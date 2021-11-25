@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/AS_STS_code.iml" filepath="$PROJECT_DIR$/.idea/AS_STS_code.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../live_coding/.idea/live_coding.iml" filepath="$PROJECT_DIR$/../live_coding/.idea/live_coding.iml" />
     </modules>
   </component>
 </project>
