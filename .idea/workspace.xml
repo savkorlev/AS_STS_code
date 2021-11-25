@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="">
+    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="Commit by Cory">
       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -22,6 +22,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PythonContentEntriesConfigurable" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -35,6 +36,7 @@
       <workItem from="1637838857369" duration="1000" />
       <workItem from="1637838886920" duration="438000" />
       <workItem from="1637839513934" duration="302000" />
+      <workItem from="1637844395598" duration="341000" />
     </task>
     <task id="LOCAL-00001" summary="Let's see">
       <created>1637839022626</created>
@@ -71,16 +73,42 @@
       <option name="project" value="LOCAL" />
       <updated>1637839764432</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Commit by Cory">
+      <created>1637844545139</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1637844545139</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Commit by Cory">
+      <created>1637844592901</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1637844592901</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Let's see" />
     <MESSAGE value="Commit via InteliJ" />
     <MESSAGE value="Commit via PyCharm" />
-    <option name="LAST_COMMIT_MESSAGE" value="Commit via PyCharm" />
+    <MESSAGE value="Commit by Cory" />
+    <option name="LAST_COMMIT_MESSAGE" value="Commit by Cory" />
   </component>
 </project>
