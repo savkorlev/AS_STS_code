@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="" />
+    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -32,6 +34,7 @@
       <workItem from="1637838782111" duration="18000" />
       <workItem from="1637838857369" duration="1000" />
       <workItem from="1637838886920" duration="438000" />
+      <workItem from="1637839513934" duration="302000" />
     </task>
     <task id="LOCAL-00001" summary="Let's see">
       <created>1637839022626</created>
@@ -47,7 +50,28 @@
       <option name="project" value="LOCAL" />
       <updated>1637839248196</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Commit via InteliJ">
+      <created>1637839586612</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1637839586612</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Commit via InteliJ">
+      <created>1637839692213</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1637839692213</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Commit via PyCharm">
+      <created>1637839764432</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1637839764432</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -55,6 +79,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Let's see" />
-    <option name="LAST_COMMIT_MESSAGE" value="Let's see" />
+    <MESSAGE value="Commit via InteliJ" />
+    <MESSAGE value="Commit via PyCharm" />
+    <option name="LAST_COMMIT_MESSAGE" value="Commit via PyCharm" />
   </component>
 </project>
