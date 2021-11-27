@@ -1,3 +1,5 @@
-print("Hello World 1")
+import pandas as pd
 
-print("PyCharm_testing")
+df_NewYork_2 = pd.read_csv("data/NewYork.2.nodes.csv")
+
+print(df_NewYork_2)
