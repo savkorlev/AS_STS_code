@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/NewYork.1nodes.csv" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -37,7 +36,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$USER_HOME$/Documents/Python Projects/Data camp, Python Programmer/Table of contents.py" />
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -54,7 +53,7 @@
       <workItem from="1637839513934" duration="1532000" />
       <workItem from="1637841307407" duration="3068000" />
       <workItem from="1638054326822" duration="850000" />
-      <workItem from="1638055717024" duration="401000" />
+      <workItem from="1638055717024" duration="1614000" />
     </task>
     <task id="LOCAL-00001" summary="Let's see">
       <created>1637839022626</created>
@@ -119,7 +118,14 @@
       <option name="project" value="LOCAL" />
       <updated>1638054865117</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="1) reading data in main&#10;2) small corrections in files' names">
+      <created>1638056253893</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1638056253893</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -153,6 +159,7 @@
     <MESSAGE value="Commit via InteliJ" />
     <MESSAGE value="Commit via PyCharm" />
     <MESSAGE value="Adding data files as .csv" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding data files as .csv" />
+    <MESSAGE value="1) reading data in main&#10;2) small corrections in files' names" />
+    <option name="LAST_COMMIT_MESSAGE" value="1) reading data in main&#10;2) small corrections in files' names" />
   </component>
 </project>
