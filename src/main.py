@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 
-# os.chdir('C:/Users/Christopher/PycharmProjects/AS_STS_code')
+# os.chdir('C:/Users/Maximilian Sammer/PycharmProjects/AS_STS_code/')
 
 df_NewYork_1_nodes = pd.read_csv("data/NewYork.1.nodes.csv", sep=' ')
 df_NewYork_2_nodes = pd.read_csv("data/NewYork.2.nodes.csv", sep=' ')
@@ -34,3 +34,4 @@ print(df_NewYork_1_nodes.iloc[2, 2])  #select the third row and the third column
 
 
 print('test commit')
+print("test_commitMax")
