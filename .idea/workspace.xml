@@ -1,7 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="added the test commit string" />
+    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_25_11_2021_12_27_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_25_11_2021_12_27__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/NewYork.1.nodes.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/NewYork.2.nodes.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/NewYork.routes.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/Paris.nodes.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/Paris.routes.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/Shanghai.nodes.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/Shanghai.routes.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -34,36 +47,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$USER_HOME$/Documents/Python Projects/Data camp, Python Programmer/Table of contents.py" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
-  </component>
-  <component name="RunManager">
-    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="AS_STS_code" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/main.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Python.main" />
-      </list>
-    </recent_temporary>
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -80,8 +64,9 @@
       <workItem from="1637841307407" duration="3068000" />
       <workItem from="1638054326822" duration="850000" />
       <workItem from="1638055717024" duration="1999000" />
-      <workItem from="1638198448992" duration="1973000" />
-      <workItem from="1638200835717" duration="620000" />
+      <workItem from="1638198448992" duration="2767000" />
+      <workItem from="1638790429150" duration="1278000" />
+      <workItem from="1638794844323" duration="352000" />
     </task>
     <task id="LOCAL-00001" summary="Let's see">
       <created>1637839022626</created>
@@ -167,12 +152,12 @@
       <option name="project" value="LOCAL" />
       <updated>1638200044845</updated>
     </task>
-    <task id="LOCAL-00013" summary="added the test commit string">
-      <created>1638201435031</created>
+    <task id="LOCAL-00013" summary="Added hints">
+      <created>1638200484683</created>
       <option name="number" value="00013" />
       <option name="presentableId" value="LOCAL-00013" />
       <option name="project" value="LOCAL" />
-      <updated>1638201435031</updated>
+      <updated>1638200484683</updated>
     </task>
     <option name="localTasksCounter" value="14" />
     <servers />
@@ -211,10 +196,6 @@
     <MESSAGE value="1) reading data in main&#10;2) small corrections in files' names" />
     <MESSAGE value="1) loading all files as .csv in main with &quot; &quot; as a separator&#10;2) lines 19 and 20 - check if data frame's access works (list columns and address them)" />
     <MESSAGE value="Added hints" />
-    <MESSAGE value="added the test commit string" />
-    <option name="LAST_COMMIT_MESSAGE" value="added the test commit string" />
-  </component>
-  <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1638201310537" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added hints" />
   </component>
 </project>

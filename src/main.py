@@ -3,13 +3,13 @@ import pandas as pd
 
 # os.chdir('C:/Users/Christopher/PycharmProjects/AS_STS_code')
 
-df_NewYork_1_nodes = pd.read_csv("data/NewYork.1.nodes.csv", sep=' ')
-df_NewYork_2_nodes = pd.read_csv("data/NewYork.2.nodes.csv", sep=' ')
-df_NewYork_routes = pd.read_csv("data/NewYork.routes.csv", sep=' ')
-df_Paris_nodes = pd.read_csv("data/Paris.nodes.csv", sep=' ')
-df_Paris_routes = pd.read_csv("data/Paris.routes.csv", sep=' ')
-df_Shanghai_nodes = pd.read_csv("data/Shanghai.nodes.csv", sep=' ')
-df_Shanghai_routes = pd.read_csv("data/Shanghai.routes.csv", sep=' ')
+df_NewYork_1_nodes = pd.read_csv("data/NewYork.1.nodes", sep=' ')
+df_NewYork_2_nodes = pd.read_csv("data/NewYork.2.nodes", sep=' ')
+df_NewYork_routes = pd.read_csv("data/NewYork.routes", sep=' ')
+df_Paris_nodes = pd.read_csv("data/Paris.nodes", sep=' ')
+df_Paris_routes = pd.read_csv("data/Paris.routes", sep=' ')
+df_Shanghai_nodes = pd.read_csv("data/Shanghai.nodes", sep=' ')
+df_Shanghai_routes = pd.read_csv("data/Shanghai.routes", sep=' ')
 
 # print(df_NewYork_1_nodes)
 # print(df_NewYork_2_nodes)
