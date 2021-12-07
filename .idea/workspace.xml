@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="">
+    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) Restructured the project so that it resembles the lecture one (not fully though for convenience)&#10;2) Completed the data importing/loading stuff, created attributes/objects/instances&#10;3) Copied algorithms from the lecture&#10;4) Created a Trucks class which for now has only one truck with one attribute (capacity) but can be extended later on&#10;5) Added comments&#10;6) Basically made everything working from main&#10;P.S.: classes TSPLibReader.py and carModel1.vrp are obsolete for now but if we will be asked to use them instead of our current approach we can adapt to it">
+      <change afterPath="$PROJECT_DIR$/instances/Construction.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/instances/Trucks.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/instances/Utils.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/instances/carModel1.vrp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/TSPLibReader.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/AS_STS_code.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/AS_STS_code.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_29_11_2021_17_04_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_29_11_2021_17_04__Changes_.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
@@ -12,6 +21,13 @@
   </component>
   <component name="DjangoConsoleOptions" custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)">
     <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="FlaskConsoleOptions" custom-start-script="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))">
     <envs>
@@ -28,6 +44,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="21PNUh1l9QXN6taUlC8LXgOvLDj" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -36,7 +53,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$USER_HOME$/Documents/Python Projects/Data camp, Python Programmer/Table of contents.py" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../live_coding" />
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -53,7 +70,24 @@
       <workItem from="1637839513934" duration="1532000" />
       <workItem from="1637841307407" duration="3068000" />
       <workItem from="1638054326822" duration="850000" />
-      <workItem from="1638055717024" duration="1614000" />
+      <workItem from="1638055717024" duration="1999000" />
+      <workItem from="1638198448992" duration="2767000" />
+      <workItem from="1638790429150" duration="1278000" />
+      <workItem from="1638794844323" duration="1422000" />
+      <workItem from="1638796291132" duration="3430000" />
+      <workItem from="1638803722077" duration="4201000" />
+      <workItem from="1638814477004" duration="27000" />
+      <workItem from="1638814535742" duration="1043000" />
+      <workItem from="1638815594844" duration="8019000" />
+      <workItem from="1638829161268" duration="675000" />
+      <workItem from="1638829858377" duration="2599000" />
+      <workItem from="1638832933646" duration="446000" />
+      <workItem from="1638833437967" duration="1081000" />
+      <workItem from="1638834544416" duration="1651000" />
+      <workItem from="1638836393331" duration="1377000" />
+      <workItem from="1638842191801" duration="505000" />
+      <workItem from="1638842715249" duration="127000" />
+      <workItem from="1638842855943" duration="563000" />
     </task>
     <task id="LOCAL-00001" summary="Let's see">
       <created>1637839022626</created>
@@ -125,7 +159,42 @@
       <option name="project" value="LOCAL" />
       <updated>1638056253893</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="1) loading all files as .csv in main with &quot; &quot; as a separator&#10;2) lines 19 and 20 - check if data frame's access works (list columns and address them)">
+      <created>1638057457407</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1638057457407</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Added hints">
+      <created>1638200044845</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1638200044845</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Added hints">
+      <created>1638200484683</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1638200484683</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Completely removed all .csv files since we don't actually need them, we can load the data in the same format directly from .nodes and .routes files">
+      <created>1638795258281</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1638795258281</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Completely removed all .csv files since we don't actually need them, we can load the data in the same format directly from .nodes and .routes files">
+      <created>1638795391731</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1638795391731</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -160,6 +229,9 @@
     <MESSAGE value="Commit via PyCharm" />
     <MESSAGE value="Adding data files as .csv" />
     <MESSAGE value="1) reading data in main&#10;2) small corrections in files' names" />
-    <option name="LAST_COMMIT_MESSAGE" value="1) reading data in main&#10;2) small corrections in files' names" />
+    <MESSAGE value="1) loading all files as .csv in main with &quot; &quot; as a separator&#10;2) lines 19 and 20 - check if data frame's access works (list columns and address them)" />
+    <MESSAGE value="Added hints" />
+    <MESSAGE value="Completely removed all .csv files since we don't actually need them, we can load the data in the same format directly from .nodes and .routes files" />
+    <option name="LAST_COMMIT_MESSAGE" value="Completely removed all .csv files since we don't actually need them, we can load the data in the same format directly from .nodes and .routes files" />
   </component>
 </project>
