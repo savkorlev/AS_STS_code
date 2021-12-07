@@ -60,6 +60,10 @@ def next_fit_heuristic(customer_list: List[int], instance: Instance) -> Solution
             open_route = [0, c]
             open_route_capacity_used = demand
 
+    # close active route
+    open_route.append(0)
+    routes.append(open_route)  # close the last route
+
     return routes
 
 
