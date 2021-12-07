@@ -7,6 +7,7 @@ from instances.Utils import Instance, next_fit_heuristic_naive, compute_distance
 import os
 # os.chdir('C:/Users/Евгений/Desktop/TUM/WS 2021-2022/Advanced Seminar Sustainable Transportation Systems/AS_STS_code')
 # os.chdir('C:/Users/Maximilian Sammer/PycharmProjects/AS_STS_code/')
+# os.chdir('C:/Users/Christopher/PycharmProjects/AS_STS_code/')
 
 ### may come in handy later on:
 # from src import TSPLibReader
@@ -34,7 +35,7 @@ df_Shanghai_routes = pd.read_csv("data/Shanghai.routes", sep=' ')
 # print(df_NewYork_1_nodes.iloc[2, 2])  #select the third row and the third column
 
 # 2. CREATING OUR TRUCKS
-truck1 = TruckOne(1500)
+truck1 = TruckOne(3000)
 
 # 3. CREATING TEST DATASET AND ATTRIBUTES OF FUTURE INSTANCE
 testDimension = 20
@@ -62,10 +63,10 @@ for row, content in test_df_Paris_nodes.iterrows():
 ourInstance = Instance(testDimension, truck1.capacity, testDemandParis, testParisDistances, coordinates)
 
 # 5. SIMPLE SOLUTION
-solution = next_fit_heuristic_naive(ourInstance)
+#solution = next_fit_heuristic_naive(ourInstance)
 # Update: by adding an 'f' before a string, you allow for so-called string interpolation, i.e., you can use
 #  {} to access variables from the outer scope which will be inserted at this point in the string.
-print(f"Next-Fit-Heuristic | #Vehicles: {len(solution)}, distance: {compute_distances(solution, ourInstance)}")
+#print(f"Next-Fit-Heuristic | #Vehicles: {len(solution)}, distance: {compute_distances(solution, ourInstance)}")
 
 # 6. SWEEP HEURISTIC
 solution = next_fit_heuristic(sort_customers_by_sweep(ourInstance), ourInstance)
