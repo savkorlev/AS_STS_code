@@ -62,3 +62,22 @@ def sort_customers_by_sweep(instance: Instance) -> List[int]:
         sorted_customers.append(entry['id'])
 
     return sorted_customers
+
+
+def ourdistruction(solution: Solution):
+    numberOfRemoved = random.randint(2, 10)                             # 10% out of 19 is ~ 2, 50% ~ 10
+    listOfRemoved = random.sample(range(1, 19), numberOfRemoved)
+    listAfterDestruction = []
+    for i in range(len(solution)):
+        element = [e for e in solution[i] if e not in listOfRemoved]
+        listAfterDestruction.append(element)
+    return [listAfterDestruction, listOfRemoved]
+
+# testSolution = [[0, 19, 10, 18, 0], [0, 3, 5, 12, 0], [0, 6, 17, 7, 0], [0, 15, 16, 1, 0], [0, 13, 8, 11, 0], [0, 14, 4, 0], [0, 9, 2, 0]]
+# numberOfRemoved = random.randint(2, 10)  # 10% out of 19 is ~ 2, 50% ~ 10
+# listOfRemoved = random.sample(range(1, 19), numberOfRemoved)
+# testOutput = []
+# for i in range(len(testSolution)):
+#     element = [e for e in testSolution[i] if e not in listOfRemoved]
+#     testOutput.append(element)
+# print(testSolution)
