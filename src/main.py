@@ -4,7 +4,7 @@ from instances.Construction import sort_customers_by_sweep, ouralgorithm
 from instances.Trucks import TruckOne
 from instances.Utils import Instance, next_fit_heuristic_naive, compute_distances, next_fit_heuristic, is_feasible
 
-import os
+# import os
 # os.chdir('C:/Users/Евгений/Desktop/TUM/WS 2021-2022/Advanced Seminar Sustainable Transportation Systems/AS_STS_code')
 # os.chdir('C:/Users/Maximilian Sammer/PycharmProjects/AS_STS_code/')
 # os.chdir('/Users/tuminyu/Desktop/Cory/TUM Master/Advanced Seminar/Code/Project')

@@ -66,8 +66,8 @@ def sort_customers_by_sweep(instance: Instance) -> List[int]:
 
 def ouralgorithm(instance: Instance, solution: Solution):
     # start of destruction phase
-    numberOfRemoved = random.randint(round(0.1 * (len(instance.q) - 1)), round(0.5 * (len(instance.q) - 1))) # generate number customers to be removed
-    listOfRemoved = random.sample(range(1, len(instance.q) - 1), numberOfRemoved) # generate indexes of customers to be removed
+    numberOfRemoved = random.randint(round(0.1 * (len(instance.q) - 1)), round(0.5 * (len(instance.q) - 1)))  # generate number customers to be removed
+    listOfRemoved = random.sample(range(1, len(instance.q)), numberOfRemoved)  # generate customers to be removed, starting from 1 so depo isn't get deleted
     listAfterDestruction = []
     for i in range(len(solution)):
         element = [e for e in solution[i] if e not in listOfRemoved]
@@ -86,7 +86,7 @@ def ouralgorithm(instance: Instance, solution: Solution):
 # print(testSolution)
 
     # # start of insertion phase
-    # bestInsertionDistance = 1000
+    # bestInsertionDistance = 10000
     # bestPosition = 0
     # bestCustomer = 0
     # x = 0
@@ -94,3 +94,8 @@ def ouralgorithm(instance: Instance, solution: Solution):
     #     for customer in listOfRemoved:
     #         for i in listAfterDestruction:
     #             for j in listAfterDestruction[i]:
+
+# distance between (0 and 1) + (1 and 19) - (0 and 19)
+# check for feasibility before insertion - now with capacity, distance later on (maybe check it after for loops if performance is poor)
+# make a greedy code but comment everything
+# check empty routes and create new routes
