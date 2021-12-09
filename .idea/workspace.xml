@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) started insertion">
+    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) updated destruction algorithm so that it works with any input data (not only the test one)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instances/Construction.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Construction.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -121,7 +122,8 @@
       <workItem from="1639062220997" duration="117000" />
       <workItem from="1639062365243" duration="1763000" />
       <workItem from="1639064160635" duration="657000" />
-      <workItem from="1639064839252" duration="1251000" />
+      <workItem from="1639064839252" duration="2145000" />
+      <workItem from="1639067022452" duration="412000" />
     </task>
     <task id="LOCAL-00001" summary="Let's see">
       <created>1637839022626</created>
@@ -242,7 +244,14 @@
       <option name="project" value="LOCAL" />
       <updated>1639065017058</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="1) started insertion phase">
+      <created>1639066121047</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1639066121047</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -282,7 +291,8 @@
     <MESSAGE value="Completely removed all .csv files since we don't actually need them, we can load the data in the same format directly from .nodes and .routes files" />
     <MESSAGE value="1) implemented distruction" />
     <MESSAGE value="1) small renaming" />
-    <option name="LAST_COMMIT_MESSAGE" value="1) small renaming" />
+    <MESSAGE value="1) started insertion phase" />
+    <option name="LAST_COMMIT_MESSAGE" value="1) started insertion phase" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1639062954976" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
