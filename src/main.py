@@ -1,6 +1,6 @@
 import pandas as pd
 
-from instances.Construction import sort_customers_by_sweep, ourdistruction
+from instances.Construction import sort_customers_by_sweep, ouralgorithm
 from instances.Trucks import TruckOne
 from instances.Utils import Instance, next_fit_heuristic_naive, compute_distances, next_fit_heuristic, is_feasible
 
@@ -73,4 +73,4 @@ solution = next_fit_heuristic(sort_customers_by_sweep(ourInstance), ourInstance)
 print(f"Sweep Heuristic | #Vehicles: {len(solution)}, distance: {compute_distances(solution, ourInstance)}, is_feasible: {is_feasible(solution, ourInstance)}")
 
 # 7. DESTRUCTION
-afterDistruction = ourdistruction(solution)
+ouralgorithm(ourInstance, solution)
