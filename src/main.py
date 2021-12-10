@@ -7,7 +7,7 @@ from instances.Utils import Instance, next_fit_heuristic_naive, compute_distance
 # import os
 # os.chdir('C:/Users/Евгений/Desktop/TUM/WS 2021-2022/Advanced Seminar Sustainable Transportation Systems/AS_STS_code')
 # os.chdir('C:/Users/Maximilian Sammer/PycharmProjects/AS_STS_code/')
-# os.chdir('/Users/tuminyu/Desktop/Cory/TUM Master/Advanced Seminar/Code/Project')
+# os.chdir('/Users/tuminyu/Desktop/Cory/TUM Master/Advanced Sseminar/Code/Project')
 
 ### may come in handy later on:
 # from src import TSPLibReader

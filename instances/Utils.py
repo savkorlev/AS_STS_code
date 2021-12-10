@@ -10,6 +10,8 @@ class Instance:
         maximum load capacity per vehicle
     q : List[int]
         list of customer demands
+    d : Dict[Tuple[int, int], float]
+        list of distances
     coordinates : List[Tuple[int, int]]
         list of customer coordinates
     """

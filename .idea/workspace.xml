@@ -7,6 +7,8 @@
     <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instances/Construction.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Construction.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instances/Utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -123,6 +125,13 @@
       <workItem from="1639064160635" duration="657000" />
       <workItem from="1639064839252" duration="2145000" />
       <workItem from="1639067022452" duration="4017000" />
+      <workItem from="1639071341951" duration="1301000" />
+      <workItem from="1639146171573" duration="4530000" />
+      <workItem from="1639153917748" duration="1927000" />
+      <workItem from="1639155902082" duration="115000" />
+      <workItem from="1639157976084" duration="652000" />
+      <workItem from="1639158673901" duration="4905000" />
+      <workItem from="1639164773216" duration="2422000" />
     </task>
     <task id="LOCAL-00001" summary="Let's see">
       <created>1637839022626</created>
@@ -257,11 +266,21 @@
       <option name="project" value="LOCAL" />
       <updated>1639067466577</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="1) fixed a small error">
+      <created>1639071450476</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1639071450476</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName="*.routes" />
   </component>
   <component name="Vcs.Log.History.Properties">
     <option name="COLUMN_ID_ORDER">
@@ -299,9 +318,10 @@
     <MESSAGE value="1) small renaming" />
     <MESSAGE value="1) started insertion phase" />
     <MESSAGE value="1) updated destruction algorithm so that it works with any input data (not only the test one)" />
-    <option name="LAST_COMMIT_MESSAGE" value="1) updated destruction algorithm so that it works with any input data (not only the test one)" />
+    <MESSAGE value="1) fixed a small error" />
+    <option name="LAST_COMMIT_MESSAGE" value="1) fixed a small error" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1639062954976" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1639166768726" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
   </component>
 </project>
