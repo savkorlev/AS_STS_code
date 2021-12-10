@@ -1,6 +1,6 @@
 import pandas as pd
 
-from instances.Construction import sort_customers_by_sweep, ouralgorithm
+from instances.Construction import sort_customers_by_sweep, ouralgorithm, checkForAcceptance
 from instances.Trucks import TruckOne
 from instances.Utils import Instance, next_fit_heuristic_naive, compute_distances, next_fit_heuristic, is_feasible, \
     compute_total_demand
@@ -76,3 +76,6 @@ print(f"Sweep Heuristic | #Vehicles: {len(solutionSweep)}, distance: {compute_di
 # 7. DESTRUCTION & INSERTION
 solutionOur = ouralgorithm(ourInstance, solutionSweep)
 print(compute_total_demand(solutionOur[0], ourInstance))
+
+# 8. CHECK FOR ACCEPTANCE
+checkForAcceptance(solutionSweep, solutionOur, ourInstance)

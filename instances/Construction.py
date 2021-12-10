@@ -2,7 +2,7 @@ import math
 import random
 from typing import List
 
-from instances.Utils import Instance, Solution, next_fit_heuristic, compute_total_demand
+from instances.Utils import Instance, Solution, next_fit_heuristic, compute_total_demand, compute_distances
 
 
 def sweep_algorithm(instance: Instance) -> Solution:
@@ -97,6 +97,17 @@ def ouralgorithm(instance: Instance, solution: Solution):
     return listAfterDestruction
     # END OF INSERTION PHASE. Result - listAfterDestruction
 
+# START OF ACCEPTANCE PHASE
+def checkForAcceptance(solutionSweep: Solution, solutionOur: Solution, instance: Instance):
+    distancesSweep = compute_distances(solutionSweep, instance)
+    distancesOurAlgorythm = compute_distances(solutionOur, instance)
+    if distancesSweep < distancesOurAlgorythm:
+        print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {distancesOurAlgorythm}. Sweep is better")
+    elif distancesSweep == distancesOurAlgorythm:
+        print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {distancesOurAlgorythm}. Algorithms are equal")
+    else:
+        print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {distancesOurAlgorythm}. ourAlgorithm is better")
+# END OF ACCEPTANCE PHASE
 # distance between (0 and 1) + (1 and 19) - (0 and 19)
 # check for feasibility before insertion - now with capacity, distance later on (maybe check it after for loops if performance is poor)
 # make a greedy code but comment everything
