@@ -7,7 +7,6 @@
     <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instances/Construction.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Construction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instances/Utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -131,7 +130,15 @@
       <workItem from="1639155902082" duration="115000" />
       <workItem from="1639157976084" duration="652000" />
       <workItem from="1639158673901" duration="4905000" />
-      <workItem from="1639164773216" duration="2422000" />
+      <workItem from="1639164773216" duration="2471000" />
+      <workItem from="1639176584947" duration="1031000" />
+      <workItem from="1639177652929" duration="223000" />
+      <workItem from="1639177913999" duration="201000" />
+      <workItem from="1639178132914" duration="92000" />
+      <workItem from="1639178239002" duration="73000" />
+      <workItem from="1639178327885" duration="177000" />
+      <workItem from="1639178520978" duration="129000" />
+      <workItem from="1639178671844" duration="682000" />
     </task>
     <task id="LOCAL-00001" summary="Let's see">
       <created>1637839022626</created>
@@ -273,7 +280,14 @@
       <option name="project" value="LOCAL" />
       <updated>1639071450476</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="1) insertion part without checking for feasibility">
+      <created>1639169286682</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1639169286682</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -319,7 +333,8 @@
     <MESSAGE value="1) started insertion phase" />
     <MESSAGE value="1) updated destruction algorithm so that it works with any input data (not only the test one)" />
     <MESSAGE value="1) fixed a small error" />
-    <option name="LAST_COMMIT_MESSAGE" value="1) fixed a small error" />
+    <MESSAGE value="1) insertion part without checking for feasibility" />
+    <option name="LAST_COMMIT_MESSAGE" value="1) insertion part without checking for feasibility" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1639166768726" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />

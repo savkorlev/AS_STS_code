@@ -2,7 +2,8 @@ import pandas as pd
 
 from instances.Construction import sort_customers_by_sweep, ouralgorithm
 from instances.Trucks import TruckOne
-from instances.Utils import Instance, next_fit_heuristic_naive, compute_distances, next_fit_heuristic, is_feasible
+from instances.Utils import Instance, next_fit_heuristic_naive, compute_distances, next_fit_heuristic, is_feasible, \
+    compute_total_demand
 
 # import os
 # os.chdir('C:/Users/Евгений/Desktop/TUM/WS 2021-2022/Advanced Seminar Sustainable Transportation Systems/AS_STS_code')
@@ -69,8 +70,9 @@ solution = next_fit_heuristic_naive(ourInstance)
 print(f"Next-Fit-Heuristic | #Vehicles: {len(solution)}, distance: {compute_distances(solution, ourInstance)}")
 
 # 6. SWEEP HEURISTIC
-solution = next_fit_heuristic(sort_customers_by_sweep(ourInstance), ourInstance)
-print(f"Sweep Heuristic | #Vehicles: {len(solution)}, distance: {compute_distances(solution, ourInstance)}, is_feasible: {is_feasible(solution, ourInstance)}")
+solutionSweep = next_fit_heuristic(sort_customers_by_sweep(ourInstance), ourInstance)
+print(f"Sweep Heuristic | #Vehicles: {len(solutionSweep)}, distance: {compute_distances(solutionSweep, ourInstance)}, is_feasible: {is_feasible(solutionSweep, ourInstance)}")
 
-# 7. DESTRUCTION
-ouralgorithm(ourInstance, solution)
+# 7. DESTRUCTION & INSERTION
+solutionOur = ouralgorithm(ourInstance, solutionSweep)
+print(compute_total_demand(solutionOur[0], ourInstance))
