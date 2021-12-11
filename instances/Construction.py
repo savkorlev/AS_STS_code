@@ -2,6 +2,7 @@ import math
 import random
 from typing import List
 
+from instances.LocalSearch import hillclimbing
 from instances.Utils import Instance, Solution, next_fit_heuristic, compute_total_demand, compute_distances
 
 
@@ -64,7 +65,7 @@ def sort_customers_by_sweep(instance: Instance) -> List[int]:
     return sorted_customers
 
 
-def ouralgorithm(instance: Instance, solution: Solution):
+def ouralgorithm(instance: Instance, solution: Solution, function):
     # START OF DESTRUCTION PHASE
     numberOfRemoved = random.randint(round(0.1 * (len(instance.q) - 1)), round(0.5 * (len(instance.q) - 1)))  # generate number customers to be removed
     listOfRemoved = random.sample(range(1, len(instance.q)), numberOfRemoved)  # generate customers to be removed, starting from 1 so depo isn't getting deleted
@@ -94,8 +95,13 @@ def ouralgorithm(instance: Instance, solution: Solution):
         listAfterDestruction[bestPosition[0]].insert(bestPosition[1], bestCustomer)  # insert bestCustomer to the best feasible route for them
         listOfRemoved.remove(bestCustomer)  # delete current bestCustomer from a list of removed customers
     print(listAfterDestruction)
-    return listAfterDestruction
-    # END OF INSERTION PHASE. Result - listAfterDestruction
+    # END OF INSERTION PHASE
+
+    # START OF OPTIMIZATION PHASE
+    listAfterOptimization = hillclimbing(listAfterDestruction, instance, function)
+    return listAfterOptimization
+    # END OF OPTIMIZATION PHASE. Result - listAfterDestruction
+
 
 # START OF ACCEPTANCE PHASE
 def checkForAcceptance(solutionSweep: Solution, solutionOur: Solution, instance: Instance):

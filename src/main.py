@@ -1,14 +1,16 @@
 import pandas as pd
 
 from instances.Construction import sort_customers_by_sweep, ouralgorithm, checkForAcceptance
+from instances.LocalSearch import find_first_improvement_2Opt, find_first_improvement_relocate, \
+    find_first_improvement_exchange
 from instances.Trucks import TruckOne
 from instances.Utils import Instance, next_fit_heuristic_naive, compute_distances, next_fit_heuristic, is_feasible, \
     compute_total_demand
 
-# import os
+import os
 # os.chdir('C:/Users/Евгений/Desktop/TUM/WS 2021-2022/Advanced Seminar Sustainable Transportation Systems/AS_STS_code')
 # os.chdir('C:/Users/Maximilian Sammer/PycharmProjects/AS_STS_code/')
-# os.chdir('/Users/tuminyu/Desktop/Cory/TUM Master/Advanced Sseminar/Code/Project')
+os.chdir('/Users/tuminyu/Desktop/Cory/TUM Master/Advanced Seminar/Code/Project')
 
 ### may come in handy later on:
 # from src import TSPLibReader
@@ -73,8 +75,8 @@ print(f"Next-Fit-Heuristic | #Vehicles: {len(solution)}, distance: {compute_dist
 solutionSweep = next_fit_heuristic(sort_customers_by_sweep(ourInstance), ourInstance)
 print(f"Sweep Heuristic | #Vehicles: {len(solutionSweep)}, distance: {compute_distances(solutionSweep, ourInstance)}, is_feasible: {is_feasible(solutionSweep, ourInstance)}")
 
-# 7. DESTRUCTION & INSERTION
-solutionOur = ouralgorithm(ourInstance, solutionSweep)
+# 7. DESTRUCTION & INSERTION & OPTIMIZATION
+solutionOur = ouralgorithm(ourInstance, solutionSweep, find_first_improvement_2Opt)
 print(compute_total_demand(solutionOur[0], ourInstance))
 
 # 8. CHECK FOR ACCEPTANCE
