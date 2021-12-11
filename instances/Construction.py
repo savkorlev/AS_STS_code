@@ -2,7 +2,8 @@ import math
 import random
 from typing import List
 
-from instances.Utils import Instance, Solution, next_fit_heuristic
+from instances.LocalSearch import hillclimbing
+from instances.Utils import Instance, Solution, next_fit_heuristic, compute_total_demand, compute_distances
 
 
 def sweep_algorithm(instance: Instance) -> Solution:
@@ -62,3 +63,58 @@ def sort_customers_by_sweep(instance: Instance) -> List[int]:
         sorted_customers.append(entry['id'])
 
     return sorted_customers
+
+
+def ouralgorithm(instance: Instance, solution: Solution, function):
+    # START OF DESTRUCTION PHASE
+    numberOfRemoved = random.randint(round(0.1 * (len(instance.q) - 1)), round(0.5 * (len(instance.q) - 1)))  # generate number customers to be removed
+    listOfRemoved = random.sample(range(1, len(instance.q)), numberOfRemoved)  # generate customers to be removed, starting from 1 so depo isn't getting deleted
+    listAfterDestruction = []
+    for i in range(len(solution)):
+        element = [e for e in solution[i] if e not in listOfRemoved]
+        listAfterDestruction.append(element)
+    print(solution); print(listAfterDestruction); print(listOfRemoved)
+    # END OF DESTRUCTION PHASE. Result - listAfterDestruction and listOfRemoved
+
+    # START OF INSERTION PHASE
+    while len(listOfRemoved) > 0:
+        bestInsertionDistance = 10000
+        bestPosition = 0
+        bestCustomer = 0
+        for customerIndex in range(len(listOfRemoved)):  # iterating over list of removed customers
+            for i in range(len(listAfterDestruction)):  # iterating over routes in listAfterDestruction
+                for j in range(len(listAfterDestruction[i]) - 1):  # iterating over positions in a route
+                    keyNegative = (listAfterDestruction[i][j], listAfterDestruction[i][j + 1])
+                    key1Positive = (listAfterDestruction[i][j], listOfRemoved[customerIndex])
+                    key2Positive = (listOfRemoved[customerIndex], listAfterDestruction[i][j + 1])
+                    insertionDistance = instance.d[key1Positive] + instance.d[key2Positive] - instance.d[keyNegative]  # calculation of insertion distance
+                    if (insertionDistance < bestInsertionDistance) & (compute_total_demand(listAfterDestruction[i], instance) + instance.q[listOfRemoved[customerIndex]] < instance.Q):  # checking both conditions, first - lowest distance, second - total demand after insertion must be lower than our truck's capacity
+                        bestInsertionDistance = insertionDistance
+                        bestPosition = (i, j + 1)
+                        bestCustomer = listOfRemoved[customerIndex]
+        listAfterDestruction[bestPosition[0]].insert(bestPosition[1], bestCustomer)  # insert bestCustomer to the best feasible route for them
+        listOfRemoved.remove(bestCustomer)  # delete current bestCustomer from a list of removed customers
+    print(listAfterDestruction)
+    # END OF INSERTION PHASE
+
+    # START OF OPTIMIZATION PHASE
+    listAfterOptimization = hillclimbing(listAfterDestruction, instance, function)
+    return listAfterOptimization
+    # END OF OPTIMIZATION PHASE. Result - listAfterDestruction
+
+
+# START OF ACCEPTANCE PHASE
+def checkForAcceptance(solutionSweep: Solution, solutionOur: Solution, instance: Instance):
+    distancesSweep = compute_distances(solutionSweep, instance)
+    distancesOurAlgorythm = compute_distances(solutionOur, instance)
+    if distancesSweep < distancesOurAlgorythm:
+        print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {distancesOurAlgorythm}. Sweep is better")
+    elif distancesSweep == distancesOurAlgorythm:
+        print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {distancesOurAlgorythm}. Algorithms are equal")
+    else:
+        print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {distancesOurAlgorythm}. ourAlgorithm is better")
+# END OF ACCEPTANCE PHASE
+# distance between (0 and 1) + (1 and 19) - (0 and 19)
+# check for feasibility before insertion - now with capacity, distance later on (maybe check it after for loops if performance is poor)
+# make a greedy code but comment everything
+# check empty routes and create new routes

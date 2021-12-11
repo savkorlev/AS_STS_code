@@ -2,7 +2,6 @@ from typing import List, Dict, Tuple
 
 
 class Instance:
-
     """
     n : int
         number of nodes in total
@@ -10,6 +9,8 @@ class Instance:
         maximum load capacity per vehicle
     q : List[int]
         list of customer demands
+    d : Dict[Tuple[int, int], float]
+        list of distances
     coordinates : List[Tuple[int, int]]
         list of customer coordinates
     """
@@ -20,7 +21,8 @@ class Instance:
     d: Dict[Tuple, float]
     coordinates: List[Tuple[int, int]]
 
-    def __init__(self, n: int, Q: int, q: List[int], d: Dict[Tuple[int, int], float], coordinates: List[Tuple[int, int]]):
+    def __init__(self, n: int, Q: int, q: List[int], d: Dict[Tuple[int, int], float],
+                 coordinates: List[Tuple[int, int]]):
         self.n = n
         self.Q = Q
         self.q = q
@@ -38,7 +40,6 @@ def next_fit_heuristic_naive(instance: Instance) -> Solution:
 
 
 def next_fit_heuristic(customer_list: List[int], instance: Instance) -> Solution:
-
     routes: Solution = list()
     open_route = [0]
     open_route_capacity_used = 0
@@ -60,6 +61,10 @@ def next_fit_heuristic(customer_list: List[int], instance: Instance) -> Solution
             open_route = [0, c]
             open_route_capacity_used = demand
 
+    # close active route
+    open_route.append(0)
+    routes.append(open_route)  # close the last route
+
     return routes
 
 
@@ -78,10 +83,11 @@ def compute_distance(route: Route, instance: Instance) -> float:
     # route: [0,1,2,3,4,0]
     #   (i-1)-^ ^-i
     for i in range(1, len(route)):
-        key = (route[i-1], route[i])
+        key = (route[i - 1], route[i])
         sum_distances += instance.d[key]
 
     return sum_distances
+
 
 def compute_total_demand(route: List[int], instance: Instance) -> int:
     sum_demands = 0
@@ -89,6 +95,7 @@ def compute_total_demand(route: List[int], instance: Instance) -> int:
         sum_demands += instance.q[n]
 
     return sum_demands
+
 
 def is_feasible(solution: Solution, instance: Instance) -> bool:
     """
