@@ -92,6 +92,10 @@ def ouralgorithm(instance: Instance, solution: Solution, function):
                         bestInsertionDistance = insertionDistance
                         bestPosition = (i, j + 1)
                         bestCustomer = listOfRemoved[customerIndex]
+        # ERROR. TypeError: 'int' object is not subscriptable. Data that leads to error:
+        # solution: [[0, 19, 10, 18, 0], [0, 3, 5, 12, 0], [0, 6, 17, 7, 0], [0, 15, 16, 1, 0], [0, 13, 8, 11, 0], [0, 14, 4, 0], [0, 9, 2, 0]]
+        # listAfterDestrucion: [[0, 10, 0], [0, 3, 5, 12, 0], [0, 6, 17, 7, 0], [0, 15, 16, 1, 0], [0, 13, 8, 0], [0, 14, 4, 0], [0, 2, 0]]
+        # listOfRemoved: [9, 18, 11, 19]
         listAfterDestruction[bestPosition[0]].insert(bestPosition[1], bestCustomer)  # insert bestCustomer to the best feasible route for them
         listOfRemoved.remove(bestCustomer)  # delete current bestCustomer from a list of removed customers
     print(listAfterDestruction)
@@ -99,6 +103,7 @@ def ouralgorithm(instance: Instance, solution: Solution, function):
 
     # START OF OPTIMIZATION PHASE
     listAfterOptimization = hillclimbing(listAfterDestruction, instance, function)
+    print(listAfterOptimization)
     return listAfterOptimization
     # END OF OPTIMIZATION PHASE. Result - listAfterDestruction
 
