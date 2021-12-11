@@ -73,7 +73,9 @@ def ouralgorithm(instance: Instance, solution: Solution, function):
     for i in range(len(solution)):
         element = [e for e in solution[i] if e not in listOfRemoved]
         listAfterDestruction.append(element)
-    print(solution); print(listAfterDestruction); print(listOfRemoved)
+    print(f"Sweep solution:             {solution}")
+    print(f"Customers to be removed:    {listOfRemoved}")
+    print(f"Routes after destruction:   {listAfterDestruction}")
     # END OF DESTRUCTION PHASE. Result - listAfterDestruction and listOfRemoved
 
     # START OF INSERTION PHASE
@@ -98,12 +100,12 @@ def ouralgorithm(instance: Instance, solution: Solution, function):
         # listOfRemoved: [9, 18, 11, 19]
         listAfterDestruction[bestPosition[0]].insert(bestPosition[1], bestCustomer)  # insert bestCustomer to the best feasible route for them
         listOfRemoved.remove(bestCustomer)  # delete current bestCustomer from a list of removed customers
-    print(listAfterDestruction)
+    print(f"Routes after insertion:     {listAfterDestruction}")
     # END OF INSERTION PHASE
 
     # START OF OPTIMIZATION PHASE
     listAfterOptimization = hillclimbing(listAfterDestruction, instance, function)
-    print(listAfterOptimization)
+    print(f"Routes after optimization:  {listAfterOptimization}")
     return listAfterOptimization
     # END OF OPTIMIZATION PHASE. Result - listAfterDestruction
 

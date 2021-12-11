@@ -78,7 +78,7 @@ print(f"Sweep Heuristic | #Vehicles: {len(solutionSweep)}, distance: {compute_di
 
 # 7. DESTRUCTION & INSERTION & OPTIMIZATION
 solutionOur = ouralgorithm(ourInstance, solutionSweep, find_first_improvement_2Opt)
-print(compute_total_demand(solutionOur[0], ourInstance))
+print("Sum of demands by each route: " + str(compute_total_demand(solutionOur[0], ourInstance)) + " " + str(compute_total_demand(solutionOur[1], ourInstance)) + " " + str(compute_total_demand(solutionOur[2], ourInstance)) + " " + str(compute_total_demand(solutionOur[3], ourInstance)) + " " + str(compute_total_demand(solutionOur[4], ourInstance)) + " " + str(compute_total_demand(solutionOur[5], ourInstance)) + " " + str(compute_total_demand(solutionOur[6], ourInstance)))
 
 # 8. CHECK FOR ACCEPTANCE
 checkForAcceptance(solutionSweep, solutionOur, ourInstance)
