@@ -66,6 +66,7 @@ for row, content in test_df_Paris_nodes.iterrows():
 # 4. CREATING INSTANCE
 ourInstance = Instance(testDimension, truck1.capacity, testDemandParis, testParisDistances, coordinates)
 
+
 # 5. SIMPLE SOLUTION
 solution = next_fit_heuristic_naive(ourInstance)
 # Update: by adding an 'f' before a string, you allow for so-called string interpolation, i.e., you can use
@@ -80,5 +81,5 @@ print(f"Sweep Heuristic | #Vehicles: {len(solutionSweep)}, distance: {compute_di
 solutionOur = ouralgorithm(ourInstance, solutionSweep, find_first_improvement_2Opt)
 print("Sum of demands by each route: " + str(compute_total_demand(solutionOur[0], ourInstance)) + " " + str(compute_total_demand(solutionOur[1], ourInstance)) + " " + str(compute_total_demand(solutionOur[2], ourInstance)) + " " + str(compute_total_demand(solutionOur[3], ourInstance)) + " " + str(compute_total_demand(solutionOur[4], ourInstance)) + " " + str(compute_total_demand(solutionOur[5], ourInstance)) + " " + str(compute_total_demand(solutionOur[6], ourInstance)))
 
-# 8. CHECK FOR ACCEPTANCE
-checkForAcceptance(solutionSweep, solutionOur, ourInstance)
+# # 8. CHECK FOR ACCEPTANCE
+# checkForAcceptance(solutionSweep, ourInstance)

@@ -2,7 +2,7 @@ import math
 import random
 from typing import List
 
-from instances.LocalSearch import hillclimbing
+from instances.LocalSearch import hillclimbing, find_first_improvement_2Opt
 from instances.Utils import Instance, Solution, next_fit_heuristic, compute_total_demand, compute_distances
 
 
@@ -111,9 +111,17 @@ def ouralgorithm(instance: Instance, solution: Solution, function):
 
 
 # START OF ACCEPTANCE PHASE
-def checkForAcceptance(solutionSweep: Solution, solutionOur: Solution, instance: Instance):
+def checkForAcceptance(solutionSweep: Solution, instance: Instance):
+    bestDistance = 10e10
     distancesSweep = compute_distances(solutionSweep, instance)
-    distancesOurAlgorythm = compute_distances(solutionOur, instance)
+    for i in range(10):
+        print("New iteration")
+        solutionOur = ouralgorithm(instance, solutionSweep, find_first_improvement_2Opt)
+        distancesOurAlgorythm = compute_distances(solutionOur, instance)
+        if distancesOurAlgorythm < bestDistance:
+            bestDistance = distancesOurAlgorythm
+        print(distancesOurAlgorythm)
+        print(bestDistance)
     if distancesSweep < distancesOurAlgorythm:
         print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {distancesOurAlgorythm}. Sweep is better")
     elif distancesSweep == distancesOurAlgorythm:
