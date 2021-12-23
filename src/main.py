@@ -3,7 +3,7 @@ import pandas as pd
 from instances.Construction import sort_customers_by_sweep, ouralgorithm, checkForAcceptance
 from instances.LocalSearch import find_first_improvement_2Opt, find_first_improvement_relocate, \
     find_first_improvement_exchange
-from instances.Trucks import TruckOne
+from instances.Trucks import TruckOne, TruckTwo
 from instances.Utils import Instance, next_fit_heuristic_naive, compute_distances, next_fit_heuristic, is_feasible, \
     compute_total_demand
 
@@ -40,6 +40,7 @@ df_Shanghai_routes = pd.read_csv("data/Shanghai.routes", sep=' ')
 
 # 2. CREATING OUR TRUCKS
 truck1 = TruckOne(1500)
+truck2 = TruckTwo(1200)
 
 # 3. CREATING TEST DATASET AND ATTRIBUTES OF FUTURE INSTANCE
 testDimension = 20
@@ -66,7 +67,6 @@ for row, content in test_df_Paris_nodes.iterrows():
 # 4. CREATING INSTANCE
 ourInstance = Instance(testDimension, truck1.capacity, testDemandParis, testParisDistances, coordinates)
 
-
 # 5. SIMPLE SOLUTION
 solution = next_fit_heuristic_naive(ourInstance)
 # Update: by adding an 'f' before a string, you allow for so-called string interpolation, i.e., you can use
@@ -79,7 +79,9 @@ print(f"Sweep Heuristic | #Vehicles: {len(solutionSweep)}, distance: {compute_di
 
 # 7. DESTRUCTION & INSERTION & OPTIMIZATION
 solutionOur = ouralgorithm(ourInstance, solutionSweep, find_first_improvement_2Opt)
-print("Sum of demands by each route: " + str(compute_total_demand(solutionOur[0], ourInstance)) + " " + str(compute_total_demand(solutionOur[1], ourInstance)) + " " + str(compute_total_demand(solutionOur[2], ourInstance)) + " " + str(compute_total_demand(solutionOur[3], ourInstance)) + " " + str(compute_total_demand(solutionOur[4], ourInstance)) + " " + str(compute_total_demand(solutionOur[5], ourInstance)) + " " + str(compute_total_demand(solutionOur[6], ourInstance)))
+lenOfSolutionOur = len(solutionOur)
+for i in range(lenOfSolutionOur):
+    print(f"Sum of demands of an {i}-th route: " + str(compute_total_demand(solutionOur[i], ourInstance)))
 
-# # 8. CHECK FOR ACCEPTANCE
-# checkForAcceptance(solutionSweep, ourInstance)
+# 8. CHECK FOR ACCEPTANCE
+checkForAcceptance(solutionSweep, ourInstance)

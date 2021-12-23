@@ -73,14 +73,14 @@ def ouralgorithm(instance: Instance, solution: Solution, function):
     for i in range(len(solution)):
         element = [e for e in solution[i] if e not in listOfRemoved]
         listAfterDestruction.append(element)
-    print(f"Sweep solution:             {solution}")
-    print(f"Customers to be removed:    {listOfRemoved}")
-    print(f"Routes after destruction:   {listAfterDestruction}")
+    print(f"Sweep solution: {solution}")
+    print(f"Customers to be removed: {listOfRemoved}")
+    print(f"Routes after destruction: {listAfterDestruction}")
     # END OF DESTRUCTION PHASE. Result - listAfterDestruction and listOfRemoved
 
     # START OF INSERTION PHASE
     while len(listOfRemoved) > 0:
-        bestInsertionDistance = 10000
+        bestInsertionDistance = 10e10 # very big number
         bestPosition = 0
         bestCustomer = 0
         for customerIndex in range(len(listOfRemoved)):  # iterating over list of removed customers
@@ -94,27 +94,28 @@ def ouralgorithm(instance: Instance, solution: Solution, function):
                         bestInsertionDistance = insertionDistance
                         bestPosition = (i, j + 1)
                         bestCustomer = listOfRemoved[customerIndex]
-        # ERROR. TypeError: 'int' object is not subscriptable. Data that leads to error:
-        # solution: [[0, 19, 10, 18, 0], [0, 3, 5, 12, 0], [0, 6, 17, 7, 0], [0, 15, 16, 1, 0], [0, 13, 8, 11, 0], [0, 14, 4, 0], [0, 9, 2, 0]]
-        # listAfterDestrucion: [[0, 10, 0], [0, 3, 5, 12, 0], [0, 6, 17, 7, 0], [0, 15, 16, 1, 0], [0, 13, 8, 0], [0, 14, 4, 0], [0, 2, 0]]
-        # listOfRemoved: [9, 18, 11, 19]
-        listAfterDestruction[bestPosition[0]].insert(bestPosition[1], bestCustomer)  # insert bestCustomer to the best feasible route for them
+        if bestInsertionDistance != 10e10:
+            listAfterDestruction[bestPosition[0]].insert(bestPosition[1], bestCustomer)  # insert bestCustomer to the best feasible route for them
+        else:
+            bestCustomer = listOfRemoved[0]  # if there are no feasible routes then open a new route and place 1st customer there
+            listToAppend = [0, bestCustomer, 0]
+            listAfterDestruction.append(listToAppend)
         listOfRemoved.remove(bestCustomer)  # delete current bestCustomer from a list of removed customers
-    print(f"Routes after insertion:     {listAfterDestruction}")
+    print(f"Routes after insertion: {listAfterDestruction}")
     # END OF INSERTION PHASE
 
     # START OF OPTIMIZATION PHASE
     listAfterOptimization = hillclimbing(listAfterDestruction, instance, function)
-    print(f"Routes after optimization:  {listAfterOptimization}")
+    print(f"Routes after optimization: {listAfterOptimization}")
     return listAfterOptimization
     # END OF OPTIMIZATION PHASE. Result - listAfterDestruction
 
 
 # START OF ACCEPTANCE PHASE
 def checkForAcceptance(solutionSweep: Solution, instance: Instance):
-    bestDistance = 10e10
+    bestDistance = 10e10  # very big number
     distancesSweep = compute_distances(solutionSweep, instance)
-    for i in range(10):
+    for i in range(10):  # run our algorithm 10 times
         print("New iteration")
         solutionOur = ouralgorithm(instance, solutionSweep, find_first_improvement_2Opt)
         distancesOurAlgorythm = compute_distances(solutionOur, instance)
@@ -122,14 +123,10 @@ def checkForAcceptance(solutionSweep: Solution, instance: Instance):
             bestDistance = distancesOurAlgorythm
         print(distancesOurAlgorythm)
         print(bestDistance)
-    if distancesSweep < distancesOurAlgorythm:
-        print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {distancesOurAlgorythm}. Sweep is better")
-    elif distancesSweep == distancesOurAlgorythm:
-        print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {distancesOurAlgorythm}. Algorithms are equal")
+    if distancesSweep < bestDistance:
+        print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {bestDistance}. Sweep is better")
+    elif distancesSweep == bestDistance:
+        print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {bestDistance}. Algorithms are equal")
     else:
-        print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {distancesOurAlgorythm}. ourAlgorithm is better")
+        print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {bestDistance}. ourAlgorithm is better")
 # END OF ACCEPTANCE PHASE
-# distance between (0 and 1) + (1 and 19) - (0 and 19)
-# check for feasibility before insertion - now with capacity, distance later on (maybe check it after for loops if performance is poor)
-# make a greedy code but comment everything
-# check empty routes and create new routes
