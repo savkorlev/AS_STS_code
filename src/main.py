@@ -81,7 +81,8 @@ print(f"Sweep Heuristic | #Vehicles: {len(solutionSweep)}, distance: {compute_di
 solutionOur = ouralgorithm(ourInstance, solutionSweep, find_first_improvement_2Opt)
 lenOfSolutionOur = len(solutionOur)
 for i in range(lenOfSolutionOur):
-    print(f"Sum of demands of an {i}-th route: " + str(compute_total_demand(solutionOur[i], ourInstance)))
+    print(f"Sum of demands of a {i} route: " + str(compute_total_demand(solutionOur[i], ourInstance)))
 
 # 8. CHECK FOR ACCEPTANCE
-checkForAcceptance(solutionSweep, ourInstance)
+acceptedSolution = checkForAcceptance(solutionSweep, ourInstance)
+# print(compute_distances(acceptedSolution, ourInstance))

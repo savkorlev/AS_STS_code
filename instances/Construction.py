@@ -121,6 +121,7 @@ def checkForAcceptance(solutionSweep: Solution, instance: Instance):
         distancesOurAlgorythm = compute_distances(solutionOur, instance)
         if distancesOurAlgorythm < bestDistance:
             bestDistance = distancesOurAlgorythm
+            bestSolution = solutionOur
         print(distancesOurAlgorythm)
         print(bestDistance)
     if distancesSweep < bestDistance:
@@ -129,4 +130,5 @@ def checkForAcceptance(solutionSweep: Solution, instance: Instance):
         print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {bestDistance}. Algorithms are equal")
     else:
         print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {bestDistance}. ourAlgorithm is better")
+    return bestSolution
 # END OF ACCEPTANCE PHASE
