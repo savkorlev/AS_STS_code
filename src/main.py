@@ -1,9 +1,10 @@
 import pandas as pd
 
-from instances.Construction import sort_customers_by_sweep, ouralgorithm, checkForAcceptance
+from instances.Construction import sort_customers_by_sweep, ouralgorithm, checkForAcceptance, truckAssigning
 from instances.LocalSearch import find_first_improvement_2Opt, find_first_improvement_relocate, \
     find_first_improvement_exchange
-from instances.Trucks import TruckOne, TruckTwo
+from instances.Trucks import MercedesBenzAtego, VWTransporter, VWCaddypanelvan, DaimlerFUSOeCanter, \
+    StreetScooterWORKL, StreetScooterWORK, DouzeV2ECargoBike
 from instances.Utils import Instance, next_fit_heuristic_naive, compute_distances, next_fit_heuristic, is_feasible, \
     compute_total_demand
 
@@ -39,8 +40,14 @@ df_Shanghai_routes = pd.read_csv("data/Shanghai.routes", sep=' ')
 # print(df_NewYork_1_nodes.iloc[2, 2])  #select the third row and the third column
 
 # 2. CREATING OUR TRUCKS
-truck1 = TruckOne(1500)
-truck2 = TruckTwo(1200)
+truck1 = MercedesBenzAtego(2800)
+truck2 = VWTransporter(883)
+truck3 = VWCaddypanelvan(670)
+truck4 = DaimlerFUSOeCanter(2800)
+truck5 = StreetScooterWORKL(905)
+truck6 = StreetScooterWORK(720)
+truck7 = DouzeV2ECargoBike(100)
+listOfTrucks = [truck1, truck2, truck3, truck4, truck5, truck6, truck7]
 
 # 3. CREATING TEST DATASET AND ATTRIBUTES OF FUTURE INSTANCE
 testDimension = 20
@@ -65,7 +72,7 @@ for row, content in test_df_Paris_nodes.iterrows():
     coordinates.append(coordinate)
 
 # 4. CREATING INSTANCE
-ourInstance = Instance(testDimension, truck1.capacity, testDemandParis, testParisDistances, coordinates)
+ourInstance = Instance(testDimension, listOfTrucks, testDemandParis, testParisDistances, coordinates)
 
 # 5. SIMPLE SOLUTION
 solution = next_fit_heuristic_naive(ourInstance)
@@ -85,4 +92,8 @@ for i in range(lenOfSolutionOur):
 
 # 8. CHECK FOR ACCEPTANCE
 acceptedSolution = checkForAcceptance(solutionSweep, ourInstance)
-# print(compute_distances(acceptedSolution, ourInstance))
+print(compute_distances(acceptedSolution, ourInstance))
+
+# 9. TRUCK ASSIGNING
+assignedTrucks = truckAssigning(acceptedSolution, ourInstance)
+print(assignedTrucks[0])

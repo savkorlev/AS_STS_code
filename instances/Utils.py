@@ -5,8 +5,8 @@ class Instance:
     """
     n : int
         number of nodes in total
-    Q : int
-        maximum load capacity per vehicle
+    Q : List
+        list of trucks
     q : List[int]
         list of customer demands
     d : Dict[Tuple[int, int], float]
@@ -16,12 +16,12 @@ class Instance:
     """
 
     n: int
-    Q: int
+    Q: List
     q: List[int]
     d: Dict[Tuple, float]
     coordinates: List[Tuple[int, int]]
 
-    def __init__(self, n: int, Q: int, q: List[int], d: Dict[Tuple[int, int], float],
+    def __init__(self, n: int, Q: List, q: List[int], d: Dict[Tuple[int, int], float],
                  coordinates: List[Tuple[int, int]]):
         self.n = n
         self.Q = Q
@@ -44,10 +44,14 @@ def next_fit_heuristic(customer_list: List[int], instance: Instance) -> Solution
     open_route = [0]
     open_route_capacity_used = 0
 
+    listOfPayloads = []
+    for i in instance.Q:
+        listOfPayloads.append(i.capacity)
+
     for c in customer_list:
         demand = instance.q[c]
 
-        if open_route_capacity_used + demand <= instance.Q:
+        if open_route_capacity_used + demand <= max(listOfPayloads):  # checking max capacity among the whole list
             # assign customer to route
             open_route.append(c)
             open_route_capacity_used += demand
@@ -107,10 +111,14 @@ def is_feasible(solution: Solution, instance: Instance) -> bool:
     :return: True if feasible, False otherwise
     """
 
+    listOfPayloads = []
+    for i in instance.Q:
+        listOfPayloads.append(i.capacity)
+
     for route in solution:
         load = compute_total_demand(route, instance)
-        if load > instance.Q:
-            print(f"Error: load capacity is exceeded ({load} > {instance.Q})")
+        if load > max(listOfPayloads):  # checking max capacity among the whole list
+            print(f"Error: load capacity is exceeded ({load} > {max(listOfPayloads)})")
             return False
 
     node_visited = [0] * instance.n
@@ -124,3 +132,16 @@ def is_feasible(solution: Solution, instance: Instance) -> bool:
             return False
 
     return True
+
+
+# def feasibilityCheck(instance: Instance, listAfterDestruction: List[int], listOfRemoved: List[int], customerIndex: int, i: int):
+#
+#     listOfPayloads = []
+#     for i in instance.Q:
+#         listOfPayloads.append(i.capacity)
+#
+#     if compute_total_demand(listAfterDestruction[i], instance) + instance.q[listOfRemoved[customerIndex]] < max(listOfPayloads):  # checking both conditions, first - lowest distance, second - total demand after insertion must be lower than our truck's capacity
+#         return True
+#
+#     return False
+# (compute_total_demand(listAfterDestruction[i], instance) + instance.q[listOfRemoved[customerIndex]] < max(listOfPayloads)):  # checking both conditions, first - lowest distance, second - total demand after insertion must be lower than our truck's capacity # add feasibility check

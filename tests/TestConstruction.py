@@ -3,7 +3,8 @@ import pandas as pd
 from instances.Construction import sort_customers_by_sweep, ouralgorithm, checkForAcceptance
 from instances.LocalSearch import find_first_improvement_2Opt, find_first_improvement_relocate, \
     find_first_improvement_exchange
-from instances.Trucks import TruckOne
+from instances.Trucks import MercedesBenzAtego, VWTransporter, VWCaddypanelvan, DaimlerFUSOeCanter, \
+    StreetScooterWORKL, StreetScooterWORK, DouzeV2ECargoBike
 from instances.Utils import Instance, next_fit_heuristic_naive, compute_distances, next_fit_heuristic, is_feasible, \
     compute_total_demand
 df_NewYork_1_nodes = pd.read_csv("data/NewYork.1.nodes", sep=' ')
@@ -13,7 +14,14 @@ df_Paris_nodes = pd.read_csv("data/Paris.nodes", sep=' ')
 df_Paris_routes = pd.read_csv("data/Paris.routes", sep=' ')
 df_Shanghai_nodes = pd.read_csv("data/Shanghai.nodes", sep=' ')
 df_Shanghai_routes = pd.read_csv("data/Shanghai.routes", sep=' ')
-truck1 = TruckOne(1500)
+truck1 = MercedesBenzAtego(2800)
+truck2 = VWTransporter(883)
+truck3 = VWCaddypanelvan(670)
+truck4 = DaimlerFUSOeCanter(2800)
+truck5 = StreetScooterWORKL(905)
+truck6 = StreetScooterWORK(720)
+truck7 = DouzeV2ECargoBike(100)
+listOfTrucks = [truck1, truck2, truck3, truck4, truck5, truck6, truck7]
 testDimension = 20
 test_df_Paris_nodes = df_Paris_nodes.iloc[:20, :]                   # select elements from D0 to C19 in nodes
 test_df_Paris_routes = df_Paris_routes.iloc[:2260, :]               # select elements from D0 to C19 in routes
@@ -65,12 +73,3 @@ while len(testListOfRemoved) > 0:
     testListOfRemoved.remove(bestCustomer)  # delete current bestCustomer from a list of removed customers
 print(f"Routes after insertion: {testListAfterDestrucion}")
 # END OF INSERTION PHASE
-
-print(compute_total_demand(testListAfterDestrucion[0], ourInstance))
-print(compute_total_demand(testListAfterDestrucion[1], ourInstance))
-print(compute_total_demand(testListAfterDestrucion[2], ourInstance))
-print(compute_total_demand(testListAfterDestrucion[3], ourInstance))
-print(compute_total_demand(testListAfterDestrucion[4], ourInstance))
-print(compute_total_demand(testListAfterDestrucion[5], ourInstance))
-print(compute_total_demand(testListAfterDestrucion[6], ourInstance))
-print(compute_total_demand(testListAfterDestrucion[7], ourInstance))

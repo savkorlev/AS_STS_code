@@ -79,8 +79,11 @@ def ouralgorithm(instance: Instance, solution: Solution, function):
     # END OF DESTRUCTION PHASE. Result - listAfterDestruction and listOfRemoved
 
     # START OF INSERTION PHASE
+    listOfPayloads = []
+    for i in instance.Q:
+        listOfPayloads.append(i.capacity)
     while len(listOfRemoved) > 0:
-        bestInsertionDistance = 10e10 # very big number
+        bestInsertionDistance = 10e10  # very big number
         bestPosition = 0
         bestCustomer = 0
         for customerIndex in range(len(listOfRemoved)):  # iterating over list of removed customers
@@ -90,7 +93,7 @@ def ouralgorithm(instance: Instance, solution: Solution, function):
                     key1Positive = (listAfterDestruction[i][j], listOfRemoved[customerIndex])
                     key2Positive = (listOfRemoved[customerIndex], listAfterDestruction[i][j + 1])
                     insertionDistance = instance.d[key1Positive] + instance.d[key2Positive] - instance.d[keyNegative]  # calculation of insertion distance
-                    if (insertionDistance < bestInsertionDistance) & (compute_total_demand(listAfterDestruction[i], instance) + instance.q[listOfRemoved[customerIndex]] < instance.Q):  # checking both conditions, first - lowest distance, second - total demand after insertion must be lower than our truck's capacity
+                    if (insertionDistance < bestInsertionDistance) & (compute_total_demand(listAfterDestruction[i], instance) + instance.q[listOfRemoved[customerIndex]] < max(listOfPayloads)):  # & feasibilityCheck(instance, listAfterDestruction, listOfRemoved, customerIndex, i)
                         bestInsertionDistance = insertionDistance
                         bestPosition = (i, j + 1)
                         bestCustomer = listOfRemoved[customerIndex]
@@ -132,3 +135,27 @@ def checkForAcceptance(solutionSweep: Solution, instance: Instance):
         print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {bestDistance}. ourAlgorithm is better")
     return bestSolution
 # END OF ACCEPTANCE PHASE
+
+
+# START OF TRUCK ASSIGNING PHASE
+def truckAssigning(solution: Solution, instance: Instance):  # Currently hardcoded
+    # listOfPayloads = []
+    # for i in instance.Q:
+    #     listOfPayloads.append(i.capacity)
+    assignedTrucks = []
+    for i in solution:
+        check = compute_total_demand(i, instance)
+        if 2800 > check > 905:
+            assignedTrucks.append(instance.Q[0])
+        elif check > 883:
+            assignedTrucks.append(instance.Q[4])
+        elif check > 720:
+            assignedTrucks.append(instance.Q[1])
+        elif check > 670:
+            assignedTrucks.append(instance.Q[5])
+        elif check > 100:
+            assignedTrucks.append(instance.Q[2])
+        else:
+            assignedTrucks.append(instance.Q[6])
+    return assignedTrucks
+# END OF TRUCK ASSIGNING PHASE
