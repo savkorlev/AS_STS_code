@@ -66,76 +66,75 @@ def sort_customers_by_sweep(instance: Instance) -> List[int]:
 
 
 def ouralgorithm(instance: Instance, solution: Solution, function):
-    # START OF DESTRUCTION PHASE
-    numberOfRemoved = random.randint(round(0.1 * (len(instance.q) - 1)), round(0.5 * (len(instance.q) - 1)))  # generate number customers to be removed
-    listOfRemoved = random.sample(range(1, len(instance.q)), numberOfRemoved)  # generate customers to be removed, starting from 1 so depo isn't getting deleted
-    listAfterDestruction = []
-    for i in range(len(solution)):
-        element = [e for e in solution[i] if e not in listOfRemoved]
-        listAfterDestruction.append(element)
-    print(f"Sweep solution: {solution}")
-    print(f"Customers to be removed: {listOfRemoved}")
-    print(f"Routes after destruction: {listAfterDestruction}")
-    # END OF DESTRUCTION PHASE. Result - listAfterDestruction and listOfRemoved
-
-    # START OF INSERTION PHASE
-    listOfPayloads = []
-    for i in instance.Q:
-        listOfPayloads.append(i.capacity)
-    while len(listOfRemoved) > 0:
-        bestInsertionDistance = 10e10  # very big number
-        bestPosition = 0
-        bestCustomer = 0
-        for customerIndex in range(len(listOfRemoved)):  # iterating over list of removed customers
-            for i in range(len(listAfterDestruction)):  # iterating over routes in listAfterDestruction
-                for j in range(len(listAfterDestruction[i]) - 1):  # iterating over positions in a route
-                    keyNegative = (listAfterDestruction[i][j], listAfterDestruction[i][j + 1])
-                    key1Positive = (listAfterDestruction[i][j], listOfRemoved[customerIndex])
-                    key2Positive = (listOfRemoved[customerIndex], listAfterDestruction[i][j + 1])
-                    insertionDistance = instance.d[key1Positive] + instance.d[key2Positive] - instance.d[keyNegative]  # calculation of insertion distance
-                    if (insertionDistance < bestInsertionDistance) & (compute_total_demand(listAfterDestruction[i], instance) + instance.q[listOfRemoved[customerIndex]] < max(listOfPayloads)):  # & feasibilityCheck(instance, listAfterDestruction, listOfRemoved, customerIndex, i)
-                        bestInsertionDistance = insertionDistance
-                        bestPosition = (i, j + 1)
-                        bestCustomer = listOfRemoved[customerIndex]
-        if bestInsertionDistance != 10e10:
-            listAfterDestruction[bestPosition[0]].insert(bestPosition[1], bestCustomer)  # insert bestCustomer to the best feasible route for them
-        else:
-            bestCustomer = listOfRemoved[0]  # if there are no feasible routes then open a new route and place 1st customer there
-            listToAppend = [0, bestCustomer, 0]
-            listAfterDestruction.append(listToAppend)
-        listOfRemoved.remove(bestCustomer)  # delete current bestCustomer from a list of removed customers
-    print(f"Routes after insertion: {listAfterDestruction}")
-    # END OF INSERTION PHASE
-
-    # START OF OPTIMIZATION PHASE
-    listAfterOptimization = hillclimbing(listAfterDestruction, instance, function)
-    print(f"Routes after optimization: {listAfterOptimization}")
-    return listAfterOptimization
-    # END OF OPTIMIZATION PHASE. Result - listAfterDestruction
-
-
-# START OF ACCEPTANCE PHASE
-def checkForAcceptance(solutionSweep: Solution, instance: Instance):
     bestDistance = 10e10  # very big number
-    distancesSweep = compute_distances(solutionSweep, instance)
-    for i in range(10):  # run our algorithm 10 times
-        print("New iteration")
-        solutionOur = ouralgorithm(instance, solutionSweep, find_first_improvement_2Opt)
-        distancesOurAlgorythm = compute_distances(solutionOur, instance)
+    distancesSweep = compute_distances(solution, instance)
+    bestIteration = 0
+    print(f"Sweep solution: {solution}")
+    for iteration in range(10):  # run our algorithm 10 times
+        print(f"New iteration__________{iteration}")
+        # START OF DESTRUCTION PHASE
+        numberOfRemoved = random.randint(round(0.1 * (len(instance.q) - 1)), round(0.5 * (len(instance.q) - 1)))  # generate number customers to be removed
+        listOfRemoved = random.sample(range(1, len(instance.q)), numberOfRemoved)  # generate customers to be removed, starting from 1 so depo isn't getting deleted
+        listAfterDestruction = []
+        for i in range(len(solution)):
+            element = [e for e in solution[i] if e not in listOfRemoved]
+            listAfterDestruction.append(element)
+        print(f"Customers to be removed: {listOfRemoved}")
+        print(f"Routes after destruction: {listAfterDestruction}")
+        # END OF DESTRUCTION PHASE. Result - listAfterDestruction and listOfRemoved
+
+        # START OF INSERTION PHASE
+        listOfPayloads = []
+        for i in instance.Q:
+            listOfPayloads.append(i.capacity)
+        while len(listOfRemoved) > 0:
+            bestInsertionDistance = 10e10  # very big number
+            bestPosition = 0
+            bestCustomer = 0
+            for customerIndex in range(len(listOfRemoved)):  # iterating over list of removed customers
+                for i in range(len(listAfterDestruction)):  # iterating over routes in listAfterDestruction
+                    for j in range(len(listAfterDestruction[i]) - 1):  # iterating over positions in a route
+                        keyNegative = (listAfterDestruction[i][j], listAfterDestruction[i][j + 1])
+                        key1Positive = (listAfterDestruction[i][j], listOfRemoved[customerIndex])
+                        key2Positive = (listOfRemoved[customerIndex], listAfterDestruction[i][j + 1])
+                        insertionDistance = instance.d[key1Positive] + instance.d[key2Positive] - instance.d[keyNegative]  # calculation of insertion distance
+                        if (insertionDistance < bestInsertionDistance) & (compute_total_demand(listAfterDestruction[i], instance) + instance.q[listOfRemoved[customerIndex]] < max(listOfPayloads)):  # & feasibilityCheck(instance, listAfterDestruction, listOfRemoved, customerIndex, i)
+                            bestInsertionDistance = insertionDistance
+                            bestPosition = (i, j + 1)
+                            bestCustomer = listOfRemoved[customerIndex]
+            if bestInsertionDistance != 10e10:
+                listAfterDestruction[bestPosition[0]].insert(bestPosition[1], bestCustomer)  # insert bestCustomer to the best feasible route for them
+            else:
+                bestCustomer = listOfRemoved[0]  # if there are no feasible routes then open a new route and place 1st customer there
+                listToAppend = [0, bestCustomer, 0]
+                listAfterDestruction.append(listToAppend)
+            listOfRemoved.remove(bestCustomer)  # delete current bestCustomer from a list of removed customers
+        print(f"Routes after insertion: {listAfterDestruction}")
+        # END OF INSERTION PHASE
+
+        # START OF OPTIMIZATION PHASE
+        listAfterOptimization = hillclimbing(listAfterDestruction, instance, function)
+        print(f"Routes after optimization: {listAfterOptimization}")
+        # END OF OPTIMIZATION PHASE. Result - listAfterDestruction
+
+        # START OF ACCEPTANCE PHASE
+        distancesOurAlgorythm = compute_distances(listAfterOptimization, instance)
         if distancesOurAlgorythm < bestDistance:
             bestDistance = distancesOurAlgorythm
-            bestSolution = solutionOur
-        print(distancesOurAlgorythm)
-        print(bestDistance)
+            bestSolution = listAfterOptimization
+            bestIteration = iteration
+        print(f"Total distance of the current iteration: {distancesOurAlgorythm}")
+        print(f"The best distance: {bestDistance}")
+        print(f"The best iteration: {bestIteration}")
+        # END OF ACCEPTANCE PHASE
     if distancesSweep < bestDistance:
         print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {bestDistance}. Sweep is better")
     elif distancesSweep == bestDistance:
-        print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {bestDistance}. Algorithms are equal")
+        print(
+            f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {bestDistance}. Algorithms are equal")
     else:
         print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {bestDistance}. ourAlgorithm is better")
     return bestSolution
-# END OF ACCEPTANCE PHASE
-
 
 # START OF TRUCK ASSIGNING PHASE
 def truckAssigning(solution: Solution, instance: Instance):  # Currently hardcoded

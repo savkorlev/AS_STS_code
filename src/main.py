@@ -1,6 +1,6 @@
 import pandas as pd
 
-from instances.Construction import sort_customers_by_sweep, ouralgorithm, checkForAcceptance, truckAssigning
+from instances.Construction import sort_customers_by_sweep, ouralgorithm, truckAssigning
 from instances.LocalSearch import find_first_improvement_2Opt, find_first_improvement_relocate, \
     find_first_improvement_exchange
 from instances.Trucks import MercedesBenzAtego, VWTransporter, VWCaddypanelvan, DaimlerFUSOeCanter, \
@@ -40,20 +40,28 @@ df_Shanghai_routes = pd.read_csv("data/Shanghai.routes", sep=' ')
 # print(df_NewYork_1_nodes.iloc[2, 2])  #select the third row and the third column
 
 # 2. CREATING OUR TRUCKS
-truck1 = MercedesBenzAtego(2800)
-truck2 = VWTransporter(883)
-truck3 = VWCaddypanelvan(670)
-truck4 = DaimlerFUSOeCanter(2800)
-truck5 = StreetScooterWORKL(905)
-truck6 = StreetScooterWORK(720)
-truck7 = DouzeV2ECargoBike(100)
+truck1 = MercedesBenzAtego()
+truck2 = VWTransporter()
+truck3 = VWCaddypanelvan()
+truck4 = DaimlerFUSOeCanter()
+truck5 = StreetScooterWORKL()
+truck6 = StreetScooterWORK()
+truck7 = DouzeV2ECargoBike()
 listOfTrucks = [truck1, truck2, truck3, truck4, truck5, truck6, truck7]
 
 # 3. CREATING TEST DATASET AND ATTRIBUTES OF FUTURE INSTANCE
-testDimension = 20
+testDimension = 112
 
-test_df_Paris_nodes = df_Paris_nodes.iloc[:20, :]                   # select elements from D0 to C19 in nodes
-test_df_Paris_routes = df_Paris_routes.iloc[:2260, :]               # select elements from D0 to C19 in routes
+# test_df_Paris_nodes = df_Paris_nodes.iloc[:20, :]                   # select elements from D0 to C19 in nodes
+# test_df_Paris_routes = df_Paris_routes.iloc[:2260, :]               # select elements from D0 to C19 in routes
+# test_df_Paris_nodes = df_Paris_nodes.iloc[:40, :]                   # select elements from D0 to C40 in nodes
+# test_df_Paris_routes = df_Paris_routes.iloc[:4633, :]               # select elements from D0 to C40 in routes
+# test_df_Paris_nodes = df_Paris_nodes.iloc[:40, :]                   # select elements from D0 to C40 in nodes
+# test_df_Paris_routes = df_Paris_routes.iloc[:12768, :]               # select elements from D0 to C40 in routes
+# test_df_Paris_nodes = df_Paris_nodes.iloc[:testDimension, :]                   # select elements from D0 to C40 in nodes
+# test_df_Paris_routes = df_Paris_routes.iloc[:len(df_Paris_routes), :]               # select elements from D0 to C40 in routes
+test_df_Paris_nodes = df_Paris_nodes
+test_df_Paris_routes = df_Paris_routes
 # print(test_df_Paris_nodes)
 # print(test_df_Paris_routes)
 
@@ -73,6 +81,7 @@ for row, content in test_df_Paris_nodes.iterrows():
 
 # 4. CREATING INSTANCE
 ourInstance = Instance(testDimension, listOfTrucks, testDemandParis, testParisDistances, coordinates)
+print(coordinates)
 
 # 5. SIMPLE SOLUTION
 solution = next_fit_heuristic_naive(ourInstance)
@@ -84,16 +93,16 @@ print(f"Next-Fit-Heuristic | #Vehicles: {len(solution)}, distance: {compute_dist
 solutionSweep = next_fit_heuristic(sort_customers_by_sweep(ourInstance), ourInstance)
 print(f"Sweep Heuristic | #Vehicles: {len(solutionSweep)}, distance: {compute_distances(solutionSweep, ourInstance)}, is_feasible: {is_feasible(solutionSweep, ourInstance)}")
 
-# 7. DESTRUCTION & INSERTION & OPTIMIZATION
+# 7. OUR ALGORITHM (DESTRUCTION + INSERTION + OPTIMIZATION + ACCEPTANCE)
 solutionOur = ouralgorithm(ourInstance, solutionSweep, find_first_improvement_2Opt)
 lenOfSolutionOur = len(solutionOur)
 for i in range(lenOfSolutionOur):
     print(f"Sum of demands of a {i} route: " + str(compute_total_demand(solutionOur[i], ourInstance)))
+print(compute_distances(solutionOur, ourInstance))
 
-# 8. CHECK FOR ACCEPTANCE
-acceptedSolution = checkForAcceptance(solutionSweep, ourInstance)
-print(compute_distances(acceptedSolution, ourInstance))
-
-# 9. TRUCK ASSIGNING
-assignedTrucks = truckAssigning(acceptedSolution, ourInstance)
+# 8. TRUCK ASSIGNING
+assignedTrucks = truckAssigning(solutionOur, ourInstance)
 print(assignedTrucks[0])
+print(assignedTrucks[1])
+print(assignedTrucks[2])
+print(assignedTrucks[3])
