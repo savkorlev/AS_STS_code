@@ -3,6 +3,7 @@ import random
 from typing import List
 
 from instances.LocalSearch import hillclimbing, find_first_improvement_2Opt
+from instances.Trucks import MercedesBenzAtego
 from instances.Utils import Instance, Solution, next_fit_heuristic, compute_total_demand, compute_distances
 
 
@@ -145,7 +146,7 @@ def truckAssigning(solution: Solution, instance: Instance):  # Currently hardcod
     for i in solution:
         check = compute_total_demand(i, instance)
         if 2800 > check > 905:
-            assignedTrucks.append(instance.Q[0])
+            assignedTrucks.append(instance.Q[0])  # or assignedTrucks.append(MercedesBenzAtego()) to create a unique vehicles
         elif check > 883:
             assignedTrucks.append(instance.Q[4])
         elif check > 720:
