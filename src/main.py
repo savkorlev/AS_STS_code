@@ -92,6 +92,11 @@ print(f"Next-Fit-Heuristic | #Vehicles: {len(solution)}, distance: {compute_dist
 # 6. SWEEP HEURISTIC
 solutionSweep = next_fit_heuristic(sort_customers_by_sweep(ourInstance), ourInstance)
 print(f"Sweep Heuristic | #Vehicles: {len(solutionSweep)}, distance: {compute_distances(solutionSweep, ourInstance)}, is_feasible: {is_feasible(solutionSweep, ourInstance)}")
+assignedTrucksSweep = truckAssigning(solutionSweep, ourInstance)
+print(assignedTrucksSweep[0])
+print(assignedTrucksSweep[1])
+print(assignedTrucksSweep[2])
+print(assignedTrucksSweep[3])
 
 # 7. OUR ALGORITHM (DESTRUCTION + INSERTION + OPTIMIZATION + ACCEPTANCE)
 solutionOur = ouralgorithm(ourInstance, solutionSweep, find_first_improvement_2Opt)
@@ -101,8 +106,8 @@ for i in range(lenOfSolutionOur):
 print(compute_distances(solutionOur, ourInstance))
 
 # 8. TRUCK ASSIGNING
-assignedTrucks = truckAssigning(solutionOur, ourInstance)
-print(assignedTrucks[0])
-print(assignedTrucks[1])
-print(assignedTrucks[2])
-print(assignedTrucks[3])
+assignedTrucksOurAlgorithm = truckAssigning(solutionOur, ourInstance)
+print(assignedTrucksOurAlgorithm[0])
+print(assignedTrucksOurAlgorithm[1])
+print(assignedTrucksOurAlgorithm[2])
+print(assignedTrucksOurAlgorithm[3])

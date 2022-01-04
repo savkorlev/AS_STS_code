@@ -1,5 +1,7 @@
 from typing import List, Dict, Tuple
 
+from instances import Trucks
+
 
 class Instance:
     """
@@ -51,7 +53,7 @@ def next_fit_heuristic(customer_list: List[int], instance: Instance) -> Solution
     for c in customer_list:
         demand = instance.q[c]
 
-        if open_route_capacity_used + demand <= max(listOfPayloads):  # checking max capacity among the whole list
+        if open_route_capacity_used + demand <= 900:  # 900 is a made-up number
             # assign customer to route
             open_route.append(c)
             open_route_capacity_used += demand
@@ -145,3 +147,7 @@ def is_feasible(solution: Solution, instance: Instance) -> bool:
 #
 #     return False
 # (compute_total_demand(listAfterDestruction[i], instance) + instance.q[listOfRemoved[customerIndex]] < max(listOfPayloads)):  # checking both conditions, first - lowest distance, second - total demand after insertion must be lower than our truck's capacity # add feasibility check
+
+def routeCost(vehicleType, route: Route, instance: Instance):
+    cost = compute_distance(route, instance) * vehicleType.costs_km
+    return cost
