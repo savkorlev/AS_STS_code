@@ -71,9 +71,10 @@ def ouralgorithm(instance: Instance, solution: Solution, function):
     distancesSweep = compute_distances(solution, instance)
     bestIteration = 0
     print(f"Sweep solution: {solution}")
-    for iteration in range(10):  # run our algorithm 10 times
+    for iteration in range(100):  # run our algorithm 10 times
         print(f"New iteration__________{iteration}")
         # START OF DESTRUCTION PHASE
+        # Random Removal Operation
         numberOfRemoved = random.randint(round(0.1 * (len(instance.q) - 1)), round(0.5 * (len(instance.q) - 1)))  # generate number customers to be removed
         listOfRemoved = random.sample(range(1, len(instance.q)), numberOfRemoved)  # generate customers to be removed, starting from 1 so depo isn't getting deleted
         listAfterDestruction = []
@@ -85,6 +86,7 @@ def ouralgorithm(instance: Instance, solution: Solution, function):
         # END OF DESTRUCTION PHASE. Result - listAfterDestruction and listOfRemoved
 
         # START OF INSERTION PHASE
+        # Cheapest Global Insertion Operation
         listOfPayloads = []
         for i in instance.Q:
             listOfPayloads.append(i.capacity)

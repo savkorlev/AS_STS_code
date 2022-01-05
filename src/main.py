@@ -50,7 +50,7 @@ truck7 = DouzeV2ECargoBike()
 listOfTrucks = [truck1, truck2, truck3, truck4, truck5, truck6, truck7]
 
 # 3. CREATING TEST DATASET AND ATTRIBUTES OF FUTURE INSTANCE
-testDimension = 112
+testDimension = 112 # change this to use more or less customers of the data set. Max for Paris is 112. Also need to change the iloc for the nodes file
 
 # test_df_Paris_nodes = df_Paris_nodes.iloc[:20, :]                   # select elements from D0 to C19 in nodes
 # test_df_Paris_routes = df_Paris_routes.iloc[:2260, :]               # select elements from D0 to C19 in routes
