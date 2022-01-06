@@ -1,17 +1,17 @@
 import pandas as pd
 
-from instances.Construction import sort_customers_by_sweep, ouralgorithm, truckAssigning
+from instances.Construction import LNS, truckAssigning, sweep_algorithm, algorithm
 from instances.LocalSearch import find_first_improvement_2Opt, find_first_improvement_relocate, \
-    find_first_improvement_exchange
+    find_first_improvement_exchange, hillclimbing, find_best_improvement_2Opt
 from instances.Trucks import MercedesBenzAtego, VWTransporter, VWCaddypanelvan, DaimlerFUSOeCanter, \
     StreetScooterWORKL, StreetScooterWORK, DouzeV2ECargoBike
-from instances.Utils import Instance, next_fit_heuristic_naive, compute_distances, next_fit_heuristic, is_feasible, \
+from instances.Utils import Instance, next_fit_heuristic_naive, compute_distances, is_feasible, \
     compute_total_demand
 
-# import os
+import os
 # os.chdir('C:/Users/Евгений/Desktop/TUM/WS 2021-2022/Advanced Seminar Sustainable Transportation Systems/AS_STS_code')
 # os.chdir('C:/Users/Maximilian Sammer/PycharmProjects/AS_STS_code/')
-# os.chdir('/Users/tuminyu/Desktop/Cory/TUM Master/Advanced Seminar/Code/Project')
+os.chdir('/Users/tuminyu/Desktop/Cory/TUM Master/Advanced Seminar/Code/Project')
 # os.chdir('C:/Users/Christopher/PycharmProjects/AS_STS_code/')
 
 ### may come in handy later on:
@@ -90,16 +90,26 @@ solution = next_fit_heuristic_naive(ourInstance)
 print(f"Next-Fit-Heuristic | #Vehicles: {len(solution)}, distance: {compute_distances(solution, ourInstance)}")
 
 # 6. SWEEP HEURISTIC
-solutionSweep = next_fit_heuristic(sort_customers_by_sweep(ourInstance), ourInstance)
+solutionSweep = sweep_algorithm(ourInstance)
 print(f"Sweep Heuristic | #Vehicles: {len(solutionSweep)}, distance: {compute_distances(solutionSweep, ourInstance)}, is_feasible: {is_feasible(solutionSweep, ourInstance)}")
+
 assignedTrucksSweep = truckAssigning(solutionSweep, ourInstance)
 print(assignedTrucksSweep[0])
 print(assignedTrucksSweep[1])
 print(assignedTrucksSweep[2])
 print(assignedTrucksSweep[3])
 
-# 7. OUR ALGORITHM (DESTRUCTION + INSERTION + OPTIMIZATION + ACCEPTANCE)
-solutionOur = ouralgorithm(ourInstance, solutionSweep, find_first_improvement_2Opt)
+
+# 7. LNS (DESTRUCTION + INSERTION + OPTIMIZATION + ACCEPTANCE)
+# 7. LNS (DESTRUCTION + INSERTION + OPTIMIZATION)
+solutionOur = LNS(ourInstance, solutionSweep, find_first_improvement_2Opt)
+lenOfSolutionOur = len(solutionOur)
+for i in range(lenOfSolutionOur):
+    print(f"Sum of demands of a {i} route: " + str(compute_total_demand(solutionOur[i], ourInstance)))
+print(compute_distances(solutionOur, ourInstance))
+
+# 8. LNS+SA (DESTRUCTION + INSERTION + OPTIMIZATION + ACCEPTANCE)
+solutionOur = algorithm(ourInstance, init_temp=0.5, cooling=0.9, stop=5, function=find_best_improvement_2Opt)
 lenOfSolutionOur = len(solutionOur)
 for i in range(lenOfSolutionOur):
     print(f"Sum of demands of a {i} route: " + str(compute_total_demand(solutionOur[i], ourInstance)))
