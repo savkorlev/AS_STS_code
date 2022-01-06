@@ -8,10 +8,10 @@ from instances.Trucks import MercedesBenzAtego, VWTransporter, VWCaddypanelvan, 
 from instances.Utils import Instance, next_fit_heuristic_naive, compute_distances, is_feasible, \
     compute_total_demand
 
-import os
+# import os
 # os.chdir('C:/Users/Евгений/Desktop/TUM/WS 2021-2022/Advanced Seminar Sustainable Transportation Systems/AS_STS_code')
 # os.chdir('C:/Users/Maximilian Sammer/PycharmProjects/AS_STS_code/')
-os.chdir('/Users/tuminyu/Desktop/Cory/TUM Master/Advanced Seminar/Code/Project')
+# os.chdir('/Users/tuminyu/Desktop/Cory/TUM Master/Advanced Seminar/Code/Project')
 # os.chdir('C:/Users/Christopher/PycharmProjects/AS_STS_code/')
 
 ### may come in handy later on:
@@ -92,7 +92,6 @@ print(f"Next-Fit-Heuristic | #Vehicles: {len(solution)}, distance: {compute_dist
 # 6. SWEEP HEURISTIC
 solutionSweep = sweep_algorithm(ourInstance)
 print(f"Sweep Heuristic | #Vehicles: {len(solutionSweep)}, distance: {compute_distances(solutionSweep, ourInstance)}, is_feasible: {is_feasible(solutionSweep, ourInstance)}")
-
 assignedTrucksSweep = truckAssigning(solutionSweep, ourInstance)
 print(assignedTrucksSweep[0])
 print(assignedTrucksSweep[1])
