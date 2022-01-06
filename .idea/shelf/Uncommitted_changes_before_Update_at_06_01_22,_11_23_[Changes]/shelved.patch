@@ -1,0 +1,622 @@
+Index: instances/Construction.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import math\nimport random\nfrom typing import List\n\nfrom instances.LocalSearch import hillclimbing\nfrom instances.Utils import Instance, Solution, next_fit_heuristic, compute_total_demand, compute_distances\n\n\ndef sweep_algorithm(instance: Instance) -> Solution:\n    # sort the customers according to the sweep\n    sorted_customers = sort_customers_by_sweep(instance)\n    # assign them to routes (next fit)\n    return next_fit_heuristic(sorted_customers, instance)\n\n\ndef random_sweep(instance: Instance) -> Solution:\n    customer_list = sort_customers_by_sweep(instance)\n\n    # emulate changing the starting angle by rotating the list of customers\n    rotate = random.randint(0, instance.n - 1)\n    customer_list = customer_list[rotate:] + customer_list[:rotate]\n\n    # emulate changing the direction of the sweep by reversing the list of customers\n    if random.randint(0, 1) == 1:\n        customer_list.reverse()\n\n    return next_fit_heuristic(customer_list, instance)\n\n\ndef sort_customers_by_sweep(instance: Instance) -> List[int]:\n    \"\"\"\n    sorts the customer visits by their angle in a polar coordinate system with the depot at its center.\n    To break ties, the distance from the depot is used, then the id of the node itself (which is unique).\n\n    :param instance: corresponding instance\n    :return: list of ordered customers sorted by sweeping\n    \"\"\"\n\n    center_x, center_y = instance.coordinates[0]\n\n    customers_angles = []\n    for i in range(1, instance.n):\n        node_x, node_y = instance.coordinates[i]\n        angle = math.atan2(node_y - center_y, node_x - center_x)\n        if angle < 0:\n            angle += 2.0 * math.pi\n\n        # Update: let be more expressive here and use a dict with named keys\n        customers_angles.append({'id': i, 'angle': angle, 'distance': instance.d[0, i]})\n\n    # Update: it's possibility that the order is not clearly defined, so we need break ties in the sorting\n    #  (two customers might have the same angle). We introduce the distance to the depot as the second feature\n    #  to be sorted against, with the id as a last resort (they are unique).\n    #  Tuples are naturally sorted by the first element first, and so on.\n    #  We exploit that and provide such a tuple as a key to the sort function\n    #\n    # before: customers_angles.sort(key=lambda entry: entry[1])\n\n    customers_angles.sort(key=lambda entry: (entry['angle'], entry['distance'], entry['id']))\n\n    sorted_customers = []\n    for entry in customers_angles:\n        sorted_customers.append(entry['id'])\n\n    return sorted_customers\n\n\ndef ouralgorithm(instance: Instance, solution: Solution, function):\n    # START OF DESTRUCTION PHASE\n    numberOfRemoved = random.randint(round(0.1 * (len(instance.q) - 1)), round(0.5 * (len(instance.q) - 1)))  # generate number customers to be removed\n    listOfRemoved = random.sample(range(1, len(instance.q)), numberOfRemoved)  # generate customers to be removed, starting from 1 so depo isn't getting deleted\n    listAfterDestruction = []\n    for i in range(len(solution)):\n        element = [e for e in solution[i] if e not in listOfRemoved]\n        listAfterDestruction.append(element)\n    print(solution); print(listAfterDestruction); print(listOfRemoved)\n    # END OF DESTRUCTION PHASE. Result - listAfterDestruction and listOfRemoved\n\n    # START OF INSERTION PHASE\n    while len(listOfRemoved) > 0:\n        bestInsertionDistance = 10000\n        bestPosition = 0\n        bestCustomer = 0\n        for customerIndex in range(len(listOfRemoved)):  # iterating over list of removed customers\n            for i in range(len(listAfterDestruction)):  # iterating over routes in listAfterDestruction\n                for j in range(len(listAfterDestruction[i]) - 1):  # iterating over positions in a route\n                    keyNegative = (listAfterDestruction[i][j], listAfterDestruction[i][j + 1])\n                    key1Positive = (listAfterDestruction[i][j], listOfRemoved[customerIndex])\n                    key2Positive = (listOfRemoved[customerIndex], listAfterDestruction[i][j + 1])\n                    insertionDistance = instance.d[key1Positive] + instance.d[key2Positive] - instance.d[keyNegative]  # calculation of insertion distance\n                    if (insertionDistance < bestInsertionDistance) & (compute_total_demand(listAfterDestruction[i], instance) + instance.q[listOfRemoved[customerIndex]] < instance.Q):  # checking both conditions, first - lowest distance, second - total demand after insertion must be lower than our truck's capacity\n                        bestInsertionDistance = insertionDistance\n                        bestPosition = (i, j + 1)\n                        bestCustomer = listOfRemoved[customerIndex]\n        listAfterDestruction[bestPosition[0]].insert(bestPosition[1], bestCustomer)  # insert bestCustomer to the best feasible route for them\n        listOfRemoved.remove(bestCustomer)  # delete current bestCustomer from a list of removed customers\n    print(listAfterDestruction)\n    # END OF INSERTION PHASE\n\n    # START OF OPTIMIZATION PHASE\n    listAfterOptimization = hillclimbing(listAfterDestruction, instance, function)\n    return listAfterOptimization\n    # END OF OPTIMIZATION PHASE. Result - listAfterDestruction\n\n\n# START OF ACCEPTANCE PHASE\ndef checkForAcceptance(solutionSweep: Solution, solutionOur: Solution, instance: Instance):\n    distancesSweep = compute_distances(solutionSweep, instance)\n    distancesOurAlgorythm = compute_distances(solutionOur, instance)\n    if distancesSweep < distancesOurAlgorythm:\n        print(f\"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {distancesOurAlgorythm}. Sweep is better\")\n    elif distancesSweep == distancesOurAlgorythm:\n        print(f\"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {distancesOurAlgorythm}. Algorithms are equal\")\n    else:\n        print(f\"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {distancesOurAlgorythm}. ourAlgorithm is better\")\n# END OF ACCEPTANCE PHASE\n# distance between (0 and 1) + (1 and 19) - (0 and 19)\n# check for feasibility before insertion - now with capacity, distance later on (maybe check it after for loops if performance is poor)\n# make a greedy code but comment everything\n# check empty routes and create new routes\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/instances/Construction.py b/instances/Construction.py
+--- a/instances/Construction.py	(revision e398b37a68d81aa9c232c5c09d050e82da303b60)
++++ b/instances/Construction.py	(date 1639238926030)
+@@ -100,7 +100,7 @@
+     # START OF OPTIMIZATION PHASE
+     listAfterOptimization = hillclimbing(listAfterDestruction, instance, function)
+     return listAfterOptimization
+-    # END OF OPTIMIZATION PHASE. Result - listAfterDestruction
++    # END OF OPTIMIZATION PHASE. Result - listAfterOptimization
+ 
+ 
+ # START OF ACCEPTANCE PHASE
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_11_12_21,_10_08_[Changes]/shelved.patch
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_11_12_21,_10_08_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Update_at_11_12_21,_10_08_[Changes]/shelved.patch
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_11_12_21,_10_08_[Changes]/shelved.patch	(revision e398b37a68d81aa9c232c5c09d050e82da303b60)
++++ /dev/null	(revision e398b37a68d81aa9c232c5c09d050e82da303b60)
+@@ -1,251 +0,0 @@
+-Index: instances/Utils.py
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>from typing import List, Dict, Tuple\n\n\nclass Instance:\n\n    \"\"\"\n    n : int\n        number of nodes in total\n    Q : int\n        maximum load capacity per vehicle\n    q : List[int]\n        list of customer demands\n    coordinates : List[Tuple[int, int]]\n        list of customer coordinates\n    \"\"\"\n\n    n: int\n    Q: int\n    q: List[int]\n    d: Dict[Tuple, float]\n    coordinates: List[Tuple[int, int]]\n\n    def __init__(self, n: int, Q: int, q: List[int], d: Dict[Tuple[int, int], float], coordinates: List[Tuple[int, int]]):\n        self.n = n\n        self.Q = Q\n        self.q = q\n        self.d = d\n        self.coordinates = coordinates\n\n\nRoute = List[int]\nSolution = List[Route]\n\n\ndef next_fit_heuristic_naive(instance: Instance) -> Solution:\n    order = list(range(1, instance.n))\n    return next_fit_heuristic(order, instance)\n\n\ndef next_fit_heuristic(customer_list: List[int], instance: Instance) -> Solution:\n\n    routes: Solution = list()\n    open_route = [0]\n    open_route_capacity_used = 0\n\n    for c in customer_list:\n        demand = instance.q[c]\n\n        if open_route_capacity_used + demand <= instance.Q:\n            # assign customer to route\n            open_route.append(c)\n            open_route_capacity_used += demand\n\n        else:\n            # close active route\n            open_route.append(0)\n            routes.append(open_route)\n\n            # open new route and assign customer\n            open_route = [0, c]\n            open_route_capacity_used = demand\n\n    # close active route\n    open_route.append(0)\n    routes.append(open_route)  # close the last route\n\n    return routes\n\n\ndef compute_distances(solution: Solution, instance: Instance) -> float:\n    sum_distances = 0.0\n\n    for route in solution:\n        sum_distances += compute_distance(route, instance)\n\n    return sum_distances\n\n\ndef compute_distance(route: Route, instance: Instance) -> float:\n    sum_distances = 0.0\n\n    # route: [0,1,2,3,4,0]\n    #   (i-1)-^ ^-i\n    for i in range(1, len(route)):\n        key = (route[i-1], route[i])\n        sum_distances += instance.d[key]\n\n    return sum_distances\n\ndef compute_total_demand(route: List[int], instance: Instance) -> int:\n    sum_demands = 0\n    for n in route:\n        sum_demands += instance.q[n]\n\n    return sum_demands\n\ndef is_feasible(solution: Solution, instance: Instance) -> bool:\n    \"\"\"\n    checks whether a solution (list of routes) is feasible, i.e.,\n    all customers are visited exactly once and the maximum load capacity Q is never exceeded\n\n    :param solution: list of routes\n    :param instance: corresponding instance\n    :return: True if feasible, False otherwise\n    \"\"\"\n\n    for route in solution:\n        load = compute_total_demand(route, instance)\n        if load > instance.Q:\n            print(f\"Error: load capacity is exceeded ({load} > {instance.Q})\")\n            return False\n\n    node_visited = [0] * instance.n\n    for route in solution:\n        for r_i in route:\n            node_visited[r_i] += 1\n\n    for v in range(1, instance.n):\n        if node_visited[v] != 1:\n            print(f\"Error: node {v} has been visited {node_visited[v]} times\")\n            return False\n\n    return True\n
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/instances/Utils.py b/instances/Utils.py
+---- a/instances/Utils.py	(revision cb9a78b43b87afbaaffd4440db01735f1c7b36f4)
+-+++ b/instances/Utils.py	(date 1638909550026)
+-@@ -2,7 +2,6 @@
+- 
+- 
+- class Instance:
+--
+-     """
+-     n : int
+-         number of nodes in total
+-@@ -20,7 +19,8 @@
+-     d: Dict[Tuple, float]
+-     coordinates: List[Tuple[int, int]]
+- 
+--    def __init__(self, n: int, Q: int, q: List[int], d: Dict[Tuple[int, int], float], coordinates: List[Tuple[int, int]]):
+-+    def __init__(self, n: int, Q: int, q: List[int], d: Dict[Tuple[int, int], float],
+-+                 coordinates: List[Tuple[int, int]]):
+-         self.n = n
+-         self.Q = Q
+-         self.q = q
+-@@ -38,7 +38,6 @@
+- 
+- 
+- def next_fit_heuristic(customer_list: List[int], instance: Instance) -> Solution:
+--
+-     routes: Solution = list()
+-     open_route = [0]
+-     open_route_capacity_used = 0
+-@@ -82,11 +81,12 @@
+-     # route: [0,1,2,3,4,0]
+-     #   (i-1)-^ ^-i
+-     for i in range(1, len(route)):
+--        key = (route[i-1], route[i])
+-+        key = (route[i - 1], route[i])
+-         sum_distances += instance.d[key]
+- 
+-     return sum_distances
+- 
+-+
+- def compute_total_demand(route: List[int], instance: Instance) -> int:
+-     sum_demands = 0
+-     for n in route:
+-@@ -94,6 +94,7 @@
+- 
+-     return sum_demands
+- 
+-+
+- def is_feasible(solution: Solution, instance: Instance) -> bool:
+-     """
+-     checks whether a solution (list of routes) is feasible, i.e.,
+-Index: src/main.py
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>import pandas as pd\n\nfrom instances.Construction import sort_customers_by_sweep\nfrom instances.Trucks import TruckOne\nfrom instances.Utils import Instance, next_fit_heuristic_naive, compute_distances, next_fit_heuristic, is_feasible\n\nimport os\n# os.chdir('C:/Users/Евгений/Desktop/TUM/WS 2021-2022/Advanced Seminar Sustainable Transportation Systems/AS_STS_code')\n# os.chdir('C:/Users/Maximilian Sammer/PycharmProjects/AS_STS_code/')\n# os.chdir('/Users/tuminyu/Desktop/Cory/TUM Master/Advanced Seminar/Code/Project')\n\n### may come in handy later on:\n# from src import TSPLibReader\n# instance = TSPLibReader.read(\"instances/carModel1.vrp\") //using .vrp\n###\n\n# 1. LOADING THE DATA\ndf_NewYork_1_nodes = pd.read_csv(\"data/NewYork.1.nodes\", sep=' ')\ndf_NewYork_2_nodes = pd.read_csv(\"data/NewYork.2.nodes\", sep=' ')\ndf_NewYork_routes = pd.read_csv(\"data/NewYork.routes\", sep=' ')\ndf_Paris_nodes = pd.read_csv(\"data/Paris.nodes\", sep=' ')\ndf_Paris_routes = pd.read_csv(\"data/Paris.routes\", sep=' ')\ndf_Shanghai_nodes = pd.read_csv(\"data/Shanghai.nodes\", sep=' ')\ndf_Shanghai_routes = pd.read_csv(\"data/Shanghai.routes\", sep=' ')\n\n# # .loc[] - access the data by the name\n# print(df_NewYork_1_nodes.loc[:, \"Duration\"])  #select all rows and the \"Duration\" column\n# print(type(df_NewYork_1_nodes.loc[:, \"Duration\"]))  #return type - Series\n#\n# print(df_NewYork_1_nodes.loc[:, [\"Duration\"]])  #select all rows and the \"Duration\" column\n# print(type(df_NewYork_1_nodes.loc[:, [\"Duration\"]]))  #return type - DataFrame\n#\n# # .iloc[] - access the data by its number\n# print(df_NewYork_1_nodes.iloc[:, 2])  #select all rows and the third column\n# print(df_NewYork_1_nodes.iloc[2, 2])  #select the third row and the third column\n\n# 2. CREATING OUR TRUCKS\ntruck1 = TruckOne(1500)\n\n# 3. CREATING TEST DATASET AND ATTRIBUTES OF FUTURE INSTANCE\ntestDimension = 20\n\ntest_df_Paris_nodes = df_Paris_nodes.iloc[:20, :]                   # select elements from D0 to C19 in nodes\ntest_df_Paris_routes = df_Paris_routes.iloc[:2260, :]               # select elements from D0 to C19 in routes\n# print(test_df_Paris_nodes)\n# print(test_df_Paris_routes)\n\ntestDemandParis = list(test_df_Paris_nodes.loc[:, \"Demand[kg]\"])    # select demand column and convert it to a list\n# print(testDemandParis)\n\ntestParisDistances = {}                                             # the purpose of the following up loop is\nfor row, content in test_df_Paris_routes.iterrows():                # to create tuples with distances from one Id\n    key = (int(content[0][1:]), int(content[1][1:]))                # to another\n    testParisDistances[key] = content[2]\n# print(testParisDistances)\n\ncoordinates = []\nfor row, content in test_df_Paris_nodes.iterrows():\n    coordinate = (content[1], content[2])\n    coordinates.append(coordinate)\n\n# 4. CREATING INSTANCE\nourInstance = Instance(testDimension, truck1.capacity, testDemandParis, testParisDistances, coordinates)\n\n# 5. SIMPLE SOLUTION\nsolution = next_fit_heuristic_naive(ourInstance)\n# Update: by adding an 'f' before a string, you allow for so-called string interpolation, i.e., you can use\n#  {} to access variables from the outer scope which will be inserted at this point in the string.\nprint(f\"Next-Fit-Heuristic | #Vehicles: {len(solution)}, distance: {compute_distances(solution, ourInstance)}\")\n\n# 6. SWEEP HEURISTIC\nsolution = next_fit_heuristic(sort_customers_by_sweep(ourInstance), ourInstance)\nprint(f\"Sweep Heuristic | #Vehicles: {len(solution)}, distance: {compute_distances(solution, ourInstance)}, is_feasible: {is_feasible(solution, ourInstance)}\")\n
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/src/main.py b/src/main.py
+---- a/src/main.py	(revision cb9a78b43b87afbaaffd4440db01735f1c7b36f4)
+-+++ b/src/main.py	(date 1638909595389)
+-@@ -1,13 +1,18 @@
+-+import numpy as np
+- import pandas as pd
+- 
+- from instances.Construction import sort_customers_by_sweep
+-+from instances.LocalSearch import hillclimbing
+- from instances.Trucks import TruckOne
+--from instances.Utils import Instance, next_fit_heuristic_naive, compute_distances, next_fit_heuristic, is_feasible
+-+from instances.Utils import Instance, next_fit_heuristic_naive, compute_distances, next_fit_heuristic, is_feasible, \
+-+    Solution, compute_distance
+-+from scipy import optimize
+- 
+- import os
+-+
+- # os.chdir('C:/Users/Евгений/Desktop/TUM/WS 2021-2022/Advanced Seminar Sustainable Transportation Systems/AS_STS_code')
+- # os.chdir('C:/Users/Maximilian Sammer/PycharmProjects/AS_STS_code/')
+--# os.chdir('/Users/tuminyu/Desktop/Cory/TUM Master/Advanced Seminar/Code/Project')
+-+os.chdir('/Users/tuminyu/Desktop/Cory/TUM Master/Advanced Seminar/Code/Project')
+- 
+- ### may come in handy later on:
+- # from src import TSPLibReader
+-@@ -40,17 +45,17 @@
+- # 3. CREATING TEST DATASET AND ATTRIBUTES OF FUTURE INSTANCE
+- testDimension = 20
+- 
+--test_df_Paris_nodes = df_Paris_nodes.iloc[:20, :]                   # select elements from D0 to C19 in nodes
+--test_df_Paris_routes = df_Paris_routes.iloc[:2260, :]               # select elements from D0 to C19 in routes
+-+test_df_Paris_nodes = df_Paris_nodes.iloc[:20, :]  # select elements from D0 to C19 in nodes
+-+test_df_Paris_routes = df_Paris_routes.iloc[:2260, :]  # select elements from D0 to C19 in routes
+- # print(test_df_Paris_nodes)
+- # print(test_df_Paris_routes)
+- 
+--testDemandParis = list(test_df_Paris_nodes.loc[:, "Demand[kg]"])    # select demand column and convert it to a list
+-+testDemandParis = list(test_df_Paris_nodes.loc[:, "Demand[kg]"])  # select demand column and convert it to a list
+- # print(testDemandParis)
+- 
+--testParisDistances = {}                                             # the purpose of the following up loop is
+--for row, content in test_df_Paris_routes.iterrows():                # to create tuples with distances from one Id
+--    key = (int(content[0][1:]), int(content[1][1:]))                # to another
+-+testParisDistances = {}  # the purpose of the following up loop is
+-+for row, content in test_df_Paris_routes.iterrows():  # to create tuples with distances from one Id
+-+    key = (int(content[0][1:]), int(content[1][1:]))  # to another
+-     testParisDistances[key] = content[2]
+- # print(testParisDistances)
+- 
+-@@ -70,4 +75,24 @@
+- 
+- # 6. SWEEP HEURISTIC
+- solution = next_fit_heuristic(sort_customers_by_sweep(ourInstance), ourInstance)
+--print(f"Sweep Heuristic | #Vehicles: {len(solution)}, distance: {compute_distances(solution, ourInstance)}, is_feasible: {is_feasible(solution, ourInstance)}")
+-+print(
+-+    f"Sweep Heuristic | #Vehicles: {len(solution)}, distance: {compute_distances(solution, ourInstance)}, is_feasible: {is_feasible(solution, ourInstance)}")
+-+
+-+
+-+# 7. SIMULATED ANNEALING
+-+def compute_distances_ls(solution: Solution, instance: Instance) -> float:
+-+    solutions = hillclimbing(solution, instance)
+-+    sum_distances = 0.0
+-+
+-+    for route in solutions:
+-+        sum_distances += compute_distance(route, instance)
+-+
+-+    return sum_distances
+-+
+-+
+-+np.random.seed(2021)
+-+solution = optimize.dual_annealing(compute_distances_ls, args=ourInstance, maxiter=3,
+-+                                   initial_temp=0.1 * compute_distances(solution, ourInstance),
+-+                                   restart_temp_ratio=0.7)
+-+print(
+-+    f"Simulated Annealing | #Vehicles: {len(solution.x)}, distance: {solution.fun}, is_feasible: {is_feasible(solution.x, ourInstance)}")
+-Index: .idea/AS_STS_code.iml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<module type=\"PYTHON_MODULE\" version=\"4\">\n  <component name=\"NewModuleRootManager\">\n    <content url=\"file://$MODULE_DIR$\" />\n    <orderEntry type=\"jdk\" jdkName=\"Python 3.9 (myenv)\" jdkType=\"Python SDK\" />\n    <orderEntry type=\"sourceFolder\" forTests=\"false\" />\n  </component>\n</module>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/.idea/AS_STS_code.iml b/.idea/AS_STS_code.iml
+---- a/.idea/AS_STS_code.iml	(revision cb9a78b43b87afbaaffd4440db01735f1c7b36f4)
+-+++ b/.idea/AS_STS_code.iml	(date 1638909042473)
+-@@ -5,4 +5,7 @@
+-     <orderEntry type="jdk" jdkName="Python 3.9 (myenv)" jdkType="Python SDK" />
+-     <orderEntry type="sourceFolder" forTests="false" />
+-   </component>
+-+  <component name="PyDocumentationSettings">
+-+    <option name="renderExternalDocumentation" value="true" />
+-+  </component>
+- </module>
+-\ No newline at end of file
+-Index: .idea/workspace.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"AutoImportSettings\">\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\n  </component>\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"8c680e45-7c97-481f-92a5-74cbaa3d7be3\" name=\"Changes\" comment=\"1) reading data in main&#10;2) small corrections in files' names\">\n      <change beforePath=\"$PROJECT_DIR$/.idea/AS_STS_code.iml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/AS_STS_code.iml\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/.idea/misc.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/misc.xml\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/instances/Utils.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/instances/Utils.py\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/src/main.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main.py\" afterDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"DjangoConsoleOptions\" custom-start-script=\"import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)\">\n    <option name=\"myCustomStartScript\" value=\"import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)\" />\n  </component>\n  <component name=\"FileTemplateManagerImpl\">\n    <option name=\"RECENT_TEMPLATES\">\n      <list>\n        <option value=\"Python Script\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"FlaskConsoleOptions\" custom-start-script=\"import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\\nApp: %s [%s]\\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))\">\n    <envs>\n      <env key=\"FLASK_APP\" value=\"app\" />\n    </envs>\n    <option name=\"myCustomStartScript\" value=\"import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\\nApp: %s [%s]\\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))\" />\n    <option name=\"myEnvs\">\n      <map>\n        <entry key=\"FLASK_APP\" value=\"app\" />\n      </map>\n    </option>\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"ProjectId\" id=\"21PNUh1l9QXN6taUlC8LXgOvLDj\" />\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\" />\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\">\n    <property name=\"RunOnceActivity.OpenProjectViewOnStart\" value=\"true\" />\n    <property name=\"RunOnceActivity.ShowReadmeOnStart\" value=\"true\" />\n    <property name=\"WebServerToolWindowFactoryState\" value=\"false\" />\n    <property name=\"last_opened_file_path\" value=\"$PROJECT_DIR$/../live_coding\" />\n    <property name=\"node.js.detected.package.eslint\" value=\"true\" />\n    <property name=\"node.js.detected.package.tslint\" value=\"true\" />\n    <property name=\"node.js.selected.package.eslint\" value=\"(autodetect)\" />\n    <property name=\"node.js.selected.package.tslint\" value=\"(autodetect)\" />\n    <property name=\"settings.editor.selected.configurable\" value=\"preferences.keymap\" />\n  </component>\n  <component name=\"RunManager\">\n    <configuration name=\"main\" type=\"PythonConfigurationType\" factoryName=\"Python\" temporary=\"true\" nameIsGenerated=\"true\">\n      <module name=\"AS_STS_code\" />\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\n      <option name=\"PARENT_ENVS\" value=\"true\" />\n      <envs>\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\n      </envs>\n      <option name=\"SDK_HOME\" value=\"\" />\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$/src\" />\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/src/main.py\" />\n      <option name=\"PARAMETERS\" value=\"\" />\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\n      <option name=\"MODULE_MODE\" value=\"false\" />\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\n      <option name=\"INPUT_FILE\" value=\"\" />\n      <method v=\"2\" />\n    </configuration>\n    <recent_temporary>\n      <list>\n        <item itemvalue=\"Python.main\" />\n      </list>\n    </recent_temporary>\n  </component>\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"8c680e45-7c97-481f-92a5-74cbaa3d7be3\" name=\"Changes\" comment=\"\" />\n      <created>1637838780117</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1637838780117</updated>\n      <workItem from=\"1637838782111\" duration=\"18000\" />\n      <workItem from=\"1637838857369\" duration=\"1000\" />\n      <workItem from=\"1637838886920\" duration=\"438000\" />\n      <workItem from=\"1637839513934\" duration=\"1532000\" />\n      <workItem from=\"1637841307407\" duration=\"3068000\" />\n      <workItem from=\"1638054326822\" duration=\"850000\" />\n      <workItem from=\"1638055717024\" duration=\"1999000\" />\n      <workItem from=\"1638198448992\" duration=\"2767000\" />\n      <workItem from=\"1638790429150\" duration=\"1278000\" />\n      <workItem from=\"1638794844323\" duration=\"1422000\" />\n      <workItem from=\"1638796291132\" duration=\"3430000\" />\n      <workItem from=\"1638803722077\" duration=\"4201000\" />\n      <workItem from=\"1638814477004\" duration=\"27000\" />\n      <workItem from=\"1638814535742\" duration=\"1043000\" />\n      <workItem from=\"1638815594844\" duration=\"8019000\" />\n      <workItem from=\"1638829161268\" duration=\"675000\" />\n      <workItem from=\"1638829858377\" duration=\"2599000\" />\n      <workItem from=\"1638832933646\" duration=\"446000\" />\n      <workItem from=\"1638833437967\" duration=\"1081000\" />\n      <workItem from=\"1638834544416\" duration=\"1651000\" />\n      <workItem from=\"1638836393331\" duration=\"1377000\" />\n      <workItem from=\"1638842191801\" duration=\"505000\" />\n      <workItem from=\"1638842715249\" duration=\"127000\" />\n      <workItem from=\"1638842855943\" duration=\"563000\" />\n      <workItem from=\"1638882867872\" duration=\"1816000\" />\n    </task>\n    <task id=\"LOCAL-00001\" summary=\"Let's see\">\n      <created>1637839022626</created>\n      <option name=\"number\" value=\"00001\" />\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1637839022626</updated>\n    </task>\n    <task id=\"LOCAL-00002\" summary=\"Let's see\">\n      <created>1637839248196</created>\n      <option name=\"number\" value=\"00002\" />\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1637839248196</updated>\n    </task>\n    <task id=\"LOCAL-00003\" summary=\"Commit via InteliJ\">\n      <created>1637839586612</created>\n      <option name=\"number\" value=\"00003\" />\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1637839586612</updated>\n    </task>\n    <task id=\"LOCAL-00004\" summary=\"Commit via InteliJ\">\n      <created>1637839692213</created>\n      <option name=\"number\" value=\"00004\" />\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1637839692213</updated>\n    </task>\n    <task id=\"LOCAL-00005\" summary=\"Commit via PyCharm\">\n      <created>1637839764432</created>\n      <option name=\"number\" value=\"00005\" />\n      <option name=\"presentableId\" value=\"LOCAL-00005\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1637839764432</updated>\n    </task>\n    <task id=\"LOCAL-00006\" summary=\"Commit via PyCharm\">\n      <created>1637839854080</created>\n      <option name=\"number\" value=\"00006\" />\n      <option name=\"presentableId\" value=\"LOCAL-00006\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1637839854080</updated>\n    </task>\n    <task id=\"LOCAL-00007\" summary=\"Commit via PyCharm\">\n      <created>1637844692536</created>\n      <option name=\"number\" value=\"00007\" />\n      <option name=\"presentableId\" value=\"LOCAL-00007\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1637844692537</updated>\n    </task>\n    <task id=\"LOCAL-00008\" summary=\"Commit via PyCharm\">\n      <created>1637844733464</created>\n      <option name=\"number\" value=\"00008\" />\n      <option name=\"presentableId\" value=\"LOCAL-00008\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1637844733464</updated>\n    </task>\n    <task id=\"LOCAL-00009\" summary=\"Adding data files as .csv\">\n      <created>1638054865117</created>\n      <option name=\"number\" value=\"00009\" />\n      <option name=\"presentableId\" value=\"LOCAL-00009\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1638054865117</updated>\n    </task>\n    <task id=\"LOCAL-00010\" summary=\"1) reading data in main&#10;2) small corrections in files' names\">\n      <created>1638056253893</created>\n      <option name=\"number\" value=\"00010\" />\n      <option name=\"presentableId\" value=\"LOCAL-00010\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1638056253893</updated>\n    </task>\n    <task id=\"LOCAL-00011\" summary=\"1) loading all files as .csv in main with &quot; &quot; as a separator&#10;2) lines 19 and 20 - check if data frame's access works (list columns and address them)\">\n      <created>1638057457407</created>\n      <option name=\"number\" value=\"00011\" />\n      <option name=\"presentableId\" value=\"LOCAL-00011\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1638057457407</updated>\n    </task>\n    <task id=\"LOCAL-00012\" summary=\"Added hints\">\n      <created>1638200044845</created>\n      <option name=\"number\" value=\"00012\" />\n      <option name=\"presentableId\" value=\"LOCAL-00012\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1638200044845</updated>\n    </task>\n    <task id=\"LOCAL-00013\" summary=\"Added hints\">\n      <created>1638200484683</created>\n      <option name=\"number\" value=\"00013\" />\n      <option name=\"presentableId\" value=\"LOCAL-00013\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1638200484683</updated>\n    </task>\n    <task id=\"LOCAL-00014\" summary=\"Completely removed all .csv files since we don't actually need them, we can load the data in the same format directly from .nodes and .routes files\">\n      <created>1638795258281</created>\n      <option name=\"number\" value=\"00014\" />\n      <option name=\"presentableId\" value=\"LOCAL-00014\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1638795258281</updated>\n    </task>\n    <task id=\"LOCAL-00015\" summary=\"Completely removed all .csv files since we don't actually need them, we can load the data in the same format directly from .nodes and .routes files\">\n      <created>1638795391731</created>\n      <option name=\"number\" value=\"00015\" />\n      <option name=\"presentableId\" value=\"LOCAL-00015\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1638795391731</updated>\n    </task>\n    <option name=\"localTasksCounter\" value=\"16\" />\n    <servers />\n  </component>\n  <component name=\"TypeScriptGeneratedFilesManager\">\n    <option name=\"version\" value=\"3\" />\n  </component>\n  <component name=\"Vcs.Log.History.Properties\">\n    <option name=\"COLUMN_ID_ORDER\">\n      <list>\n        <option value=\"Default.Root\" />\n        <option value=\"Default.Author\" />\n        <option value=\"Default.Date\" />\n        <option value=\"Default.Subject\" />\n        <option value=\"Space.CommitStatus\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"Vcs.Log.Tabs.Properties\">\n    <option name=\"TAB_STATES\">\n      <map>\n        <entry key=\"MAIN\">\n          <value>\n            <State />\n          </value>\n        </entry>\n      </map>\n    </option>\n    <option name=\"oldMeFiltersMigrated\" value=\"true\" />\n  </component>\n  <component name=\"VcsManagerConfiguration\">\n    <MESSAGE value=\"Let's see\" />\n    <MESSAGE value=\"Commit via InteliJ\" />\n    <MESSAGE value=\"Commit via PyCharm\" />\n    <MESSAGE value=\"Adding data files as .csv\" />\n    <MESSAGE value=\"1) reading data in main&#10;2) small corrections in files' names\" />\n    <MESSAGE value=\"1) loading all files as .csv in main with &quot; &quot; as a separator&#10;2) lines 19 and 20 - check if data frame's access works (list columns and address them)\" />\n    <MESSAGE value=\"Added hints\" />\n    <MESSAGE value=\"Completely removed all .csv files since we don't actually need them, we can load the data in the same format directly from .nodes and .routes files\" />\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"Completely removed all .csv files since we don't actually need them, we can load the data in the same format directly from .nodes and .routes files\" />\n  </component>\n  <component name=\"com.intellij.coverage.CoverageDataManagerImpl\">\n    <SUITE FILE_PATH=\"coverage/main_py$main.coverage\" NAME=\"main Coverage Results\" MODIFIED=\"1638893032512\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"true\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$/src\" />\n  </component>\n</project>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+---- a/.idea/workspace.xml	(revision cb9a78b43b87afbaaffd4440db01735f1c7b36f4)
+-+++ b/.idea/workspace.xml	(date 1639213687715)
+-@@ -4,9 +4,8 @@
+-     <option name="autoReloadType" value="SELECTIVE" />
+-   </component>
+-   <component name="ChangeListManager">
+--    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) reading data in main&#10;2) small corrections in files' names">
+-+    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="debug the constraint &quot;all customers must be visited&quot;">
+-       <change beforePath="$PROJECT_DIR$/.idea/AS_STS_code.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/AS_STS_code.iml" afterDir="false" />
+--      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+-       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-       <change beforePath="$PROJECT_DIR$/instances/Utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Utils.py" afterDir="false" />
+-       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
+-@@ -55,9 +54,31 @@
+-     <property name="node.js.detected.package.tslint" value="true" />
+-     <property name="node.js.selected.package.eslint" value="(autodetect)" />
+-     <property name="node.js.selected.package.tslint" value="(autodetect)" />
+--    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+-+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+-   </component>
+-   <component name="RunManager">
+-+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+-+      <module name="AS_STS_code" />
+-+      <option name="INTERPRETER_OPTIONS" value="" />
+-+      <option name="PARENT_ENVS" value="true" />
+-+      <envs>
+-+        <env name="PYTHONUNBUFFERED" value="1" />
+-+      </envs>
+-+      <option name="SDK_HOME" value="" />
+-+      <option name="WORKING_DIRECTORY" value="" />
+-+      <option name="IS_MODULE_SDK" value="false" />
+-+      <option name="ADD_CONTENT_ROOTS" value="true" />
+-+      <option name="ADD_SOURCE_ROOTS" value="true" />
+-+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+-+      <option name="SCRIPT_NAME" value="" />
+-+      <option name="PARAMETERS" value="" />
+-+      <option name="SHOW_COMMAND_LINE" value="true" />
+-+      <option name="EMULATE_TERMINAL" value="false" />
+-+      <option name="MODULE_MODE" value="false" />
+-+      <option name="REDIRECT_INPUT" value="false" />
+-+      <option name="INPUT_FILE" value="" />
+-+      <method v="2" />
+-+    </configuration>
+-     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+-       <module name="AS_STS_code" />
+-       <option name="INTERPRETER_OPTIONS" value="" />
+-@@ -118,7 +139,7 @@
+-       <workItem from="1638842191801" duration="505000" />
+-       <workItem from="1638842715249" duration="127000" />
+-       <workItem from="1638842855943" duration="563000" />
+--      <workItem from="1638882867872" duration="1816000" />
+-+      <workItem from="1638882867872" duration="8529000" />
+-     </task>
+-     <task id="LOCAL-00001" summary="Let's see">
+-       <created>1637839022626</created>
+-@@ -225,7 +246,14 @@
+-       <option name="project" value="LOCAL" />
+-       <updated>1638795391731</updated>
+-     </task>
+--    <option name="localTasksCounter" value="16" />
+-+    <task id="LOCAL-00016" summary="debug the constraint &quot;all customers must be visited&quot;">
+-+      <created>1638893122126</created>
+-+      <option name="number" value="00016" />
+-+      <option name="presentableId" value="LOCAL-00016" />
+-+      <option name="project" value="LOCAL" />
+-+      <updated>1638893122127</updated>
+-+    </task>
+-+    <option name="localTasksCounter" value="17" />
+-     <servers />
+-   </component>
+-   <component name="TypeScriptGeneratedFilesManager">
+-@@ -263,9 +291,10 @@
+-     <MESSAGE value="1) loading all files as .csv in main with &quot; &quot; as a separator&#10;2) lines 19 and 20 - check if data frame's access works (list columns and address them)" />
+-     <MESSAGE value="Added hints" />
+-     <MESSAGE value="Completely removed all .csv files since we don't actually need them, we can load the data in the same format directly from .nodes and .routes files" />
+--    <option name="LAST_COMMIT_MESSAGE" value="Completely removed all .csv files since we don't actually need them, we can load the data in the same format directly from .nodes and .routes files" />
+-+    <MESSAGE value="debug the constraint &quot;all customers must be visited&quot;" />
+-+    <option name="LAST_COMMIT_MESSAGE" value="debug the constraint &quot;all customers must be visited&quot;" />
+-   </component>
+-   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+--    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1638893032512" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+-+    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1638909595409" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+-   </component>
+- </project>
+-\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_11_12_21__10_08__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_11_12_21__10_08__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Update_at_11_12_21__10_08__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_11_12_21__10_08__Changes_.xml	(revision e398b37a68d81aa9c232c5c09d050e82da303b60)
++++ /dev/null	(revision e398b37a68d81aa9c232c5c09d050e82da303b60)
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Update_at_11_12_21,_10_08_[Changes]" date="1639213709160" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_11_12_21,_10_08_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Update at 11.12.21, 10:08 [Changes]" />
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_09_12_2021_12_55__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_09_12_2021_12_55__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Update_at_09_12_2021_12_55__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_09_12_2021_12_55__Changes_.xml	(revision e398b37a68d81aa9c232c5c09d050e82da303b60)
++++ /dev/null	(revision e398b37a68d81aa9c232c5c09d050e82da303b60)
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Update_at_09_12_2021_12_55_[Changes]" date="1639051074994" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_09_12_2021_12_55_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Update at 09.12.2021 12:55 [Changes]" />
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_07_12_21__13_56__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_07_12_21__13_56__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Update_at_07_12_21__13_56__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_07_12_21__13_56__Changes_.xml	(revision e398b37a68d81aa9c232c5c09d050e82da303b60)
++++ /dev/null	(revision e398b37a68d81aa9c232c5c09d050e82da303b60)
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Update_at_07_12_21,_13_56_[Changes]" date="1638881787831" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_07_12_21,_13_56_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Update at 07.12.21, 13:56 [Changes]" />
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_07_12_21,_13_56_[Changes]/shelved.patch
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_07_12_21,_13_56_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Update_at_07_12_21,_13_56_[Changes]/shelved.patch
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_07_12_21,_13_56_[Changes]/shelved.patch	(revision e398b37a68d81aa9c232c5c09d050e82da303b60)
++++ /dev/null	(revision e398b37a68d81aa9c232c5c09d050e82da303b60)
+@@ -1,169 +0,0 @@
+-Index: src/main.py
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>import pandas as pd\n\ndf_NewYork_1_nodes = pd.read_csv(\"data/NewYork.1.nodes.csv\", sep=' ')\ndf_NewYork_2_nodes = pd.read_csv(\"data/NewYork.2.nodes.csv\", sep=' ')\ndf_NewYork_routes = pd.read_csv(\"data/NewYork.routes.csv\", sep=' ')\ndf_Paris_nodes = pd.read_csv(\"data/Paris.nodes.csv\", sep=' ')\ndf_Paris_routes = pd.read_csv(\"data/Paris.routes.csv\", sep=' ')\ndf_Shanghai_nodes = pd.read_csv(\"data/Shanghai.nodes.csv\", sep=' ')\ndf_Shanghai_routes = pd.read_csv(\"data/Shanghai.routes.csv\", sep=' ')\n\nprint(df_NewYork_1_nodes)\nprint(df_NewYork_2_nodes)\nprint(df_NewYork_routes)\nprint(df_Paris_nodes)\nprint(df_Paris_routes)\nprint(df_Shanghai_nodes)\nprint(df_Shanghai_routes)\n\nlist(df_NewYork_1_nodes.columns)\nprint(df_NewYork_1_nodes[\"Duration\"])\n
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/src/main.py b/src/main.py
+---- a/src/main.py	(revision d543189121e1f57a7f9ee86e97132f9d8b5e0b5d)
+-+++ b/src/main.py	(date 1638129872835)
+-@@ -1,5 +1,8 @@
+-+import os
+- import pandas as pd
+- 
+-+os.chdir('/Users/tuminyu/Desktop/Cory/TUM Master/Advanced Seminar/Code/Project')
+-+
+- df_NewYork_1_nodes = pd.read_csv("data/NewYork.1.nodes.csv", sep=' ')
+- df_NewYork_2_nodes = pd.read_csv("data/NewYork.2.nodes.csv", sep=' ')
+- df_NewYork_routes = pd.read_csv("data/NewYork.routes.csv", sep=' ')
+-Index: .idea/shelf/Uncommitted_changes_before_Update_at_25_11_2021_12_27_[Changes]/shelved.patch
+-===================================================================
+-diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_25_11_2021_12_27_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Update_at_25_11_2021_12_27_[Changes]/shelved.patch
+-deleted file mode 100644
+---- a/.idea/shelf/Uncommitted_changes_before_Update_at_25_11_2021_12_27_[Changes]/shelved.patch	(revision d543189121e1f57a7f9ee86e97132f9d8b5e0b5d)
+-+++ /dev/null	(revision d543189121e1f57a7f9ee86e97132f9d8b5e0b5d)
+-@@ -1,13 +0,0 @@
+--Index: src/main.py
+--IDEA additional info:
+--Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+--<+>print(\"Hello World 2\")\r\n
+--Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+--<+>UTF-8
+--===================================================================
+--diff --git a/src/main.py b/src/main.py
+----- a/src/main.py	(revision 8afdb8603ab32d9f59b1f7f1fbe571966cb20400)
+--+++ b/src/main.py	(date 1637839619783)
+--@@ -1,1 +1,1 @@
+---print("Hello World 2")
+--+print("Hello World 3")
+-Index: .idea/shelf/Uncommitted_changes_before_Update_at_25_11_2021_12_27__Changes_.xml
+-===================================================================
+-diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_25_11_2021_12_27__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Update_at_25_11_2021_12_27__Changes_.xml
+-deleted file mode 100644
+---- a/.idea/shelf/Uncommitted_changes_before_Update_at_25_11_2021_12_27__Changes_.xml	(revision d543189121e1f57a7f9ee86e97132f9d8b5e0b5d)
+-+++ /dev/null	(revision d543189121e1f57a7f9ee86e97132f9d8b5e0b5d)
+-@@ -1,4 +0,0 @@
+--<changelist name="Uncommitted_changes_before_Update_at_25_11_2021_12_27_[Changes]" date="1637839677150" recycled="true" deleted="true">
+--  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_25_11_2021_12_27_[Changes]/shelved.patch" />
+--  <option name="DESCRIPTION" value="Uncommitted changes before Update at 25.11.2021 12:27 [Changes]" />
+--</changelist>
+-\ No newline at end of file
+-Index: .idea/misc.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"ProjectRootManager\" version=\"2\" project-jdk-name=\"Python 3.10\" project-jdk-type=\"Python SDK\" />\n</project>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/.idea/misc.xml b/.idea/misc.xml
+---- a/.idea/misc.xml	(revision d543189121e1f57a7f9ee86e97132f9d8b5e0b5d)
+-+++ b/.idea/misc.xml	(date 1638122751125)
+-@@ -1,4 +1,4 @@
+- <?xml version="1.0" encoding="UTF-8"?>
+- <project version="4">
+--  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.10" project-jdk-type="Python SDK" />
+-+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.9 (myenv)" project-jdk-type="Python SDK" />
+- </project>
+-\ No newline at end of file
+-Index: .idea/AS_STS_code.iml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<module type=\"PYTHON_MODULE\" version=\"4\">\n  <component name=\"NewModuleRootManager\">\n    <content url=\"file://$MODULE_DIR$\" />\n    <orderEntry type=\"inheritedJdk\" />\n    <orderEntry type=\"sourceFolder\" forTests=\"false\" />\n    <orderEntry type=\"module\" module-name=\"live_coding\" />\n  </component>\n</module>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/.idea/AS_STS_code.iml b/.idea/AS_STS_code.iml
+---- a/.idea/AS_STS_code.iml	(revision d543189121e1f57a7f9ee86e97132f9d8b5e0b5d)
+-+++ b/.idea/AS_STS_code.iml	(date 1638122751112)
+-@@ -2,7 +2,7 @@
+- <module type="PYTHON_MODULE" version="4">
+-   <component name="NewModuleRootManager">
+-     <content url="file://$MODULE_DIR$" />
+--    <orderEntry type="inheritedJdk" />
+-+    <orderEntry type="jdk" jdkName="Python 3.9 (myenv)" jdkType="Python SDK" />
+-     <orderEntry type="sourceFolder" forTests="false" />
+-     <orderEntry type="module" module-name="live_coding" />
+-   </component>
+-Index: .idea/workspace.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"8c680e45-7c97-481f-92a5-74cbaa3d7be3\" name=\"Changes\" comment=\"\">\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/src/main.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main.py\" afterDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"DjangoConsoleOptions\" custom-start-script=\"import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)\">\n    <option name=\"myCustomStartScript\" value=\"import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)\" />\n  </component>\n  <component name=\"FlaskConsoleOptions\" custom-start-script=\"import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\\nApp: %s [%s]\\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))\">\n    <envs>\n      <env key=\"FLASK_APP\" value=\"app\" />\n    </envs>\n    <option name=\"myCustomStartScript\" value=\"import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\\nApp: %s [%s]\\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))\" />\n    <option name=\"myEnvs\">\n      <map>\n        <entry key=\"FLASK_APP\" value=\"app\" />\n      </map>\n    </option>\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"ProjectId\" id=\"21PNUh1l9QXN6taUlC8LXgOvLDj\" />\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\">\n    <property name=\"RunOnceActivity.OpenProjectViewOnStart\" value=\"true\" />\n    <property name=\"RunOnceActivity.ShowReadmeOnStart\" value=\"true\" />\n    <property name=\"WebServerToolWindowFactoryState\" value=\"false\" />\n    <property name=\"last_opened_file_path\" value=\"$USER_HOME$/Documents/Python Projects/Data camp, Python Programmer/Table of contents.py\" />\n    <property name=\"settings.editor.selected.configurable\" value=\"preferences.keymap\" />\n  </component>\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"8c680e45-7c97-481f-92a5-74cbaa3d7be3\" name=\"Changes\" comment=\"\" />\n      <created>1637838780117</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1637838780117</updated>\n      <workItem from=\"1637838782111\" duration=\"18000\" />\n      <workItem from=\"1637838857369\" duration=\"1000\" />\n      <workItem from=\"1637838886920\" duration=\"438000\" />\n      <workItem from=\"1637839513934\" duration=\"1532000\" />\n      <workItem from=\"1637841307407\" duration=\"3068000\" />\n      <workItem from=\"1638054326822\" duration=\"850000\" />\n      <workItem from=\"1638055717024\" duration=\"1614000\" />\n    </task>\n    <task id=\"LOCAL-00001\" summary=\"Let's see\">\n      <created>1637839022626</created>\n      <option name=\"number\" value=\"00001\" />\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1637839022626</updated>\n    </task>\n    <task id=\"LOCAL-00002\" summary=\"Let's see\">\n      <created>1637839248196</created>\n      <option name=\"number\" value=\"00002\" />\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1637839248196</updated>\n    </task>\n    <task id=\"LOCAL-00003\" summary=\"Commit via InteliJ\">\n      <created>1637839586612</created>\n      <option name=\"number\" value=\"00003\" />\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1637839586612</updated>\n    </task>\n    <task id=\"LOCAL-00004\" summary=\"Commit via InteliJ\">\n      <created>1637839692213</created>\n      <option name=\"number\" value=\"00004\" />\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1637839692213</updated>\n    </task>\n    <task id=\"LOCAL-00005\" summary=\"Commit via PyCharm\">\n      <created>1637839764432</created>\n      <option name=\"number\" value=\"00005\" />\n      <option name=\"presentableId\" value=\"LOCAL-00005\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1637839764432</updated>\n    </task>\n    <task id=\"LOCAL-00006\" summary=\"Commit via PyCharm\">\n      <created>1637839854080</created>\n      <option name=\"number\" value=\"00006\" />\n      <option name=\"presentableId\" value=\"LOCAL-00006\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1637839854080</updated>\n    </task>\n    <task id=\"LOCAL-00007\" summary=\"Commit via PyCharm\">\n      <created>1637844692536</created>\n      <option name=\"number\" value=\"00007\" />\n      <option name=\"presentableId\" value=\"LOCAL-00007\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1637844692537</updated>\n    </task>\n    <task id=\"LOCAL-00008\" summary=\"Commit via PyCharm\">\n      <created>1637844733464</created>\n      <option name=\"number\" value=\"00008\" />\n      <option name=\"presentableId\" value=\"LOCAL-00008\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1637844733464</updated>\n    </task>\n    <task id=\"LOCAL-00009\" summary=\"Adding data files as .csv\">\n      <created>1638054865117</created>\n      <option name=\"number\" value=\"00009\" />\n      <option name=\"presentableId\" value=\"LOCAL-00009\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1638054865117</updated>\n    </task>\n    <task id=\"LOCAL-00010\" summary=\"1) reading data in main&#10;2) small corrections in files' names\">\n      <created>1638056253893</created>\n      <option name=\"number\" value=\"00010\" />\n      <option name=\"presentableId\" value=\"LOCAL-00010\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1638056253893</updated>\n    </task>\n    <option name=\"localTasksCounter\" value=\"11\" />\n    <servers />\n  </component>\n  <component name=\"TypeScriptGeneratedFilesManager\">\n    <option name=\"version\" value=\"3\" />\n  </component>\n  <component name=\"Vcs.Log.History.Properties\">\n    <option name=\"COLUMN_ID_ORDER\">\n      <list>\n        <option value=\"Default.Root\" />\n        <option value=\"Default.Author\" />\n        <option value=\"Default.Date\" />\n        <option value=\"Default.Subject\" />\n        <option value=\"Space.CommitStatus\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"Vcs.Log.Tabs.Properties\">\n    <option name=\"TAB_STATES\">\n      <map>\n        <entry key=\"MAIN\">\n          <value>\n            <State />\n          </value>\n        </entry>\n      </map>\n    </option>\n    <option name=\"oldMeFiltersMigrated\" value=\"true\" />\n  </component>\n  <component name=\"VcsManagerConfiguration\">\n    <MESSAGE value=\"Let's see\" />\n    <MESSAGE value=\"Commit via InteliJ\" />\n    <MESSAGE value=\"Commit via PyCharm\" />\n    <MESSAGE value=\"Adding data files as .csv\" />\n    <MESSAGE value=\"1) reading data in main&#10;2) small corrections in files' names\" />\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"1) reading data in main&#10;2) small corrections in files' names\" />\n  </component>\n</project>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+---- a/.idea/workspace.xml	(revision d543189121e1f57a7f9ee86e97132f9d8b5e0b5d)
+-+++ b/.idea/workspace.xml	(date 1638881716440)
+-@@ -1,7 +1,12 @@
+- <?xml version="1.0" encoding="UTF-8"?>
+- <project version="4">
+-+  <component name="AutoImportSettings">
+-+    <option name="autoReloadType" value="SELECTIVE" />
+-+  </component>
+-   <component name="ChangeListManager">
+--    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="">
+-+    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) reading data in main&#10;2) small corrections in files' names">
+-+      <change beforePath="$PROJECT_DIR$/.idea/AS_STS_code.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/AS_STS_code.iml" afterDir="false" />
+-+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+-       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
+-     </list>
+-@@ -37,8 +42,40 @@
+-     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+-     <property name="WebServerToolWindowFactoryState" value="false" />
+-     <property name="last_opened_file_path" value="$USER_HOME$/Documents/Python Projects/Data camp, Python Programmer/Table of contents.py" />
+-+    <property name="node.js.detected.package.eslint" value="true" />
+-+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+-+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+-     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+-   </component>
+-+  <component name="RunManager">
+-+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+-+      <module name="AS_STS_code" />
+-+      <option name="INTERPRETER_OPTIONS" value="" />
+-+      <option name="PARENT_ENVS" value="true" />
+-+      <envs>
+-+        <env name="PYTHONUNBUFFERED" value="1" />
+-+      </envs>
+-+      <option name="SDK_HOME" value="" />
+-+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src" />
+-+      <option name="IS_MODULE_SDK" value="true" />
+-+      <option name="ADD_CONTENT_ROOTS" value="true" />
+-+      <option name="ADD_SOURCE_ROOTS" value="true" />
+-+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+-+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/main.py" />
+-+      <option name="PARAMETERS" value="" />
+-+      <option name="SHOW_COMMAND_LINE" value="false" />
+-+      <option name="EMULATE_TERMINAL" value="false" />
+-+      <option name="MODULE_MODE" value="false" />
+-+      <option name="REDIRECT_INPUT" value="false" />
+-+      <option name="INPUT_FILE" value="" />
+-+      <method v="2" />
+-+    </configuration>
+-+    <recent_temporary>
+-+      <list>
+-+        <item itemvalue="Python.main" />
+-+      </list>
+-+    </recent_temporary>
+-+  </component>
+-   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+-   <component name="TaskManager">
+-     <task active="true" id="Default" summary="Default task">
+-@@ -54,6 +91,7 @@
+-       <workItem from="1637841307407" duration="3068000" />
+-       <workItem from="1638054326822" duration="850000" />
+-       <workItem from="1638055717024" duration="1614000" />
+-+      <workItem from="1638201138433" duration="629000" />
+-     </task>
+-     <task id="LOCAL-00001" summary="Let's see">
+-       <created>1637839022626</created>
+-@@ -162,4 +200,7 @@
+-     <MESSAGE value="1) reading data in main&#10;2) small corrections in files' names" />
+-     <option name="LAST_COMMIT_MESSAGE" value="1) reading data in main&#10;2) small corrections in files' names" />
+-   </component>
+-+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+-+    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1638129872849" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+-+  </component>
+- </project>
+-\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_09_12_2021_12_55_[Changes]/shelved.patch
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_09_12_2021_12_55_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Update_at_09_12_2021_12_55_[Changes]/shelved.patch
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_09_12_2021_12_55_[Changes]/shelved.patch	(revision e398b37a68d81aa9c232c5c09d050e82da303b60)
++++ /dev/null	(revision e398b37a68d81aa9c232c5c09d050e82da303b60)
+@@ -1,66 +0,0 @@
+-Index: .idea/workspace.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"8c680e45-7c97-481f-92a5-74cbaa3d7be3\" name=\"Changes\" comment=\"1) Restructured the project so that it resembles the lecture one (not fully though for convenience)&#10;2) Completed the data importing/loading stuff, created attributes/objects/instances&#10;3) Copied algorithms from the lecture&#10;4) Created a Trucks class which for now has only one truck with one attribute (capacity) but can be extended later on&#10;5) Added comments&#10;6) Basically made everything working from main&#10;P.S.: classes TSPLibReader.py and carModel1.vrp are obsolete for now but if we will be asked to use them instead of our current approach we can adapt to it\">\r\n      <change afterPath=\"$PROJECT_DIR$/instances/Construction.py\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/instances/Trucks.py\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/instances/Utils.py\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/instances/carModel1.vrp\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/src/TSPLibReader.py\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/AS_STS_code.iml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/AS_STS_code.iml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/modules.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/modules.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_29_11_2021_17_04_[Changes]/shelved.patch\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_29_11_2021_17_04__Changes_.xml\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/main.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main.py\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"DjangoConsoleOptions\" custom-start-script=\"import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)\">\r\n    <option name=\"myCustomStartScript\" value=\"import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Python Script\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"FlaskConsoleOptions\" custom-start-script=\"import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\\nApp: %s [%s]\\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))\">\r\n    <envs>\r\n      <env key=\"FLASK_APP\" value=\"app\" />\r\n    </envs>\r\n    <option name=\"myCustomStartScript\" value=\"import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\\nApp: %s [%s]\\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))\" />\r\n    <option name=\"myEnvs\">\r\n      <map>\r\n        <entry key=\"FLASK_APP\" value=\"app\" />\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"ProjectId\" id=\"21PNUh1l9QXN6taUlC8LXgOvLDj\" />\r\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">\r\n    <property name=\"RunOnceActivity.OpenProjectViewOnStart\" value=\"true\" />\r\n    <property name=\"RunOnceActivity.ShowReadmeOnStart\" value=\"true\" />\r\n    <property name=\"WebServerToolWindowFactoryState\" value=\"false\" />\r\n    <property name=\"last_opened_file_path\" value=\"$PROJECT_DIR$/../live_coding\" />\r\n    <property name=\"settings.editor.selected.configurable\" value=\"preferences.keymap\" />\r\n  </component>\r\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"8c680e45-7c97-481f-92a5-74cbaa3d7be3\" name=\"Changes\" comment=\"\" />\r\n      <created>1637838780117</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1637838780117</updated>\r\n      <workItem from=\"1637838782111\" duration=\"18000\" />\r\n      <workItem from=\"1637838857369\" duration=\"1000\" />\r\n      <workItem from=\"1637838886920\" duration=\"438000\" />\r\n      <workItem from=\"1637839513934\" duration=\"1532000\" />\r\n      <workItem from=\"1637841307407\" duration=\"3068000\" />\r\n      <workItem from=\"1638054326822\" duration=\"850000\" />\r\n      <workItem from=\"1638055717024\" duration=\"1999000\" />\r\n      <workItem from=\"1638198448992\" duration=\"2767000\" />\r\n      <workItem from=\"1638790429150\" duration=\"1278000\" />\r\n      <workItem from=\"1638794844323\" duration=\"1422000\" />\r\n      <workItem from=\"1638796291132\" duration=\"3430000\" />\r\n      <workItem from=\"1638803722077\" duration=\"4201000\" />\r\n      <workItem from=\"1638814477004\" duration=\"27000\" />\r\n      <workItem from=\"1638814535742\" duration=\"1043000\" />\r\n      <workItem from=\"1638815594844\" duration=\"8019000\" />\r\n      <workItem from=\"1638829161268\" duration=\"675000\" />\r\n      <workItem from=\"1638829858377\" duration=\"2599000\" />\r\n      <workItem from=\"1638832933646\" duration=\"446000\" />\r\n      <workItem from=\"1638833437967\" duration=\"1081000\" />\r\n      <workItem from=\"1638834544416\" duration=\"1651000\" />\r\n      <workItem from=\"1638836393331\" duration=\"1377000\" />\r\n      <workItem from=\"1638842191801\" duration=\"505000\" />\r\n      <workItem from=\"1638842715249\" duration=\"127000\" />\r\n      <workItem from=\"1638842855943\" duration=\"563000\" />\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"Let's see\">\r\n      <created>1637839022626</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1637839022626</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"Let's see\">\r\n      <created>1637839248196</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1637839248196</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00003\" summary=\"Commit via InteliJ\">\r\n      <created>1637839586612</created>\r\n      <option name=\"number\" value=\"00003\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1637839586612</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00004\" summary=\"Commit via InteliJ\">\r\n      <created>1637839692213</created>\r\n      <option name=\"number\" value=\"00004\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1637839692213</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00005\" summary=\"Commit via PyCharm\">\r\n      <created>1637839764432</created>\r\n      <option name=\"number\" value=\"00005\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00005\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1637839764432</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00006\" summary=\"Commit via PyCharm\">\r\n      <created>1637839854080</created>\r\n      <option name=\"number\" value=\"00006\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00006\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1637839854080</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00007\" summary=\"Commit via PyCharm\">\r\n      <created>1637844692536</created>\r\n      <option name=\"number\" value=\"00007\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00007\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1637844692537</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00008\" summary=\"Commit via PyCharm\">\r\n      <created>1637844733464</created>\r\n      <option name=\"number\" value=\"00008\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00008\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1637844733464</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00009\" summary=\"Adding data files as .csv\">\r\n      <created>1638054865117</created>\r\n      <option name=\"number\" value=\"00009\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00009\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1638054865117</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00010\" summary=\"1) reading data in main&#10;2) small corrections in files' names\">\r\n      <created>1638056253893</created>\r\n      <option name=\"number\" value=\"00010\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00010\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1638056253893</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00011\" summary=\"1) loading all files as .csv in main with &quot; &quot; as a separator&#10;2) lines 19 and 20 - check if data frame's access works (list columns and address them)\">\r\n      <created>1638057457407</created>\r\n      <option name=\"number\" value=\"00011\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00011\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1638057457407</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00012\" summary=\"Added hints\">\r\n      <created>1638200044845</created>\r\n      <option name=\"number\" value=\"00012\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00012\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1638200044845</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00013\" summary=\"Added hints\">\r\n      <created>1638200484683</created>\r\n      <option name=\"number\" value=\"00013\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00013\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1638200484683</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00014\" summary=\"Completely removed all .csv files since we don't actually need them, we can load the data in the same format directly from .nodes and .routes files\">\r\n      <created>1638795258281</created>\r\n      <option name=\"number\" value=\"00014\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00014\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1638795258281</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00015\" summary=\"Completely removed all .csv files since we don't actually need them, we can load the data in the same format directly from .nodes and .routes files\">\r\n      <created>1638795391731</created>\r\n      <option name=\"number\" value=\"00015\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00015\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1638795391731</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"16\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"TypeScriptGeneratedFilesManager\">\r\n    <option name=\"version\" value=\"3\" />\r\n  </component>\r\n  <component name=\"Vcs.Log.History.Properties\">\r\n    <option name=\"COLUMN_ID_ORDER\">\r\n      <list>\r\n        <option value=\"Default.Root\" />\r\n        <option value=\"Default.Author\" />\r\n        <option value=\"Default.Date\" />\r\n        <option value=\"Default.Subject\" />\r\n        <option value=\"Space.CommitStatus\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n    <option name=\"oldMeFiltersMigrated\" value=\"true\" />\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"Let's see\" />\r\n    <MESSAGE value=\"Commit via InteliJ\" />\r\n    <MESSAGE value=\"Commit via PyCharm\" />\r\n    <MESSAGE value=\"Adding data files as .csv\" />\r\n    <MESSAGE value=\"1) reading data in main&#10;2) small corrections in files' names\" />\r\n    <MESSAGE value=\"1) loading all files as .csv in main with &quot; &quot; as a separator&#10;2) lines 19 and 20 - check if data frame's access works (list columns and address them)\" />\r\n    <MESSAGE value=\"Added hints\" />\r\n    <MESSAGE value=\"Completely removed all .csv files since we don't actually need them, we can load the data in the same format directly from .nodes and .routes files\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"Completely removed all .csv files since we don't actually need them, we can load the data in the same format directly from .nodes and .routes files\" />\r\n  </component>\r\n</project>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+---- a/.idea/workspace.xml	(revision 6b1f5bd05667468241e251a501d01cacd5c6fc02)
+-+++ b/.idea/workspace.xml	(date 1638843606753)
+-@@ -1,19 +1,7 @@
+- <?xml version="1.0" encoding="UTF-8"?>
+- <project version="4">
+-   <component name="ChangeListManager">
+--    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) Restructured the project so that it resembles the lecture one (not fully though for convenience)&#10;2) Completed the data importing/loading stuff, created attributes/objects/instances&#10;3) Copied algorithms from the lecture&#10;4) Created a Trucks class which for now has only one truck with one attribute (capacity) but can be extended later on&#10;5) Added comments&#10;6) Basically made everything working from main&#10;P.S.: classes TSPLibReader.py and carModel1.vrp are obsolete for now but if we will be asked to use them instead of our current approach we can adapt to it">
+--      <change afterPath="$PROJECT_DIR$/instances/Construction.py" afterDir="false" />
+--      <change afterPath="$PROJECT_DIR$/instances/Trucks.py" afterDir="false" />
+--      <change afterPath="$PROJECT_DIR$/instances/Utils.py" afterDir="false" />
+--      <change afterPath="$PROJECT_DIR$/instances/carModel1.vrp" afterDir="false" />
+--      <change afterPath="$PROJECT_DIR$/src/TSPLibReader.py" afterDir="false" />
+--      <change beforePath="$PROJECT_DIR$/.idea/AS_STS_code.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/AS_STS_code.iml" afterDir="false" />
+--      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+--      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_29_11_2021_17_04_[Changes]/shelved.patch" beforeDir="false" />
+--      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_29_11_2021_17_04__Changes_.xml" beforeDir="false" />
+--      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+--      <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
+--    </list>
+-+    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="" />
+-     <option name="SHOW_DIALOG" value="false" />
+-     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+-     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+-@@ -87,7 +75,7 @@
+-       <workItem from="1638836393331" duration="1377000" />
+-       <workItem from="1638842191801" duration="505000" />
+-       <workItem from="1638842715249" duration="127000" />
+--      <workItem from="1638842855943" duration="563000" />
+-+      <workItem from="1638842855943" duration="747000" />
+-     </task>
+-     <task id="LOCAL-00001" summary="Let's see">
+-       <created>1637839022626</created>
+-@@ -194,7 +182,14 @@
+-       <option name="project" value="LOCAL" />
+-       <updated>1638795391731</updated>
+-     </task>
+--    <option name="localTasksCounter" value="16" />
+-+    <task id="LOCAL-00016" summary="1) Restructured the project so that it resembles the lecture one (not fully though for convenience)&#10;2) Completed the data importing/loading stuff, created attributes/objects/instances&#10;3) Copied algorithms from the lecture&#10;4) Created a Trucks class which for now has only one truck with one attribute (capacity) but can be extended later on&#10;5) Added comments&#10;6) Basically made everything working from main&#10;P.S.: classes TSPLibReader.py and carModel1.vrp are obsolete for now but if we will be asked to use them instead of our current approach we can adapt to it&#10;P.P.S.: to make everything working don't forget to add your system's project path to lines 7-9 of main.py and uncomment it together with import os before running the program">
+-+      <created>1638843539642</created>
+-+      <option name="number" value="00016" />
+-+      <option name="presentableId" value="LOCAL-00016" />
+-+      <option name="project" value="LOCAL" />
+-+      <updated>1638843539642</updated>
+-+    </task>
+-+    <option name="localTasksCounter" value="17" />
+-     <servers />
+-   </component>
+-   <component name="TypeScriptGeneratedFilesManager">
+-@@ -232,6 +227,7 @@
+-     <MESSAGE value="1) loading all files as .csv in main with &quot; &quot; as a separator&#10;2) lines 19 and 20 - check if data frame's access works (list columns and address them)" />
+-     <MESSAGE value="Added hints" />
+-     <MESSAGE value="Completely removed all .csv files since we don't actually need them, we can load the data in the same format directly from .nodes and .routes files" />
+--    <option name="LAST_COMMIT_MESSAGE" value="Completely removed all .csv files since we don't actually need them, we can load the data in the same format directly from .nodes and .routes files" />
+-+    <MESSAGE value="1) Restructured the project so that it resembles the lecture one (not fully though for convenience)&#10;2) Completed the data importing/loading stuff, created attributes/objects/instances&#10;3) Copied algorithms from the lecture&#10;4) Created a Trucks class which for now has only one truck with one attribute (capacity) but can be extended later on&#10;5) Added comments&#10;6) Basically made everything working from main&#10;P.S.: classes TSPLibReader.py and carModel1.vrp are obsolete for now but if we will be asked to use them instead of our current approach we can adapt to it&#10;P.P.S.: to make everything working don't forget to add your system's project path to lines 7-9 of main.py and uncomment it together with import os before running the program" />
+-+    <option name="LAST_COMMIT_MESSAGE" value="1) Restructured the project so that it resembles the lecture one (not fully though for convenience)&#10;2) Completed the data importing/loading stuff, created attributes/objects/instances&#10;3) Copied algorithms from the lecture&#10;4) Created a Trucks class which for now has only one truck with one attribute (capacity) but can be extended later on&#10;5) Added comments&#10;6) Basically made everything working from main&#10;P.S.: classes TSPLibReader.py and carModel1.vrp are obsolete for now but if we will be asked to use them instead of our current approach we can adapt to it&#10;P.P.S.: to make everything working don't forget to add your system's project path to lines 7-9 of main.py and uncomment it together with import os before running the program" />
+-   </component>
+- </project>
+-\ No newline at end of file
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"AutoImportSettings\">\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\n  </component>\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"8c680e45-7c97-481f-92a5-74cbaa3d7be3\" name=\"Changes\" comment=\"Add optimization to ourAlgorithm and add a class of local search\" />\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"DjangoConsoleOptions\" custom-start-script=\"import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)\">\n    <option name=\"myCustomStartScript\" value=\"import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)\" />\n  </component>\n  <component name=\"FileTemplateManagerImpl\">\n    <option name=\"RECENT_TEMPLATES\">\n      <list>\n        <option value=\"Python Script\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"FlaskConsoleOptions\" custom-start-script=\"import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\\nApp: %s [%s]\\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))\">\n    <envs>\n      <env key=\"FLASK_APP\" value=\"app\" />\n    </envs>\n    <option name=\"myCustomStartScript\" value=\"import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\\nApp: %s [%s]\\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))\" />\n    <option name=\"myEnvs\">\n      <map>\n        <entry key=\"FLASK_APP\" value=\"app\" />\n      </map>\n    </option>\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"ProjectId\" id=\"21PNUh1l9QXN6taUlC8LXgOvLDj\" />\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\" />\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\">\n    <property name=\"RunOnceActivity.OpenProjectViewOnStart\" value=\"true\" />\n    <property name=\"RunOnceActivity.ShowReadmeOnStart\" value=\"true\" />\n    <property name=\"WebServerToolWindowFactoryState\" value=\"false\" />\n    <property name=\"last_opened_file_path\" value=\"$PROJECT_DIR$/../live_coding\" />\n    <property name=\"node.js.detected.package.eslint\" value=\"true\" />\n    <property name=\"node.js.detected.package.tslint\" value=\"true\" />\n    <property name=\"node.js.selected.package.eslint\" value=\"(autodetect)\" />\n    <property name=\"node.js.selected.package.tslint\" value=\"(autodetect)\" />\n    <property name=\"settings.editor.selected.configurable\" value=\"preferences.keymap\" />\n  </component>\n  <component name=\"RunManager\">\n    <configuration name=\"main\" type=\"PythonConfigurationType\" factoryName=\"Python\" temporary=\"true\" nameIsGenerated=\"true\">\n      <module name=\"AS_STS_code\" />\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\n      <option name=\"PARENT_ENVS\" value=\"true\" />\n      <envs>\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\n      </envs>\n      <option name=\"SDK_HOME\" value=\"\" />\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$/src\" />\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/src/main.py\" />\n      <option name=\"PARAMETERS\" value=\"\" />\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\n      <option name=\"MODULE_MODE\" value=\"false\" />\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\n      <option name=\"INPUT_FILE\" value=\"\" />\n      <method v=\"2\" />\n    </configuration>\n    <recent_temporary>\n      <list>\n        <item itemvalue=\"Python.main\" />\n      </list>\n    </recent_temporary>\n  </component>\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"8c680e45-7c97-481f-92a5-74cbaa3d7be3\" name=\"Changes\" comment=\"\" />\n      <created>1637838780117</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1637838780117</updated>\n      <workItem from=\"1637838782111\" duration=\"18000\" />\n      <workItem from=\"1637838857369\" duration=\"1000\" />\n      <workItem from=\"1637838886920\" duration=\"438000\" />\n      <workItem from=\"1637839513934\" duration=\"1532000\" />\n      <workItem from=\"1637841307407\" duration=\"3068000\" />\n      <workItem from=\"1638054326822\" duration=\"850000\" />\n      <workItem from=\"1638055717024\" duration=\"1999000\" />\n      <workItem from=\"1638198448992\" duration=\"2767000\" />\n      <workItem from=\"1638790429150\" duration=\"1278000\" />\n      <workItem from=\"1638794844323\" duration=\"1422000\" />\n      <workItem from=\"1638796291132\" duration=\"3430000\" />\n      <workItem from=\"1638803722077\" duration=\"4201000\" />\n      <workItem from=\"1638814477004\" duration=\"27000\" />\n      <workItem from=\"1638814535742\" duration=\"1043000\" />\n      <workItem from=\"1638815594844\" duration=\"8019000\" />\n      <workItem from=\"1638829161268\" duration=\"675000\" />\n      <workItem from=\"1638829858377\" duration=\"2599000\" />\n      <workItem from=\"1638832933646\" duration=\"446000\" />\n      <workItem from=\"1638833437967\" duration=\"1081000\" />\n      <workItem from=\"1638834544416\" duration=\"1651000\" />\n      <workItem from=\"1638836393331\" duration=\"1377000\" />\n      <workItem from=\"1638842191801\" duration=\"505000\" />\n      <workItem from=\"1638842715249\" duration=\"127000\" />\n      <workItem from=\"1638842855943\" duration=\"563000\" />\n      <workItem from=\"1638882867872\" duration=\"1816000\" />\n      <workItem from=\"1639061760777\" duration=\"288000\" />\n      <workItem from=\"1639062068740\" duration=\"135000\" />\n      <workItem from=\"1639062220997\" duration=\"117000\" />\n      <workItem from=\"1639062365243\" duration=\"1763000\" />\n      <workItem from=\"1639064160635\" duration=\"657000\" />\n      <workItem from=\"1639064839252\" duration=\"2145000\" />\n      <workItem from=\"1639067022452\" duration=\"4017000\" />\n      <workItem from=\"1639071341951\" duration=\"1301000\" />\n      <workItem from=\"1639146171573\" duration=\"4530000\" />\n      <workItem from=\"1639153917748\" duration=\"1927000\" />\n      <workItem from=\"1639155902082\" duration=\"115000\" />\n      <workItem from=\"1639157976084\" duration=\"652000\" />\n      <workItem from=\"1639158673901\" duration=\"4905000\" />\n      <workItem from=\"1639164773216\" duration=\"2471000\" />\n      <workItem from=\"1639176584947\" duration=\"1031000\" />\n      <workItem from=\"1639177652929\" duration=\"223000\" />\n      <workItem from=\"1639177913999\" duration=\"201000\" />\n      <workItem from=\"1639178132914\" duration=\"92000\" />\n      <workItem from=\"1639178239002\" duration=\"73000\" />\n      <workItem from=\"1639178327885\" duration=\"177000\" />\n      <workItem from=\"1639178520978\" duration=\"129000\" />\n      <workItem from=\"1639178671844\" duration=\"682000\" />\n      <workItem from=\"1639179381408\" duration=\"900000\" />\n      <workItem from=\"1639180304787\" duration=\"203000\" />\n    </task>\n    <task id=\"LOCAL-00001\" summary=\"Let's see\">\n      <created>1637839022626</created>\n      <option name=\"number\" value=\"00001\" />\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1637839022626</updated>\n    </task>\n    <task id=\"LOCAL-00002\" summary=\"Let's see\">\n      <created>1637839248196</created>\n      <option name=\"number\" value=\"00002\" />\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1637839248196</updated>\n    </task>\n    <task id=\"LOCAL-00003\" summary=\"Commit via InteliJ\">\n      <created>1637839586612</created>\n      <option name=\"number\" value=\"00003\" />\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1637839586612</updated>\n    </task>\n    <task id=\"LOCAL-00004\" summary=\"Commit via InteliJ\">\n      <created>1637839692213</created>\n      <option name=\"number\" value=\"00004\" />\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1637839692213</updated>\n    </task>\n    <task id=\"LOCAL-00005\" summary=\"Commit via PyCharm\">\n      <created>1637839764432</created>\n      <option name=\"number\" value=\"00005\" />\n      <option name=\"presentableId\" value=\"LOCAL-00005\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1637839764432</updated>\n    </task>\n    <task id=\"LOCAL-00006\" summary=\"Commit via PyCharm\">\n      <created>1637839854080</created>\n      <option name=\"number\" value=\"00006\" />\n      <option name=\"presentableId\" value=\"LOCAL-00006\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1637839854080</updated>\n    </task>\n    <task id=\"LOCAL-00007\" summary=\"Commit via PyCharm\">\n      <created>1637844692536</created>\n      <option name=\"number\" value=\"00007\" />\n      <option name=\"presentableId\" value=\"LOCAL-00007\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1637844692537</updated>\n    </task>\n    <task id=\"LOCAL-00008\" summary=\"Commit via PyCharm\">\n      <created>1637844733464</created>\n      <option name=\"number\" value=\"00008\" />\n      <option name=\"presentableId\" value=\"LOCAL-00008\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1637844733464</updated>\n    </task>\n    <task id=\"LOCAL-00009\" summary=\"Adding data files as .csv\">\n      <created>1638054865117</created>\n      <option name=\"number\" value=\"00009\" />\n      <option name=\"presentableId\" value=\"LOCAL-00009\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1638054865117</updated>\n    </task>\n    <task id=\"LOCAL-00010\" summary=\"1) reading data in main&#10;2) small corrections in files' names\">\n      <created>1638056253893</created>\n      <option name=\"number\" value=\"00010\" />\n      <option name=\"presentableId\" value=\"LOCAL-00010\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1638056253893</updated>\n    </task>\n    <task id=\"LOCAL-00011\" summary=\"1) loading all files as .csv in main with &quot; &quot; as a separator&#10;2) lines 19 and 20 - check if data frame's access works (list columns and address them)\">\n      <created>1638057457407</created>\n      <option name=\"number\" value=\"00011\" />\n      <option name=\"presentableId\" value=\"LOCAL-00011\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1638057457407</updated>\n    </task>\n    <task id=\"LOCAL-00012\" summary=\"Added hints\">\n      <created>1638200044845</created>\n      <option name=\"number\" value=\"00012\" />\n      <option name=\"presentableId\" value=\"LOCAL-00012\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1638200044845</updated>\n    </task>\n    <task id=\"LOCAL-00013\" summary=\"Added hints\">\n      <created>1638200484683</created>\n      <option name=\"number\" value=\"00013\" />\n      <option name=\"presentableId\" value=\"LOCAL-00013\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1638200484683</updated>\n    </task>\n    <task id=\"LOCAL-00014\" summary=\"Completely removed all .csv files since we don't actually need them, we can load the data in the same format directly from .nodes and .routes files\">\n      <created>1638795258281</created>\n      <option name=\"number\" value=\"00014\" />\n      <option name=\"presentableId\" value=\"LOCAL-00014\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1638795258281</updated>\n    </task>\n    <task id=\"LOCAL-00015\" summary=\"Completely removed all .csv files since we don't actually need them, we can load the data in the same format directly from .nodes and .routes files\">\n      <created>1638795391731</created>\n      <option name=\"number\" value=\"00015\" />\n      <option name=\"presentableId\" value=\"LOCAL-00015\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1638795391731</updated>\n    </task>\n    <task id=\"LOCAL-00016\" summary=\"1) implemented distruction\">\n      <created>1639064372517</created>\n      <option name=\"number\" value=\"00016\" />\n      <option name=\"presentableId\" value=\"LOCAL-00016\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1639064372517</updated>\n    </task>\n    <task id=\"LOCAL-00017\" summary=\"1) small renaming\">\n      <created>1639065017058</created>\n      <option name=\"number\" value=\"00017\" />\n      <option name=\"presentableId\" value=\"LOCAL-00017\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1639065017058</updated>\n    </task>\n    <task id=\"LOCAL-00018\" summary=\"1) started insertion phase\">\n      <created>1639066121047</created>\n      <option name=\"number\" value=\"00018\" />\n      <option name=\"presentableId\" value=\"LOCAL-00018\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1639066121047</updated>\n    </task>\n    <task id=\"LOCAL-00019\" summary=\"1) updated destruction algorithm so that it works with any input data (not only the test one)\">\n      <created>1639067466577</created>\n      <option name=\"number\" value=\"00019\" />\n      <option name=\"presentableId\" value=\"LOCAL-00019\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1639067466577</updated>\n    </task>\n    <task id=\"LOCAL-00020\" summary=\"1) fixed a small error\">\n      <created>1639071450476</created>\n      <option name=\"number\" value=\"00020\" />\n      <option name=\"presentableId\" value=\"LOCAL-00020\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1639071450476</updated>\n    </task>\n    <task id=\"LOCAL-00021\" summary=\"1) insertion part without checking for feasibility\">\n      <created>1639169286682</created>\n      <option name=\"number\" value=\"00021\" />\n      <option name=\"presentableId\" value=\"LOCAL-00021\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1639169286682</updated>\n    </task>\n    <task id=\"LOCAL-00022\" summary=\"1) got insertion algorithm working (check in-line comments!)\">\n      <created>1639179585942</created>\n      <option name=\"number\" value=\"00022\" />\n      <option name=\"presentableId\" value=\"LOCAL-00022\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1639179585942</updated>\n    </task>\n    <task id=\"LOCAL-00023\" summary=\"Add optimization to ourAlgorithm and add a class of local search\">\n      <created>1639216153165</created>\n      <option name=\"number\" value=\"00023\" />\n      <option name=\"presentableId\" value=\"LOCAL-00023\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1639216153166</updated>\n    </task>\n    <task id=\"LOCAL-00024\" summary=\"Add optimization to ourAlgorithm and add a class of local search\">\n      <created>1639216325876</created>\n      <option name=\"number\" value=\"00024\" />\n      <option name=\"presentableId\" value=\"LOCAL-00024\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1639216325876</updated>\n    </task>\n    <option name=\"localTasksCounter\" value=\"25\" />\n    <servers />\n  </component>\n  <component name=\"TypeScriptGeneratedFilesManager\">\n    <option name=\"version\" value=\"3\" />\n  </component>\n  <component name=\"UnknownFeatures\">\n    <option featureType=\"com.intellij.fileTypeFactory\" implementationName=\"*.routes\" />\n  </component>\n  <component name=\"Vcs.Log.History.Properties\">\n    <option name=\"COLUMN_ID_ORDER\">\n      <list>\n        <option value=\"Default.Root\" />\n        <option value=\"Default.Author\" />\n        <option value=\"Default.Date\" />\n        <option value=\"Default.Subject\" />\n        <option value=\"Space.CommitStatus\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"Vcs.Log.Tabs.Properties\">\n    <option name=\"TAB_STATES\">\n      <map>\n        <entry key=\"MAIN\">\n          <value>\n            <State />\n          </value>\n        </entry>\n      </map>\n    </option>\n    <option name=\"oldMeFiltersMigrated\" value=\"true\" />\n  </component>\n  <component name=\"VcsManagerConfiguration\">\n    <MESSAGE value=\"Let's see\" />\n    <MESSAGE value=\"Commit via InteliJ\" />\n    <MESSAGE value=\"Commit via PyCharm\" />\n    <MESSAGE value=\"Adding data files as .csv\" />\n    <MESSAGE value=\"1) reading data in main&#10;2) small corrections in files' names\" />\n    <MESSAGE value=\"1) loading all files as .csv in main with &quot; &quot; as a separator&#10;2) lines 19 and 20 - check if data frame's access works (list columns and address them)\" />\n    <MESSAGE value=\"Added hints\" />\n    <MESSAGE value=\"Completely removed all .csv files since we don't actually need them, we can load the data in the same format directly from .nodes and .routes files\" />\n    <MESSAGE value=\"1) implemented distruction\" />\n    <MESSAGE value=\"1) small renaming\" />\n    <MESSAGE value=\"1) started insertion phase\" />\n    <MESSAGE value=\"1) updated destruction algorithm so that it works with any input data (not only the test one)\" />\n    <MESSAGE value=\"1) fixed a small error\" />\n    <MESSAGE value=\"1) insertion part without checking for feasibility\" />\n    <MESSAGE value=\"1) got insertion algorithm working (check in-line comments!)\" />\n    <MESSAGE value=\"Add optimization to ourAlgorithm and add a class of local search\" />\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"Add optimization to ourAlgorithm and add a class of local search\" />\n  </component>\n  <component name=\"com.intellij.coverage.CoverageDataManagerImpl\">\n    <SUITE FILE_PATH=\"coverage/main_py$main.coverage\" NAME=\"main Coverage Results\" MODIFIED=\"1639216071728\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"true\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$/src\" />\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision e398b37a68d81aa9c232c5c09d050e82da303b60)
++++ b/.idea/workspace.xml	(date 1641464516169)
+@@ -4,7 +4,12 @@
+     <option name="autoReloadType" value="SELECTIVE" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="Add optimization to ourAlgorithm and add a class of local search" />
++    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="Add a class of local search again">
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_07_12_21,_13_56_[Changes]/shelved.patch" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_07_12_21__13_56__Changes_.xml" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/instances/Construction.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Construction.py" afterDir="false" />
++    </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+@@ -137,6 +142,9 @@
+       <workItem from="1639178671844" duration="682000" />
+       <workItem from="1639179381408" duration="900000" />
+       <workItem from="1639180304787" duration="203000" />
++      <workItem from="1639238632063" duration="887000" />
++      <workItem from="1639644078099" duration="17000" />
++      <workItem from="1639644103087" duration="9000" />
+     </task>
+     <task id="LOCAL-00001" summary="Let's see">
+       <created>1637839022626</created>
+@@ -306,7 +314,14 @@
+       <option name="project" value="LOCAL" />
+       <updated>1639216325876</updated>
+     </task>
+-    <option name="localTasksCounter" value="25" />
++    <task id="LOCAL-00025" summary="Add a class of local search again">
++      <created>1639238730114</created>
++      <option name="number" value="00025" />
++      <option name="presentableId" value="LOCAL-00025" />
++      <option name="project" value="LOCAL" />
++      <updated>1639238730115</updated>
++    </task>
++    <option name="localTasksCounter" value="26" />
+     <servers />
+   </component>
+   <component name="TypeScriptGeneratedFilesManager">
+@@ -355,7 +370,8 @@
+     <MESSAGE value="1) insertion part without checking for feasibility" />
+     <MESSAGE value="1) got insertion algorithm working (check in-line comments!)" />
+     <MESSAGE value="Add optimization to ourAlgorithm and add a class of local search" />
+-    <option name="LAST_COMMIT_MESSAGE" value="Add optimization to ourAlgorithm and add a class of local search" />
++    <MESSAGE value="Add a class of local search again" />
++    <option name="LAST_COMMIT_MESSAGE" value="Add a class of local search again" />
+   </component>
+   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+     <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1639216071728" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
