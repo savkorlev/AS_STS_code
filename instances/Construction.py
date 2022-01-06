@@ -154,8 +154,7 @@ def truckAssigning(solution: Solution, instance: Instance):  # Currently hardcod
     for i in solution:
         check = compute_total_demand(i, instance)
         if 2800 > check > 905:
-            assignedTrucks.append(
-                instance.Q[0])  # or assignedTrucks.append(MercedesBenzAtego()) to create a unique vehicles
+            assignedTrucks.append(instance.Q[0])  # or assignedTrucks.append(MercedesBenzAtego()) to create a unique vehicles
         elif check > 883:
             assignedTrucks.append(instance.Q[4])
         elif check > 720:
