@@ -115,8 +115,7 @@ def LNS(instance: Instance, solution: Solution, function):
                 listAfterDestruction[bestPosition[0]].insert(bestPosition[1],
                                                              bestCustomer)  # insert bestCustomer to the best feasible route for them
             else:
-                bestCustomer = listOfRemoved[
-                    0]  # if there are no feasible routes then open a new route and place 1st customer there
+                bestCustomer = listOfRemoved[0]  # if there are no feasible routes then open a new route and place 1st customer there
                 listToAppend = [0, bestCustomer, 0]
                 listAfterDestruction.append(listToAppend)
             listOfRemoved.remove(bestCustomer)  # delete current bestCustomer from a list of removed customers
@@ -142,11 +141,9 @@ def LNS(instance: Instance, solution: Solution, function):
     if distancesSweep < bestDistance:
         print(f"Sweep Heuristic distance: {distancesSweep}, LNS distance: {bestDistance}. Sweep is better")
     elif distancesSweep == bestDistance:
-        print(
-            f"Sweep Heuristic distance: {distancesSweep}, LNS distance: {bestDistance}. Algorithms are equal")
+        print(f"Sweep Heuristic distance: {distancesSweep}, LNS distance: {bestDistance}. Algorithms are equal")
     else:
-        print(
-            f"Sweep Heuristic distance: {distancesSweep}, LNS distance: {bestDistance}. LNS is better")
+        print(f"Sweep Heuristic distance: {distancesSweep}, LNS distance: {bestDistance}. LNS is better")
     return bestSolution
 
 
