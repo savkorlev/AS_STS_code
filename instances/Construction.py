@@ -102,10 +102,9 @@ def LNS(instance: Instance, solution: Solution, function):
                         keyNegative = (listAfterDestruction[i][j], listAfterDestruction[i][j + 1])
                         key1Positive = (listAfterDestruction[i][j], listOfRemoved[customerIndex])
                         key2Positive = (listOfRemoved[customerIndex], listAfterDestruction[i][j + 1])
-                        insertionDistance = instance.d[key1Positive] + instance.d[key2Positive] - instance.d[
-                            keyNegative]  # calculation of insertion distance
+                        insertionDistance = instance.d[key1Positive] + instance.d[key2Positive] - instance.d[keyNegative]  # calculation of insertion distance
                         if (insertionDistance < bestInsertionDistance) & (
-                                compute_total_demand(listAfterDestruction[i], instance) + instance.q[
+                            compute_total_demand(listAfterDestruction[i], instance) + instance.q[
                             listOfRemoved[customerIndex]] < max(
                             listOfPayloads)):  # & feasibilityCheck(instance, listAfterDestruction, listOfRemoved, customerIndex, i)
                             bestInsertionDistance = insertionDistance
