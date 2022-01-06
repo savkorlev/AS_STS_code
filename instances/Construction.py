@@ -111,8 +111,7 @@ def LNS(instance: Instance, solution: Solution, function):
                             bestPosition = (i, j + 1)
                             bestCustomer = listOfRemoved[customerIndex]
             if bestInsertionDistance != 10e10:
-                listAfterDestruction[bestPosition[0]].insert(bestPosition[1],
-                                                             bestCustomer)  # insert bestCustomer to the best feasible route for them
+                listAfterDestruction[bestPosition[0]].insert(bestPosition[1], bestCustomer)  # insert bestCustomer to the best feasible route for them
             else:
                 bestCustomer = listOfRemoved[0]  # if there are no feasible routes then open a new route and place 1st customer there
                 listToAppend = [0, bestCustomer, 0]
