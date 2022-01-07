@@ -8,12 +8,22 @@ import math
 import random
 from typing import List
 
+
 # Pseudocode for Class Route
 class Route:
     list customer_list = [0,0] # the list of customers (+depots)
-    vehicle Vehicle = "" # each route should know the vehicle object assigned to it. not just the vehicle type, but the vehicles unique ID
+    Vehicle vehicle = "" # each route should know the vehicle object assigned to it. not just the vehicle type, but the vehicles unique ID / numberplate
     boolean currently_feasible = false # each route should know if it is currently feasible. Everytime the route_cost is updated, we should also be told if the route is feasible (penalty_cost = 0)
     int current_cost = 0 # whenever we update the route_cost, we should store it in the route. We will often compare against the cost of the unchanged route (e.g. for insert-operations), so it makes sense to have it stored
+
+def CreateRoute(initialCustomer, vehicle, instance) -> Route
+    newRoute = new Route
+    newRoute.customer_list = [0, initialCustomer, 0]
+    newRoute.vehicle = vehicle
+    newRoute.currently_feasible = false
+    newRoute.current_cost = routeCost(vehicle, newRoute, instance)
+
+    return newRoute
 
 # Pseudocode for Class Vehicle
 """
