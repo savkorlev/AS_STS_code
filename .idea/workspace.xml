@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="wrote some pseudocode for&#10;1. vehicle swap operation&#10;2. adaptive removal operations&#10;2.1 expensiveRemoval">
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_06_01_22__11_23__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_06_01_22__11_23__Changes_.xml" afterDir="false" />
+    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="wrote some pseudocode for&#10;3. vehicle class&#10;4. route class">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instances/Pseudocode.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Pseudocode.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,9 +44,6 @@
     <setting file="file://$PROJECT_DIR$/instances/Trucks.py" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/tests/TestConstruction.py" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/instances/Utils.py" root0="FORCE_HIGHLIGHTING" />
-  </component>
-  <component name="ProblemsViewState">
-    <option name="selectedIndex" value="1" />
   </component>
   <component name="ProjectId" id="21PNUh1l9QXN6taUlC8LXgOvLDj" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -215,7 +210,7 @@
       <workItem from="1641465211423" duration="10059000" />
       <workItem from="1641480735246" duration="232000" />
       <workItem from="1641481020220" duration="4741000" />
-      <workItem from="1641542999535" duration="1288000" />
+      <workItem from="1641542999535" duration="2755000" />
     </task>
     <task id="LOCAL-00001" summary="Let's see">
       <created>1637839022626</created>
@@ -434,7 +429,14 @@
       <option name="project" value="LOCAL" />
       <updated>1641308823541</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="wrote some pseudocode for&#10;3. vehicle class&#10;4. route class">
+      <created>1641544329800</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1641544329800</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -521,7 +523,8 @@
     <MESSAGE value="1) Changed the Trucks classes to represent the actual Trucks we have&#10;2) Now we're passing a list of Trucks to create an instance&#10;3) Added the truckAssigning function that assigns appropriate trucks to the respective routes&#10;4) Tried to add the feasibility check function (to Utils), but it doesn't work now for some reason, so I reverted the changes" />
     <MESSAGE value="1) Switched to original data from the test data&#10;2) Made the algorithm run 100 times&#10;3) Inserted acceptance check within ouralgorithm&#10;4) Assigning properties' values inside class declarations" />
     <MESSAGE value="1) Utils 900 is a made-up number for now (in sweep)&#10;2) Added costs (currently per km in Paris) to Trucks" />
-    <option name="LAST_COMMIT_MESSAGE" value="1) Utils 900 is a made-up number for now (in sweep)&#10;2) Added costs (currently per km in Paris) to Trucks" />
+    <MESSAGE value="wrote some pseudocode for&#10;3. vehicle class&#10;4. route class" />
+    <option name="LAST_COMMIT_MESSAGE" value="wrote some pseudocode for&#10;3. vehicle class&#10;4. route class" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/main_py$TestConstruction.coverage" NAME="TestConstruction Coverage Results" MODIFIED="1640299941018" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
