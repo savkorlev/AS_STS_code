@@ -40,17 +40,17 @@ df_Shanghai_routes = pd.read_csv("data/Shanghai.routes", sep=' ')
 # print(df_NewYork_1_nodes.iloc[2, 2])  #select the third row and the third column
 
 # 2. CREATING OUR TRUCKS
-truck1 = MercedesBenzAtego()
-truck2 = VWTransporter()
-truck3 = VWCaddypanelvan()
-truck4 = DaimlerFUSOeCanter()
-truck5 = StreetScooterWORKL()
-truck6 = StreetScooterWORK()
-truck7 = DouzeV2ECargoBike()
+truck1 = MercedesBenzAtego(000000)
+truck2 = VWTransporter(000000)
+truck3 = VWCaddypanelvan(000000)
+truck4 = DaimlerFUSOeCanter(000000)
+truck5 = StreetScooterWORKL(000000)
+truck6 = StreetScooterWORK(000000)
+truck7 = DouzeV2ECargoBike(000000)
 listOfTrucks = [truck1, truck2, truck3, truck4, truck5, truck6, truck7]
 
 # 3. CREATING TEST DATASET AND ATTRIBUTES OF FUTURE INSTANCE
-testDimension = 112 # change this to use more or less customers of the data set. Max for Paris is 112. Also need to change the iloc for the nodes file
+testDimension = 112  # change this to use more or less customers of the data set. Max for Paris is 112. Also need to change the iloc for the nodes file
 
 # test_df_Paris_nodes = df_Paris_nodes.iloc[:20, :]                   # select elements from D0 to C19 in nodes
 # test_df_Paris_routes = df_Paris_routes.iloc[:2260, :]               # select elements from D0 to C19 in routes

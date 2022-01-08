@@ -3,7 +3,8 @@ import random
 from typing import List
 
 from instances.LocalSearch import hillclimbing, find_first_improvement_2Opt
-from instances.Trucks import MercedesBenzAtego
+from instances.Trucks import MercedesBenzAtego, StreetScooterWORKL, VWTransporter, StreetScooterWORK, VWCaddypanelvan, \
+    DouzeV2ECargoBike
 from instances.Utils import Instance, Solution, next_fit_heuristic, compute_total_demand, compute_distances
 
 
@@ -70,7 +71,7 @@ def ouralgorithm(instance: Instance, solution: Solution, function):
     distancesSweep = compute_distances(solution, instance)
     bestIteration = 0
     print(f"Sweep solution: {solution}")
-    for iteration in range(100):  # run our algorithm 100 times
+    for iteration in range(10):  # run our algorithm 10 times
         print(f"New iteration__________{iteration}")
         # START OF DESTRUCTION PHASE
         # Random Removal Operation
@@ -144,19 +145,22 @@ def truckAssigning(solution: Solution, instance: Instance):  # currently hardcod
     # for i in instance.Q:
     #     listOfPayloads.append(i.capacity)
     assignedTrucks = []
+    licencePlate = 000000
     for i in solution:
         check = compute_total_demand(i, instance)
         if 2800 > check > 905:
-            assignedTrucks.append(instance.Q[0])  # or assignedTrucks.append(MercedesBenzAtego()) to create unique vehicles
+            assignedTrucks.append(MercedesBenzAtego(licencePlate))
         elif check > 883:
-            assignedTrucks.append(instance.Q[4])
+            assignedTrucks.append(StreetScooterWORKL(licencePlate))
         elif check > 720:
-            assignedTrucks.append(instance.Q[1])
+            assignedTrucks.append(VWTransporter(licencePlate))
         elif check > 670:
-            assignedTrucks.append(instance.Q[5])
+            assignedTrucks.append(StreetScooterWORK(licencePlate))
         elif check > 100:
-            assignedTrucks.append(instance.Q[2])
+            assignedTrucks.append(VWCaddypanelvan(licencePlate))
         else:
-            assignedTrucks.append(instance.Q[6])
+            assignedTrucks.append(DouzeV2ECargoBike(licencePlate))
+        licencePlate += 1
+
     return assignedTrucks
 # END OF TRUCK ASSIGNING PHASE

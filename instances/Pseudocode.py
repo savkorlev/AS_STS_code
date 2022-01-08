@@ -1,3 +1,5 @@
+
+
 """
 I will use this file to write pseudocode whenever I dont know exactly how to code something
 - Christopher 2022.01.06
@@ -62,8 +64,7 @@ def VehicleSwapOperation(list_of_routes, list_of_initial_vehicles):  # ListOfIni
     while len(sorted_routes) > 0:  # for every route we need to find he cheapest vehicle type
         cheapest_route_cost = 10e10  # to track which vehicle assignment gives the cheapest route
         for av in list_of_available_vehicles:
-            temp_route_cost = routeCost(sorted_routes[0], list_of_available_vehicles[
-                av])  # get the route_cost (transport_cost + penalty cost) for each vehicle type. Start with the most expensive route
+            temp_route_cost = routeCost(sorted_routes[0], list_of_available_vehicles[av])  # get the route_cost (transport_cost + penalty cost) for each vehicle type. Start with the most expensive route
             if temp_route_cost < cheapest_route_cost:
                 cheapest_route_cost = temp_route_cost  # update cheapest route cost
                 bestVehicle = av  # update cheapest vehicle
@@ -116,3 +117,11 @@ def expensiveRemoval(solution, numberOfRemoved) -> list:
 
     listOfRemoved = # get the numberOfRemoved highest costs from the list_of_customer_cost
     return listOfRemoved
+
+
+class Vehicle():
+    def __init__(self, type: str):
+        if type == "VW":
+            self.capacity = 100
+        elif type == "Mers":
+            self.capacity = 500
