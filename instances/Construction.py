@@ -70,7 +70,7 @@ def ouralgorithm(instance: Instance, solution: Solution, function):
     distancesSweep = compute_distances(solution, instance)
     bestIteration = 0
     print(f"Sweep solution: {solution}")
-    for iteration in range(100):  # run our algorithm 10 times
+    for iteration in range(100):  # run our algorithm 100 times
         print(f"New iteration__________{iteration}")
         # START OF DESTRUCTION PHASE
         # Random Removal Operation
@@ -139,7 +139,7 @@ def ouralgorithm(instance: Instance, solution: Solution, function):
     return bestSolution
 
 # START OF TRUCK ASSIGNING PHASE
-def truckAssigning(solution: Solution, instance: Instance):  # Currently hardcoded
+def truckAssigning(solution: Solution, instance: Instance):  # currently hardcoded
     # listOfPayloads = []
     # for i in instance.Q:
     #     listOfPayloads.append(i.capacity)
@@ -147,7 +147,7 @@ def truckAssigning(solution: Solution, instance: Instance):  # Currently hardcod
     for i in solution:
         check = compute_total_demand(i, instance)
         if 2800 > check > 905:
-            assignedTrucks.append(instance.Q[0])  # or assignedTrucks.append(MercedesBenzAtego()) to create a unique vehicles
+            assignedTrucks.append(instance.Q[0])  # or assignedTrucks.append(MercedesBenzAtego()) to create unique vehicles
         elif check > 883:
             assignedTrucks.append(instance.Q[4])
         elif check > 720:

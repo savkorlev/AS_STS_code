@@ -56,10 +56,6 @@ testDimension = 112 # change this to use more or less customers of the data set.
 # test_df_Paris_routes = df_Paris_routes.iloc[:2260, :]               # select elements from D0 to C19 in routes
 # test_df_Paris_nodes = df_Paris_nodes.iloc[:40, :]                   # select elements from D0 to C40 in nodes
 # test_df_Paris_routes = df_Paris_routes.iloc[:4633, :]               # select elements from D0 to C40 in routes
-# test_df_Paris_nodes = df_Paris_nodes.iloc[:40, :]                   # select elements from D0 to C40 in nodes
-# test_df_Paris_routes = df_Paris_routes.iloc[:12768, :]               # select elements from D0 to C40 in routes
-# test_df_Paris_nodes = df_Paris_nodes.iloc[:testDimension, :]                   # select elements from D0 to C40 in nodes
-# test_df_Paris_routes = df_Paris_routes.iloc[:len(df_Paris_routes), :]               # select elements from D0 to C40 in routes
 test_df_Paris_nodes = df_Paris_nodes
 test_df_Paris_routes = df_Paris_routes
 # print(test_df_Paris_nodes)
