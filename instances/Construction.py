@@ -71,7 +71,7 @@ def ouralgorithm(instance: Instance, solution: Solution, function):
     distancesSweep = compute_distances(solution, instance)
     bestIteration = 0
     print(f"Sweep solution: {solution}")
-    for iteration in range(100):  # run our algorithm 10 times
+    for iteration in range(100):  # run our algorithm 100 times
         print(f"New iteration__________{iteration}")
         # START OF DESTRUCTION PHASE
         # Random Removal Operation

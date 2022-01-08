@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="added Christophers local directory">
-      <change beforePath="$PROJECT_DIR$/.idea/AS_STS_code.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/AS_STS_code.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) Small comment in Construction class">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instances/Construction.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Construction.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
@@ -41,11 +39,12 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/instances/Trucks.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/tests/TestConstruction.py" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/instances/LocalSearch.py" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/main.py" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/instances/Construction.py" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/instances/Trucks.py" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/tests/TestConstruction.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../../../Python310/Lib/site-packages/pandas/io/common.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/instances/Utils.py" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProjectId" id="21PNUh1l9QXN6taUlC8LXgOvLDj" />
@@ -96,9 +95,9 @@
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="" />
+      <option name="SDK_HOME" value="C:\Python310\python.exe" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
+      <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
@@ -112,8 +111,8 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.TestConstruction" />
       <item itemvalue="Python.main" />
+      <item itemvalue="Python.TestConstruction" />
     </list>
     <recent_temporary>
       <list>
@@ -208,8 +207,9 @@
       <workItem from="1640806744148" duration="478000" />
       <workItem from="1640884500591" duration="3850000" />
       <workItem from="1641222227710" duration="4541000" />
-      <workItem from="1641299691022" duration="10081000" />
-      <workItem from="1641385173749" duration="4940000" />
+      <workItem from="1641299691022" duration="10438000" />
+      <workItem from="1641391510370" duration="1654000" />
+      <workItem from="1641639752595" duration="1364000" />
     </task>
     <task id="LOCAL-00001" summary="Let's see">
       <created>1637839022626</created>
@@ -428,7 +428,14 @@
       <option name="project" value="LOCAL" />
       <updated>1641308823541</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="1) Small comment in Construction class">
+      <created>1641310362539</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1641310362539</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -485,10 +492,11 @@
     <MESSAGE value="1) Changed the Trucks classes to represent the actual Trucks we have&#10;2) Now we're passing a list of Trucks to create an instance&#10;3) Added the truckAssigning function that assigns appropriate trucks to the respective routes&#10;4) Tried to add the feasibility check function (to Utils), but it doesn't work now for some reason, so I reverted the changes" />
     <MESSAGE value="1) Switched to original data from the test data&#10;2) Made the algorithm run 100 times&#10;3) Inserted acceptance check within ouralgorithm&#10;4) Assigning properties' values inside class declarations" />
     <MESSAGE value="1) Utils 900 is a made-up number for now (in sweep)&#10;2) Added costs (currently per km in Paris) to Trucks" />
-    <option name="LAST_COMMIT_MESSAGE" value="1) Utils 900 is a made-up number for now (in sweep)&#10;2) Added costs (currently per km in Paris) to Trucks" />
+    <MESSAGE value="1) Small comment in Construction class" />
+    <option name="LAST_COMMIT_MESSAGE" value="1) Small comment in Construction class" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/main_py$TestConstruction.coverage" NAME="TestConstruction Coverage Results" MODIFIED="1640299941018" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1641401587899" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1641640331873" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
