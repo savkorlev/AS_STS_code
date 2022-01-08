@@ -107,7 +107,6 @@ def is_feasible(solution: Solution, instance: Instance) -> bool:
     """
     checks whether a solution (list of routes) is feasible, i.e.,
     all customers are visited exactly once and the maximum load capacity Q is never exceeded
-
     :param solution: list of routes
     :param instance: corresponding instance
     :return: True if feasible, False otherwise

@@ -1,18 +1,18 @@
 import pandas as pd
 
-from instances.Construction import LNS, truckAssigning, sweep_algorithm, algorithm
+from instances.Construction import sort_customers_by_sweep, ouralgorithm, truckAssigning
 from instances.LocalSearch import find_first_improvement_2Opt, find_first_improvement_relocate, \
-    find_first_improvement_exchange, hillclimbing, find_best_improvement_2Opt
+    find_first_improvement_exchange
 from instances.Trucks import MercedesBenzAtego, VWTransporter, VWCaddypanelvan, DaimlerFUSOeCanter, \
     StreetScooterWORKL, StreetScooterWORK, DouzeV2ECargoBike
-from instances.Utils import Instance, next_fit_heuristic_naive, compute_distances, is_feasible, \
+from instances.Utils import Instance, next_fit_heuristic_naive, compute_distances, next_fit_heuristic, is_feasible, \
     compute_total_demand
 
-import os
+# import os
 # os.chdir('C:/Users/Евгений/Desktop/TUM/WS 2021-2022/Advanced Seminar Sustainable Transportation Systems/AS_STS_code')
 # os.chdir('C:/Users/Maximilian Sammer/PycharmProjects/AS_STS_code/')
 # os.chdir('/Users/tuminyu/Desktop/Cory/TUM Master/Advanced Seminar/Code/Project')
-os.chdir('C:/Users/Christopher/PycharmProjects/AS_STS_code/')
+# os.chdir('C:/Users/Christopher/PycharmProjects/AS_STS_code/')
 
 ### may come in handy later on:
 # from src import TSPLibReader
@@ -56,6 +56,10 @@ testDimension = 112 # change this to use more or less customers of the data set.
 # test_df_Paris_routes = df_Paris_routes.iloc[:2260, :]               # select elements from D0 to C19 in routes
 # test_df_Paris_nodes = df_Paris_nodes.iloc[:40, :]                   # select elements from D0 to C40 in nodes
 # test_df_Paris_routes = df_Paris_routes.iloc[:4633, :]               # select elements from D0 to C40 in routes
+# test_df_Paris_nodes = df_Paris_nodes.iloc[:40, :]                   # select elements from D0 to C40 in nodes
+# test_df_Paris_routes = df_Paris_routes.iloc[:12768, :]               # select elements from D0 to C40 in routes
+# test_df_Paris_nodes = df_Paris_nodes.iloc[:testDimension, :]                   # select elements from D0 to C40 in nodes
+# test_df_Paris_routes = df_Paris_routes.iloc[:len(df_Paris_routes), :]               # select elements from D0 to C40 in routes
 test_df_Paris_nodes = df_Paris_nodes
 test_df_Paris_routes = df_Paris_routes
 # print(test_df_Paris_nodes)
@@ -86,7 +90,7 @@ solution = next_fit_heuristic_naive(ourInstance)
 print(f"Next-Fit-Heuristic | #Vehicles: {len(solution)}, distance: {compute_distances(solution, ourInstance)}")
 
 # 6. SWEEP HEURISTIC
-solutionSweep = sweep_algorithm(ourInstance)
+solutionSweep = next_fit_heuristic(sort_customers_by_sweep(ourInstance), ourInstance)
 print(f"Sweep Heuristic | #Vehicles: {len(solutionSweep)}, distance: {compute_distances(solutionSweep, ourInstance)}, is_feasible: {is_feasible(solutionSweep, ourInstance)}")
 assignedTrucksSweep = truckAssigning(solutionSweep, ourInstance)
 print(assignedTrucksSweep[0])
@@ -94,17 +98,8 @@ print(assignedTrucksSweep[1])
 print(assignedTrucksSweep[2])
 print(assignedTrucksSweep[3])
 
-
-# 7. LNS (DESTRUCTION + INSERTION + OPTIMIZATION + ACCEPTANCE)
-# 7. LNS (DESTRUCTION + INSERTION + OPTIMIZATION)
-solutionOur = LNS(ourInstance, solutionSweep, find_first_improvement_2Opt)
-lenOfSolutionOur = len(solutionOur)
-for i in range(lenOfSolutionOur):
-    print(f"Sum of demands of a {i} route: " + str(compute_total_demand(solutionOur[i], ourInstance)))
-print(compute_distances(solutionOur, ourInstance))
-
-# 8. LNS+SA (DESTRUCTION + INSERTION + OPTIMIZATION + ACCEPTANCE)
-solutionOur = algorithm(ourInstance, init_temp=0.5, cooling=0.9, stop=5, function=find_best_improvement_2Opt)
+# 7. OUR ALGORITHM (DESTRUCTION + INSERTION + OPTIMIZATION + ACCEPTANCE)
+solutionOur = ouralgorithm(ourInstance, solutionSweep, find_first_improvement_2Opt)
 lenOfSolutionOur = len(solutionOur)
 for i in range(lenOfSolutionOur):
     print(f"Sum of demands of a {i} route: " + str(compute_total_demand(solutionOur[i], ourInstance)))

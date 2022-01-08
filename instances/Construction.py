@@ -32,7 +32,6 @@ def sort_customers_by_sweep(instance: Instance) -> List[int]:
     """
     sorts the customer visits by their angle in a polar coordinate system with the depot at its center.
     To break ties, the distance from the depot is used, then the id of the node itself (which is unique).
-
     :param instance: corresponding instance
     :return: list of ordered customers sorted by sweeping
     """
@@ -66,19 +65,17 @@ def sort_customers_by_sweep(instance: Instance) -> List[int]:
     return sorted_customers
 
 
-def LNS(instance: Instance, solution: Solution, function):
+def ouralgorithm(instance: Instance, solution: Solution, function):
     bestDistance = 10e10  # very big number
     distancesSweep = compute_distances(solution, instance)
     bestIteration = 0
     print(f"Sweep solution: {solution}")
-    for iteration in range(100):  # run our algorithm 100 times
+    for iteration in range(100):  # run our algorithm 10 times
         print(f"New iteration__________{iteration}")
         # START OF DESTRUCTION PHASE
         # Random Removal Operation
-        numberOfRemoved = random.randint(round(0.1 * (len(instance.q) - 1)),
-                                         round(0.5 * (len(instance.q) - 1)))  # generate number customers to be removed
-        listOfRemoved = random.sample(range(1, len(instance.q)),
-                                      numberOfRemoved)  # generate customers to be removed, starting from 1 so depo isn't getting deleted
+        numberOfRemoved = random.randint(round(0.1 * (len(instance.q) - 1)), round(0.5 * (len(instance.q) - 1)))  # generate number customers to be removed
+        listOfRemoved = random.sample(range(1, len(instance.q)), numberOfRemoved)  # generate customers to be removed, starting from 1 so depo isn't getting deleted
         listAfterDestruction = []
         for i in range(len(solution)):
             element = [e for e in solution[i] if e not in listOfRemoved]
@@ -103,10 +100,7 @@ def LNS(instance: Instance, solution: Solution, function):
                         key1Positive = (listAfterDestruction[i][j], listOfRemoved[customerIndex])
                         key2Positive = (listOfRemoved[customerIndex], listAfterDestruction[i][j + 1])
                         insertionDistance = instance.d[key1Positive] + instance.d[key2Positive] - instance.d[keyNegative]  # calculation of insertion distance
-                        if (insertionDistance < bestInsertionDistance) & (
-                            compute_total_demand(listAfterDestruction[i], instance) + instance.q[
-                            listOfRemoved[customerIndex]] < max(
-                            listOfPayloads)):  # & feasibilityCheck(instance, listAfterDestruction, listOfRemoved, customerIndex, i)
+                        if (insertionDistance < bestInsertionDistance) & (compute_total_demand(listAfterDestruction[i], instance) + instance.q[listOfRemoved[customerIndex]] < max(listOfPayloads)):  # & feasibilityCheck(instance, listAfterDestruction, listOfRemoved, customerIndex, i)
                             bestInsertionDistance = insertionDistance
                             bestPosition = (i, j + 1)
                             bestCustomer = listOfRemoved[customerIndex]
@@ -124,7 +118,6 @@ def LNS(instance: Instance, solution: Solution, function):
         listAfterOptimization = hillclimbing(listAfterDestruction, instance, function)
         print(f"Routes after optimization: {listAfterOptimization}")
         # END OF OPTIMIZATION PHASE. Result - listAfterDestruction
-        #return listAfterOptimization
 
         # START OF ACCEPTANCE PHASE
         distancesOurAlgorythm = compute_distances(listAfterOptimization, instance)
@@ -137,13 +130,13 @@ def LNS(instance: Instance, solution: Solution, function):
         print(f"The best iteration: {bestIteration}")
         # END OF ACCEPTANCE PHASE
     if distancesSweep < bestDistance:
-        print(f"Sweep Heuristic distance: {distancesSweep}, LNS distance: {bestDistance}. Sweep is better")
+        print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {bestDistance}. Sweep is better")
     elif distancesSweep == bestDistance:
-        print(f"Sweep Heuristic distance: {distancesSweep}, LNS distance: {bestDistance}. Algorithms are equal")
+        print(
+            f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {bestDistance}. Algorithms are equal")
     else:
-        print(f"Sweep Heuristic distance: {distancesSweep}, LNS distance: {bestDistance}. LNS is better")
+        print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {bestDistance}. ourAlgorithm is better")
     return bestSolution
-
 
 # START OF TRUCK ASSIGNING PHASE
 def truckAssigning(solution: Solution, instance: Instance):  # Currently hardcoded
@@ -166,37 +159,4 @@ def truckAssigning(solution: Solution, instance: Instance):  # Currently hardcod
         else:
             assignedTrucks.append(instance.Q[6])
     return assignedTrucks
-
-
 # END OF TRUCK ASSIGNING PHASE
-
-def SimulatedAnnealing(instance: Instance, cur_sol: Solution, new_sol: Solution, temp: float,
-                       cooling: float) -> Solution:
-    random.seed(2021)
-    curcost = compute_distances(cur_sol, instance)
-    newcost = compute_distances(new_sol, instance)
-    accept = False
-    if newcost < curcost or (random.random() < math.exp((curcost - newcost) / temp)):
-        accept = True
-    temperature = cooling * temp
-    return accept, temperature
-
-
-def algorithm(instance: Instance, init_temp: float, cooling: float, stop: int, function):
-    init_sol = sweep_algorithm(instance)
-    cur_sol = init_sol
-    cur_cost = compute_distances(cur_sol, instance)
-    best_sol = cur_sol
-    best_cost = cur_cost
-    temperature = init_temp * cur_cost
-    for _ in range(stop):
-        new_sol = LNS(instance, cur_sol, function)  # should we have iteration inside LNS?
-        new_cost = compute_distances(new_sol, instance)
-        # should we filter which new_sol to optimize?
-        accept, temperature = SimulatedAnnealing(instance, cur_sol, new_sol, temperature, cooling)
-        if accept:
-            cur_sol = new_sol
-        if new_cost < best_cost:
-            best_cost = new_cost
-            best_sol = new_sol
-    return best_sol

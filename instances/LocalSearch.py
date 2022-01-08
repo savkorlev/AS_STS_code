@@ -40,10 +40,8 @@ def find_first_improvement_2Opt(solution: Solution, instance: Instance) -> bool:
     search for the first improving 2-opt move.
     A 2-opt consist of removing two edges and reconnecting the nodes differently but feasible way.
     In other terms, a consecutive subset of visits is reversed.
-
     Example: [0,1,2,3,4,5,0] => [0,1,4,3,2,5,0]
         A 2-opt could be removing edges between 1-2 and 4-5, and connecting 1-4 and 2-5.
-
     :param solution: list of routes to improve
     :param instance: corresponding instance
     :return: `True` if an improvement was found, otherwise `False`.
@@ -72,10 +70,8 @@ def find_first_improvement_2Opt(solution: Solution, instance: Instance) -> bool:
 def find_first_improvement_relocate(solution: Solution, instance: Instance) -> bool:
     """
     search for the first improving relocate
-
     Example: [[0,1,2,0],[0,3,4,5,0]] => [[0,1,3,2,0],[0,4,5,0]]
         A relocate move could be to move customer 3 between 1 and 2.
-
     :param solution: list of routes to improve
     :param instance: corresponding instance
     :return: `True` if an improvement was found, otherwise `False`.
@@ -115,10 +111,8 @@ def find_first_improvement_relocate(solution: Solution, instance: Instance) -> b
 def find_first_improvement_exchange(solution: Solution, instance: Instance) -> bool:
     """
     search for the first improving exchange
-
     Example: [[0,1,2,0],[0,3,4,5,0]] => [[0,4,2,0],[0,3,1,5,0]]
         A exchange move could be to swap customer 4 between 1.
-
     :param solution: list of routes to improve
     :param instance: corresponding instance
     :return: `True` if an improvement was found, otherwise `False`.
@@ -174,33 +168,4 @@ def find_first_improvement_exchange(solution: Solution, instance: Instance) -> b
                         solution[r1_index] = new_r1
                         solution[r2_index] = new_r2
                         return True
-    return False
-
-def find_best_improvement_2Opt(solution: Solution, instance: Instance) -> bool:
-    """
-    search for the best improving 2-opt move.
-
-    :param solution: list of routes to improve
-    :param instance: corresponding instance
-    :return: `True` if an improvement was found, otherwise `False`.
-    """
-    # https://github.com/saper0/tsp-heuristics/blob/master/ls_2opt.py
-
-    for r_index, route in enumerate(solution): # List[Route]
-        best_2opt = None
-        best_distance = compute_distance(route, instance)
-        for i in range(1, len(route)-2): # i: the first position to be switched (the last index should -2)
-            for j in range(i+1, len(route)-1): # j: the second position to be switched (the last index should -1)
-                new_route = route[:i] + list(reversed(route[i:(j+1)])) + route[(j+1):]
-                new_distance = compute_distance(new_route, instance)
-
-                change = new_distance - best_distance
-
-                if change < -0.000001:
-                    # improvement
-                    best_distance = new_distance
-                    best_2opt = (i, j)
-        if best_2opt is not None:
-            solution[r_index] = route[:best_2opt[0]] + list(reversed(route[best_2opt[0]:(best_2opt[1]+1)])) + route[(best_2opt[1]+1):]
-            return True
     return False
