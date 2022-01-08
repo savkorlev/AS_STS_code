@@ -46,3 +46,4 @@ class DouzeV2ECargoBike:
         self.capacity = 100
         self.costs_km = 0.05
         self.plateNum = plateNum
+
