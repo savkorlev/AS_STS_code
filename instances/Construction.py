@@ -3,9 +3,10 @@ import random
 from typing import List
 
 from instances.LocalSearch import hillclimbing, find_first_improvement_2Opt
-from instances.Trucks import MercedesBenzAtego, StreetScooterWORKL, VWTransporter, StreetScooterWORK, VWCaddypanelvan, \
-    DouzeV2ECargoBike
-from instances.Utils import Instance, Solution, next_fit_heuristic, compute_total_demand, compute_distances
+from instances.Route import RouteObject
+from instances.Trucks import Vehicle
+from instances.Utils import Instance, Solution, next_fit_heuristic, compute_total_demand, compute_distances, routeCost, \
+    temporaryRouteCost
 
 
 def sweep_algorithm(instance: Instance) -> Solution:
@@ -66,11 +67,18 @@ def sort_customers_by_sweep(instance: Instance) -> List[int]:
     return sorted_customers
 
 
-def ouralgorithm(instance: Instance, solution: Solution, function):
+def ouralgorithm(instance: Instance, listOfRoutes: List[RouteObject], function):
+    listOfCustomerList = list(map(lambda x: x.customer_list, listOfRoutes))
     bestDistance = 10e10  # very big number
-    distancesSweep = compute_distances(solution, instance)
+    distancesSweep = compute_distances(listOfCustomerList, instance)
     bestIteration = 0
-    print(f"Sweep solution: {solution}")
+    print(f"Sweep solution: {listOfCustomerList}")
+
+    print(list(map(lambda x: x.current_cost, listOfRoutes)))  # printing out costs of the routes after sweep but before costs are assigned [0,0,0,0...]
+    for r in listOfRoutes:
+        r.current_cost = routeCost(r, instance)
+    print(list(map(lambda x: x.current_cost, listOfRoutes)))  # printing out costs of the routes after sweep after costs are assigned
+
     for iteration in range(10):  # run our algorithm 10 times
         print(f"New iteration__________{iteration}")
         # START OF DESTRUCTION PHASE
@@ -78,42 +86,86 @@ def ouralgorithm(instance: Instance, solution: Solution, function):
         numberOfRemoved = random.randint(round(0.1 * (len(instance.q) - 1)), round(0.5 * (len(instance.q) - 1)))  # generate number customers to be removed
         listOfRemoved = random.sample(range(1, len(instance.q)), numberOfRemoved)  # generate customers to be removed, starting from 1 so depo isn't getting deleted
         listAfterDestruction = []
-        for i in range(len(solution)):
-            element = [e for e in solution[i] if e not in listOfRemoved]
+        for i in range(len(listOfCustomerList)):
+            element = [e for e in listOfCustomerList[i] if e not in listOfRemoved]
             listAfterDestruction.append(element)
         print(f"Customers to be removed: {listOfRemoved}")
         print(f"Routes after destruction: {listAfterDestruction}")
+
+        # positionInListAfterDestruction = 0
+        # for l in listOfRoutes:
+        #     l.customer_list = listAfterDestruction[positionInListAfterDestruction]
+        #     positionInListAfterDestruction += 1
+        for i in range(len(listAfterDestruction)):
+            listOfRoutes[i].customer_list = listAfterDestruction[i]
+        print(f"Routes objects after destruction: {list(map(lambda x: x.customer_list, listOfRoutes))}")
         # END OF DESTRUCTION PHASE. Result - listAfterDestruction and listOfRemoved
 
-        # START OF INSERTION PHASE
-        # Cheapest Global Insertion Operation
-        listOfPayloads = []
-        for i in instance.Q:
-            listOfPayloads.append(i.capacity)
+        # # START OF INSERTION PHASE
+        # # Cheapest Global Insertion Operation
+        # listOfPayloads = []
+        # for i in instance.Q:
+        #     listOfPayloads.append(i.payload_kg)
+        # while len(listOfRemoved) > 0:
+        #     bestInsertionDistance = 10e10  # very big number
+        #     bestPosition = 0
+        #     bestCustomer = 0
+        #     for customerIndex in range(len(listOfRemoved)):  # iterating over list of removed customers
+        #         for i in range(len(listAfterDestruction)):  # iterating over routes in listAfterDestruction
+        #             for j in range(len(listAfterDestruction[i]) - 1):  # iterating over positions in a route
+        #                 keyNegative = (listAfterDestruction[i][j], listAfterDestruction[i][j + 1])
+        #                 key1Positive = (listAfterDestruction[i][j], listOfRemoved[customerIndex])
+        #                 key2Positive = (listOfRemoved[customerIndex], listAfterDestruction[i][j + 1])
+        #                 insertionDistance = instance.d[key1Positive] + instance.d[key2Positive] - instance.d[keyNegative]  # calculation of insertion distance
+        #                 if (insertionDistance < bestInsertionDistance) & (compute_total_demand(listAfterDestruction[i], instance) + instance.q[listOfRemoved[customerIndex]] < max(listOfPayloads)):  # & feasibilityCheck(instance, listAfterDestruction, listOfRemoved, customerIndex, i)
+        #                     bestInsertionDistance = insertionDistance
+        #                     bestPosition = (i, j + 1)
+        #                     bestCustomer = listOfRemoved[customerIndex]
+        #     if bestInsertionDistance != 10e10:
+        #         listAfterDestruction[bestPosition[0]].insert(bestPosition[1], bestCustomer)  # insert bestCustomer to the best feasible route for them
+        #     else:
+        #         bestCustomer = listOfRemoved[0]  # if there are no feasible routes then open a new route and place 1st customer there
+        #         listToAppend = [0, bestCustomer, 0]
+        #         listAfterDestruction.append(listToAppend)
+        #     listOfRemoved.remove(bestCustomer)  # delete current bestCustomer from a list of removed customers
+        # print(f"Routes after insertion: {listAfterDestruction}")
+        # # END OF INSERTION PHASE
+
+        # START OF THE COST INSERTION PHASE
         while len(listOfRemoved) > 0:
-            bestInsertionDistance = 10e10  # very big number
-            bestPosition = 0
+
+            bestInsertionCost = 10e10  # very big number
+            bestPosition = (0, 0)
             bestCustomer = 0
+
+            for r in listOfRoutes:
+                r.current_cost = routeCost(r, instance)
+            # print(list(map(lambda x: x.current_cost, listOfRoutes)))  # printing out costs of the routes after i-th loop of the insertion phase
+
             for customerIndex in range(len(listOfRemoved)):  # iterating over list of removed customers
-                for i in range(len(listAfterDestruction)):  # iterating over routes in listAfterDestruction
-                    for j in range(len(listAfterDestruction[i]) - 1):  # iterating over positions in a route
-                        keyNegative = (listAfterDestruction[i][j], listAfterDestruction[i][j + 1])
-                        key1Positive = (listAfterDestruction[i][j], listOfRemoved[customerIndex])
-                        key2Positive = (listOfRemoved[customerIndex], listAfterDestruction[i][j + 1])
-                        insertionDistance = instance.d[key1Positive] + instance.d[key2Positive] - instance.d[keyNegative]  # calculation of insertion distance
-                        if (insertionDistance < bestInsertionDistance) & (compute_total_demand(listAfterDestruction[i], instance) + instance.q[listOfRemoved[customerIndex]] < max(listOfPayloads)):  # & feasibilityCheck(instance, listAfterDestruction, listOfRemoved, customerIndex, i)
-                            bestInsertionDistance = insertionDistance
+                for i in listOfRoutes:  # iterating over routes in listOfRoutes
+                    for j in range(len(i.customer_list) - 1):  # iterating over positions in a route
+                        costWithout = i.current_cost
+                        # everything is ok until this line
+                        temporaryCustomerList = i.customer_list.copy()
+                        temporaryCustomerList.insert(j + 1, listOfRemoved[customerIndex])
+                        costWith = temporaryRouteCost(temporaryCustomerList, i.vehicle, instance)
+                        insertionCost = costWith - costWithout
+                        if (insertionCost < bestInsertionCost) & (compute_total_demand(i.customer_list, instance) + instance.q[listOfRemoved[customerIndex]] < i.vehicle.payload_kg): # & feasibilityCheck(instance, listAfterDestruction, listOfRemoved, customerIndex, i)
+                            bestInsertionCost = insertionCost
                             bestPosition = (i, j + 1)
                             bestCustomer = listOfRemoved[customerIndex]
-            if bestInsertionDistance != 10e10:
-                listAfterDestruction[bestPosition[0]].insert(bestPosition[1], bestCustomer)  # insert bestCustomer to the best feasible route for them
+
+            if bestInsertionCost != 10e10:
+                # listAfterDestruction[bestPosition[0]].insert(bestPosition[1], bestCustomer)  # insert bestCustomer to the best feasible route for them
+                bestPosition[0].customer_list.insert(bestPosition[1], bestCustomer)
             else:
                 bestCustomer = listOfRemoved[0]  # if there are no feasible routes then open a new route and place 1st customer there
                 listToAppend = [0, bestCustomer, 0]
-                listAfterDestruction.append(listToAppend)
+                listOfRoutes.append(RouteObject(listToAppend, Vehicle("MercedesBenzAtego", "Paris", "999999")))
             listOfRemoved.remove(bestCustomer)  # delete current bestCustomer from a list of removed customers
-        print(f"Routes after insertion: {listAfterDestruction}")
-        # END OF INSERTION PHASE
+        # END OF THE COST INSERTION PHASE
+
 
         # START OF OPTIMIZATION PHASE
         listAfterOptimization = hillclimbing(listAfterDestruction, instance, function)
@@ -139,28 +191,28 @@ def ouralgorithm(instance: Instance, solution: Solution, function):
         print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {bestDistance}. ourAlgorithm is better")
     return bestSolution
 
-# START OF TRUCK ASSIGNING PHASE
-def truckAssigning(solution: Solution, instance: Instance):  # currently hardcoded
-    # listOfPayloads = []
-    # for i in instance.Q:
-    #     listOfPayloads.append(i.capacity)
-    assignedTrucks = []
-    licencePlate = 000000
-    for i in solution:
-        check = compute_total_demand(i, instance)
-        if 2800 > check > 905:
-            assignedTrucks.append(MercedesBenzAtego(licencePlate))
-        elif check > 883:
-            assignedTrucks.append(StreetScooterWORKL(licencePlate))
-        elif check > 720:
-            assignedTrucks.append(VWTransporter(licencePlate))
-        elif check > 670:
-            assignedTrucks.append(StreetScooterWORK(licencePlate))
-        elif check > 100:
-            assignedTrucks.append(VWCaddypanelvan(licencePlate))
-        else:
-            assignedTrucks.append(DouzeV2ECargoBike(licencePlate))
-        licencePlate += 1
-
-    return assignedTrucks
-# END OF TRUCK ASSIGNING PHASE
+# # START OF TRUCK ASSIGNING PHASE
+# def truckAssigning(solution: Solution, instance: Instance):  # currently hardcoded
+#     # listOfPayloads = []
+#     # for i in instance.Q:
+#     #     listOfPayloads.append(i.capacity)
+#     assignedTrucks = []
+#     licencePlate = 000000
+#     for i in solution:
+#         check = compute_total_demand(i, instance)
+#         if 2800 > check > 905:
+#             assignedTrucks.append(MercedesBenzAtego(licencePlate))
+#         elif check > 883:
+#             assignedTrucks.append(StreetScooterWORKL(licencePlate))
+#         elif check > 720:
+#             assignedTrucks.append(VWTransporter(licencePlate))
+#         elif check > 670:
+#             assignedTrucks.append(StreetScooterWORK(licencePlate))
+#         elif check > 100:
+#             assignedTrucks.append(VWCaddypanelvan(licencePlate))
+#         else:
+#             assignedTrucks.append(DouzeV2ECargoBike(licencePlate))
+#         licencePlate += 1
+#
+#     return assignedTrucks
+# # END OF TRUCK ASSIGNING PHASE

@@ -1,6 +1,8 @@
 from typing import List, Dict, Tuple
 
 from instances import Trucks
+from instances.Route import RouteObject
+from instances.Trucks import Vehicle
 
 
 class Instance:
@@ -31,7 +33,6 @@ class Instance:
         self.d = d
         self.coordinates = coordinates
 
-
 Route = List[int]
 Solution = List[Route]
 
@@ -48,7 +49,7 @@ def next_fit_heuristic(customer_list: List[int], instance: Instance) -> Solution
 
     listOfPayloads = []
     for i in instance.Q:
-        listOfPayloads.append(i.capacity)
+        listOfPayloads.append(i.payload_kg)
 
     for c in customer_list:
         demand = instance.q[c]
@@ -79,6 +80,14 @@ def compute_distances(solution: Solution, instance: Instance) -> float:
 
     for route in solution:
         sum_distances += compute_distance(route, instance)
+
+    return sum_distances
+
+def compute_distances_objects(solution: Solution, instance: Instance) -> float:
+    sum_distances = 0.0
+
+    for route in solution:
+        sum_distances += compute_distance(route.customer_list, instance)
 
     return sum_distances
 
@@ -114,7 +123,7 @@ def is_feasible(solution: Solution, instance: Instance) -> bool:
 
     listOfPayloads = []
     for i in instance.Q:
-        listOfPayloads.append(i.capacity)
+        listOfPayloads.append(i.payload_kg)
 
     for route in solution:
         load = compute_total_demand(route, instance)
@@ -147,6 +156,10 @@ def is_feasible(solution: Solution, instance: Instance) -> bool:
 #     return False
 # (compute_total_demand(listAfterDestruction[i], instance) + instance.q[listOfRemoved[customerIndex]] < max(listOfPayloads)):  # checking both conditions, first - lowest distance, second - total demand after insertion must be lower than our truck's capacity # add feasibility check
 
-def routeCost(vehicleType, route: Route, instance: Instance):
-    cost = compute_distance(route, instance) * vehicleType.costs_km
+def routeCost(routeObject: RouteObject, instance: Instance):
+    cost = compute_distance(routeObject.customer_list, instance) * routeObject.vehicle.costs_km
+    return cost
+
+def temporaryRouteCost(route: Route, vehicle: Vehicle, instance: Instance):
+    cost = compute_distance(route, instance) * vehicle.costs_km
     return cost

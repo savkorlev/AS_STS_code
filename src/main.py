@@ -1,10 +1,10 @@
 import pandas as pd
 
-from instances.Construction import sort_customers_by_sweep, ouralgorithm, truckAssigning
+from instances.Construction import sort_customers_by_sweep, ouralgorithm
 from instances.LocalSearch import find_first_improvement_2Opt, find_first_improvement_relocate, \
     find_first_improvement_exchange
-from instances.Trucks import MercedesBenzAtego, VWTransporter, VWCaddypanelvan, DaimlerFUSOeCanter, \
-    StreetScooterWORKL, StreetScooterWORK, DouzeV2ECargoBike
+from instances.Route import RouteObject
+from instances.Trucks import Vehicle
 from instances.Utils import Instance, next_fit_heuristic_naive, compute_distances, next_fit_heuristic, is_feasible, \
     compute_total_demand
 
@@ -40,24 +40,22 @@ df_Shanghai_routes = pd.read_csv("data/Shanghai.routes", sep=' ')
 # print(df_NewYork_1_nodes.iloc[2, 2])  #select the third row and the third column
 
 # 2. CREATING OUR TRUCKS
-truck1 = MercedesBenzAtego(000000)
-truck2 = VWTransporter(000000)
-truck3 = VWCaddypanelvan(000000)
-truck4 = DaimlerFUSOeCanter(000000)
-truck5 = StreetScooterWORKL(000000)
-truck6 = StreetScooterWORK(000000)
-truck7 = DouzeV2ECargoBike(000000)
-listOfTrucks = [truck1, truck2, truck3, truck4, truck5, truck6, truck7]
+truck1 = Vehicle("MercedesBenzAtego", "Paris", "000000")
+truck2 = Vehicle("VWTransporter", "Paris", "000001")
+truck3 = Vehicle("DouzeV2ECargoBike", "Paris", "000002")
+listOfInitialVehicles = [truck1, truck2, truck3]
+
+print(list(map(lambda x: x.payload_kg, listOfInitialVehicles)))  # MAP THINGY
 
 # 3. CREATING TEST DATASET AND ATTRIBUTES OF FUTURE INSTANCE
-testDimension = 112  # change this to use more or less customers of the data set. Max for Paris is 112. Also need to change the iloc for the nodes file
+testDimension = 20  # change this to use more or less customers of the data set. Max for Paris is 112. Also need to change the iloc for the nodes file
 
-# test_df_Paris_nodes = df_Paris_nodes.iloc[:20, :]                   # select elements from D0 to C19 in nodes
-# test_df_Paris_routes = df_Paris_routes.iloc[:2260, :]               # select elements from D0 to C19 in routes
+test_df_Paris_nodes = df_Paris_nodes.iloc[:20, :]                   # select elements from D0 to C19 in nodes
+test_df_Paris_routes = df_Paris_routes.iloc[:2260, :]               # select elements from D0 to C19 in routes
 # test_df_Paris_nodes = df_Paris_nodes.iloc[:40, :]                   # select elements from D0 to C40 in nodes
 # test_df_Paris_routes = df_Paris_routes.iloc[:4633, :]               # select elements from D0 to C40 in routes
-test_df_Paris_nodes = df_Paris_nodes
-test_df_Paris_routes = df_Paris_routes
+# test_df_Paris_nodes = df_Paris_nodes
+# test_df_Paris_routes = df_Paris_routes
 # print(test_df_Paris_nodes)
 # print(test_df_Paris_routes)
 
@@ -76,7 +74,7 @@ for row, content in test_df_Paris_nodes.iterrows():
     coordinates.append(coordinate)
 
 # 4. CREATING INSTANCE
-ourInstance = Instance(testDimension, listOfTrucks, testDemandParis, testParisDistances, coordinates)
+ourInstance = Instance(testDimension, listOfInitialVehicles, testDemandParis, testParisDistances, coordinates)
 print(coordinates)
 
 # 5. SIMPLE SOLUTION
@@ -88,22 +86,29 @@ print(f"Next-Fit-Heuristic | #Vehicles: {len(solution)}, distance: {compute_dist
 # 6. SWEEP HEURISTIC
 solutionSweep = next_fit_heuristic(sort_customers_by_sweep(ourInstance), ourInstance)
 print(f"Sweep Heuristic | #Vehicles: {len(solutionSweep)}, distance: {compute_distances(solutionSweep, ourInstance)}, is_feasible: {is_feasible(solutionSweep, ourInstance)}")
-assignedTrucksSweep = truckAssigning(solutionSweep, ourInstance)
-print(assignedTrucksSweep[0])
-print(assignedTrucksSweep[1])
-print(assignedTrucksSweep[2])
-print(assignedTrucksSweep[3])
+# assignedTrucksSweep = truckAssigning(solutionSweep, ourInstance)
+# print(assignedTrucksSweep[0])
+# print(assignedTrucksSweep[1])
+# print(assignedTrucksSweep[2])
+# print(assignedTrucksSweep[3])
+
+# 7 CREATING ROUTE OBJECTS
+initialListOfRoutes = []
+for i in solutionSweep:
+    initialListOfRoutes.append(RouteObject(i, truck1))
+print(initialListOfRoutes)
+
 
 # 7. OUR ALGORITHM (DESTRUCTION + INSERTION + OPTIMIZATION + ACCEPTANCE)
-solutionOur = ouralgorithm(ourInstance, solutionSweep, find_first_improvement_2Opt)
+solutionOur = ouralgorithm(ourInstance, initialListOfRoutes, find_first_improvement_2Opt)
 lenOfSolutionOur = len(solutionOur)
 for i in range(lenOfSolutionOur):
     print(f"Sum of demands of a {i} route: " + str(compute_total_demand(solutionOur[i], ourInstance)))
 print(compute_distances(solutionOur, ourInstance))
-
-# 8. TRUCK ASSIGNING
-assignedTrucksOurAlgorithm = truckAssigning(solutionOur, ourInstance)
-print(assignedTrucksOurAlgorithm[0])
-print(assignedTrucksOurAlgorithm[1])
-print(assignedTrucksOurAlgorithm[2])
-print(assignedTrucksOurAlgorithm[3])
+#
+# # 8. TRUCK ASSIGNING
+# assignedTrucksOurAlgorithm = truckAssigning(solutionOur, ourInstance)
+# print(assignedTrucksOurAlgorithm[0])
+# print(assignedTrucksOurAlgorithm[1])
+# print(assignedTrucksOurAlgorithm[2])
+# print(assignedTrucksOurAlgorithm[3])
