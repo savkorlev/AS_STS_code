@@ -3,6 +3,7 @@ import random
 from typing import List
 
 from instances.LocalSearch import hillclimbing, find_first_improvement_2Opt
+from instances.Plot import plotTSP
 from instances.Route import RouteObject
 from instances.Trucks import Vehicle
 from instances.Utils import Instance, Solution, next_fit_heuristic, compute_total_demand, compute_distances, routeCost, \
@@ -67,7 +68,7 @@ def sort_customers_by_sweep(instance: Instance) -> List[int]:
     return sorted_customers
 
 
-def ouralgorithm(instance: Instance, listOfRoutes: List[RouteObject], function):
+def ouralgorithm(instance: Instance, listOfRoutes: List[RouteObject], function, coordinates_int: List):
     listOfCustomerList_sweep = list(map(lambda x: x.customer_list, listOfRoutes))
     distancesSweep = compute_distances(listOfCustomerList_sweep, instance)
     bestDistance = distancesSweep
@@ -81,11 +82,11 @@ def ouralgorithm(instance: Instance, listOfRoutes: List[RouteObject], function):
         r.current_cost = routeCost(r, instance)
     print(list(map(lambda x: x.current_cost, listOfRoutes)))  # printing out costs of the routes after sweep after costs are assigned
 
-    """START OF THE BIG BAD LOOP
+    """START OF THE LOOP
     ------------------------------------------------------------------------------------------------------------------
     ------------------------------------------------------------------------------------------------------------------
     """
-    for iteration in range(100):  # run our algorithm 10 times
+    for iteration in range(10):  # run our algorithm 10 times
         print(f"New iteration__________{iteration}")
         print(f"Routes at start of it {iteration}:          {bestSolution_LoCL}")
 
@@ -204,6 +205,8 @@ def ouralgorithm(instance: Instance, listOfRoutes: List[RouteObject], function):
         print(f"Total distance of the current iteration: {distancesOurAlgorythm}")
         print(f"The best distance: {bestDistance}")
         print(f"The best iteration: {bestIteration}")
+
+        # plotTSP(bestSolution_LoCL, coordinates_int) # use this if you want to plot after every iteration
 
 
 

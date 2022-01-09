@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) I believe our loop doesnt really loop and I will try to fix it. This commit is to have a fallback point in case i fuck up.">
+    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) THE ALGORITHM ACTUALLY USES THE BEST SOLUTION FOR NEXT ITERATION :)">
+      <change afterPath="$PROJECT_DIR$/instances/Plot.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instances/Construction.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Construction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instances/Utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -65,7 +66,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="com.intellij.openapi.externalSystem.service.settings.ExternalSystemGroupConfigurable" value="ALL" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../live_coding" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
@@ -506,7 +507,14 @@
       <option name="project" value="LOCAL" />
       <updated>1641724538353</updated>
     </task>
-    <option name="localTasksCounter" value="42" />
+    <task id="LOCAL-00042" summary="1) THE ALGORITHM ACTUALLY USES THE BEST SOLUTION FOR NEXT ITERATION :)">
+      <created>1641726008008</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1641726008008</updated>
+    </task>
+    <option name="localTasksCounter" value="43" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -539,7 +547,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="1) small renaming" />
     <MESSAGE value="1) started insertion phase" />
     <MESSAGE value="1) updated destruction algorithm so that it works with any input data (not only the test one)" />
     <MESSAGE value="1) fixed a small error" />
@@ -564,7 +571,8 @@
     <MESSAGE value="1) first draft of vehicle assignment phase" />
     <MESSAGE value="1) added some loops to create a fuckton of vehicles with custom numberplates" />
     <MESSAGE value="1) I believe our loop doesnt really loop and I will try to fix it. This commit is to have a fallback point in case i fuck up." />
-    <option name="LAST_COMMIT_MESSAGE" value="1) I believe our loop doesnt really loop and I will try to fix it. This commit is to have a fallback point in case i fuck up." />
+    <MESSAGE value="1) THE ALGORITHM ACTUALLY USES THE BEST SOLUTION FOR NEXT ITERATION :)" />
+    <option name="LAST_COMMIT_MESSAGE" value="1) THE ALGORITHM ACTUALLY USES THE BEST SOLUTION FOR NEXT ITERATION :)" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -586,6 +594,6 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/main_py$TestConstruction.coverage" NAME="TestConstruction Coverage Results" MODIFIED="1640299941018" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1641725918429" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1641734931759" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

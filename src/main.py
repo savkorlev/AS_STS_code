@@ -7,6 +7,7 @@ from instances.Route import RouteObject
 from instances.Trucks import Vehicle
 from instances.Utils import Instance, next_fit_heuristic_naive, compute_distances, next_fit_heuristic, is_feasible, \
     compute_total_demand, routeCost, temporaryRouteCost, compute_distance
+from instances.Plot import draw_routes, plotTSP
 
 # import os
 # os.chdir('C:/Users/Евгений/Desktop/TUM/WS 2021-2022/Advanced Seminar Sustainable Transportation Systems/AS_STS_code')
@@ -20,13 +21,13 @@ from instances.Utils import Instance, next_fit_heuristic_naive, compute_distance
 ###
 
 # 1. LOADING THE DATA
-df_NewYork_1_nodes = pd.read_csv("data/NewYork.1.nodes", sep=' ')
-df_NewYork_2_nodes = pd.read_csv("data/NewYork.2.nodes", sep=' ')
-df_NewYork_routes = pd.read_csv("data/NewYork.routes", sep=' ')
+# df_NewYork_1_nodes = pd.read_csv("data/NewYork.1.nodes", sep=' ')
+# df_NewYork_2_nodes = pd.read_csv("data/NewYork.2.nodes", sep=' ')
+# df_NewYork_routes = pd.read_csv("data/NewYork.routes", sep=' ')
 df_Paris_nodes = pd.read_csv("data/Paris.nodes", sep=' ')
 df_Paris_routes = pd.read_csv("data/Paris.routes", sep=' ')
-df_Shanghai_nodes = pd.read_csv("data/Shanghai.nodes", sep=' ')
-df_Shanghai_routes = pd.read_csv("data/Shanghai.routes", sep=' ')
+# df_Shanghai_nodes = pd.read_csv("data/Shanghai.nodes", sep=' ')
+# df_Shanghai_routes = pd.read_csv("data/Shanghai.routes", sep=' ')
 
 # # .loc[] - access the data by the name
 # print(df_NewYork_1_nodes.loc[:, "Duration"])  #select all rows and the "Duration" column
@@ -92,10 +93,32 @@ coordinates = []
 for row, content in test_df_Paris_nodes.iterrows():
     coordinate = (content[1], content[2])
     coordinates.append(coordinate)
+print(coordinates)
+
+# coordinates for matplot
+LonParisInt = []
+LonParis = list(test_df_Paris_nodes.loc[:, "Lon"])
+for lon in LonParis:
+    lon = lon * 10000000
+    lon = int(lon)
+    LonParisInt.append(lon)
+
+LatParisInt = []
+LatParis = list(test_df_Paris_nodes.loc[:, "Lat"])
+for lat in LatParis:
+    lat = lat * 100000000000
+    lat = int(lat)
+    LatParisInt.append(lat)
+
+coordinates_int = []
+for i in range(len(LonParisInt)):
+    cord_int = (LonParisInt[i], LatParisInt[i])
+    coordinates_int.append(cord_int)
+# coordinates end
+
 
 # 4. CREATING INSTANCE
 ourInstance = Instance(testDimension, listOfInitialVehicles, testDemandParis, testParisDistances, coordinates)
-print(coordinates)
 
 # 5. SIMPLE SOLUTION
 # solution = next_fit_heuristic_naive(ourInstance)
@@ -154,7 +177,7 @@ for r in initialListOfRoutes: # check all routes. Before this they should be ord
 
 
 # 7. OUR ALGORITHM (DESTRUCTION + INSERTION + OPTIMIZATION + ACCEPTANCE)
-solutionOur = ouralgorithm(ourInstance, initialListOfRoutes, find_first_improvement_2Opt)
+solutionOur = ouralgorithm(ourInstance, initialListOfRoutes, find_first_improvement_2Opt, coordinates_int)
 lenOfSolutionOur = len(solutionOur)
 for i in range(lenOfSolutionOur):
     print(f"Sum of demands of a {i} route: " + str(compute_total_demand(solutionOur[i], ourInstance)))
@@ -166,3 +189,14 @@ print(compute_distances(solutionOur, ourInstance))
 # print(assignedTrucksOurAlgorithm[1])
 # print(assignedTrucksOurAlgorithm[2])
 # print(assignedTrucksOurAlgorithm[3])
+
+
+
+
+
+
+# trying to get the matplot to work
+
+plotTSP(solutionOur, coordinates_int)
+
+#draw_routes(solutionOur, coordinates_int)
