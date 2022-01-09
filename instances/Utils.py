@@ -1,3 +1,4 @@
+import random
 from typing import List, Dict, Tuple
 
 from instances import Trucks
@@ -54,7 +55,7 @@ def next_fit_heuristic(customer_list: List[int], instance: Instance) -> Solution
     for c in customer_list:
         demand = instance.q[c]
 
-        if open_route_capacity_used + demand <= 2400:  # 900 is a made-up number
+        if open_route_capacity_used + demand <= random.uniform(100, 2400):  # 900 is a made-up number
             # assign customer to route
             open_route.append(c)
             open_route_capacity_used += demand
@@ -155,6 +156,12 @@ def is_feasible(solution: Solution, instance: Instance) -> bool:
 #
 #     return False
 # (compute_total_demand(listAfterDestruction[i], instance) + instance.q[listOfRemoved[customerIndex]] < max(listOfPayloads)):  # checking both conditions, first - lowest distance, second - total demand after insertion must be lower than our truck's capacity # add feasibility check
+
+def solution_cost(listOfRoutes: List[Route], instance: Instance) -> float:
+    solutionCost = 0
+    for r in listOfRoutes:
+        solutionCost = solutionCost + routeCost(r, instance)
+    return solutionCost
 
 def routeCost(routeObject: RouteObject, instance: Instance):
     cost = compute_distance(routeObject.customer_list, instance) * routeObject.vehicle.costs_km
