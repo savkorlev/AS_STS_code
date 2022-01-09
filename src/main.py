@@ -40,10 +40,29 @@ df_Shanghai_routes = pd.read_csv("data/Shanghai.routes", sep=' ')
 # print(df_NewYork_1_nodes.iloc[2, 2])  #select the third row and the third column
 
 # 2. CREATING OUR TRUCKS
-truck1 = Vehicle("MercedesBenzAtego", "Paris", "000000")
-truck2 = Vehicle("VWTransporter", "Paris", "000001")
-truck3 = Vehicle("DouzeV2ECargoBike", "Paris", "000002")
-listOfInitialVehicles = [truck1, truck2, truck3] # this needs to be filled with the vehicles the company has availiable
+listOfInitialVehicles = []
+dummyAtego = Vehicle("MercedesBenzAtego", "Paris", "000000") # this dummy vehicle is used after the sweep
+
+city = "Paris"
+numAtego = 100
+numVWtrans = 50
+numECargoBike = 50
+
+for i in range(1, numAtego):
+    vehicleType = "MercedesBenzAtego"
+    numberplate = "1MBA" + str(i).zfill(3)
+    listOfInitialVehicles.append(Vehicle(vehicleType, city, numberplate))
+for i in range(1, numVWtrans):
+    vehicleType = "VWTransporter"
+    numberplate = "2VWT" + str(i).zfill(3)
+    listOfInitialVehicles.append(Vehicle(vehicleType, city, numberplate))
+for i in range(1, numECargoBike):
+    vehicleType = "DouzeV2ECargoBike"
+    numberplate = "7ECB" + str(i).zfill(3)
+    listOfInitialVehicles.append(Vehicle(vehicleType, city, numberplate))
+
+
+# listOfInitialVehicles = [truck1, truck2, truck3] # this needs to be filled with the vehicles the company has availiable
 listOfAvailableVehicles = listOfInitialVehicles.copy()
 
 print(f"List of initial Vehicle payloads_kg: {list(map(lambda x: x.payload_kg, listOfInitialVehicles))}")  # MAP THINGY
@@ -98,7 +117,7 @@ print(f"Rand Sweep Heuristic, #Vehicles: {len(solutionRandomSweep)}, distance: {
 # 7 CREATING ROUTE OBJECTS
 initialListOfRoutes = []
 for i in solutionRandomSweep: # we turn the solution of random sweep (a nested list[list]) into a list[Route] with objects of Class Route
-    initialListOfRoutes.append(RouteObject(i, truck1)) # we start all with the same truck
+    initialListOfRoutes.append(RouteObject(i, dummyAtego)) # we start all with the same truck
 """
 trying to build the vehicle assignment phase
 doesnt work yet, because we have no penalty costs
@@ -111,18 +130,18 @@ print(f"Routes costs descending: {list(map(lambda x: x.current_cost, initialList
 
 for r in initialListOfRoutes: # check all routes. Before this they should be ordered by their costs descending
     # costBefore = r.current_cost
-    bestVehicle = truck1
+    bestVehicle = dummyAtego
     bestCost = 10e10
     for v in listOfAvailableVehicles:  # check all available vehicles. This list should get shorter while we progress, because the best vehicles will be removed from it
-        if compute_total_demand(r.customer_list, ourInstance) < v.payload_kg:
+        if compute_total_demand(r.customer_list, ourInstance) < v.payload_kg:  # feasibility check over payload. can be removed once we have penalty costs
             tempCost = temporaryRouteCost(r.customer_list, v, ourInstance) # cost with the checked vehicle
-            if tempCost < bestCost:  # needs a feasibility check until we get penalty costs
+            if tempCost < bestCost:
                 bestVehicle = v
                 bestCost = tempCost
     r.vehicle = bestVehicle  # assign the bestVehicle to the route
     listOfAvailableVehicles.remove(bestVehicle)  # remove the bestVehicle from available.
     r.current_cost = routeCost(r, ourInstance)  # update the route cost
-    print(f"Route cost after Vehicle Assignment: route {r}, vehicle {r.vehicle.type} {r.vehicle.plateNr}, cost: {r.current_cost}")
+    print(f"Route cost after Vehicle Assignment: route {r}, vehicle {r.vehicle.type} {r.vehicle.plateNr}, cost: {r.current_cost}, demand {compute_total_demand(r.customer_list, ourInstance)}")
 
 
 
