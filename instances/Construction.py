@@ -6,7 +6,7 @@ from instances.LocalSearch import hillclimbing, find_first_improvement_2Opt
 from instances.Route import RouteObject
 from instances.Trucks import Vehicle
 from instances.Utils import Instance, Solution, next_fit_heuristic, compute_total_demand, compute_distances, routeCost, \
-    temporaryRouteCost
+    temporaryRouteCost, delete_empty_routes
 
 
 def sweep_algorithm(instance: Instance) -> Solution:
@@ -90,7 +90,7 @@ def ouralgorithm(instance: Instance, listOfRoutes: List[RouteObject], function):
             element = [e for e in listOfCustomerList[i] if e not in listOfRemoved]
             listAfterDestruction.append(element)
         print(f"Customers to be removed: {listOfRemoved}")
-        print(f"Routes after destruction: {listAfterDestruction}")
+        print(f"Routes after destruction:         {listAfterDestruction}")
 
         # positionInListAfterDestruction = 0
         # for l in listOfRoutes:
@@ -164,13 +164,26 @@ def ouralgorithm(instance: Instance, listOfRoutes: List[RouteObject], function):
                 listToAppend = [0, bestCustomer, 0]
                 listOfRoutes.append(RouteObject(listToAppend, Vehicle("MercedesBenzAtego", "Paris", "999999")))
             listOfRemoved.remove(bestCustomer)  # delete current bestCustomer from a list of removed customers
+
+        print(f"Routes objects after insertion:   {list(map(lambda x: x.customer_list, listOfRoutes))}")
         # END OF THE COST INSERTION PHASE
 
+        # listOfRoutes = delete_empty_routes(listOfRoutes)
+        # print(f"Routes objects after removing empty routes: {list(map(lambda x: x.customer_list, listOfRoutes))}")
 
         # START OF OPTIMIZATION PHASE
-        listAfterOptimization = hillclimbing(listAfterDestruction, instance, function)
-        print(f"Routes after optimization: {listAfterOptimization}")
+        listAfterInsertion = []
+        for r in listOfRoutes:
+            listAfterInsertion.append(r.customer_list)
+
+        listAfterOptimization = hillclimbing(listAfterInsertion, instance, function)
+        print(f"Routes after optimization:        {listAfterOptimization}")
         # END OF OPTIMIZATION PHASE. Result - listAfterDestruction
+
+        # START OF VEHICLE SWAP PHASE
+
+        # END OF VEHICLE SWAP PHASE
+
 
         # START OF ACCEPTANCE PHASE
         distancesOurAlgorythm = compute_distances(listAfterOptimization, instance)
@@ -181,6 +194,9 @@ def ouralgorithm(instance: Instance, listOfRoutes: List[RouteObject], function):
         print(f"Total distance of the current iteration: {distancesOurAlgorythm}")
         print(f"The best distance: {bestDistance}")
         print(f"The best iteration: {bestIteration}")
+
+
+
         # END OF ACCEPTANCE PHASE
     if distancesSweep < bestDistance:
         print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {bestDistance}. Sweep is better")
@@ -191,7 +207,8 @@ def ouralgorithm(instance: Instance, listOfRoutes: List[RouteObject], function):
         print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {bestDistance}. ourAlgorithm is better")
     return bestSolution
 
-# # START OF TRUCK ASSIGNING PHASE
+
+
 # def truckAssigning(solution: Solution, instance: Instance):  # currently hardcoded
 #     # listOfPayloads = []
 #     # for i in instance.Q:

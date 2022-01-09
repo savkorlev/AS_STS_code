@@ -163,3 +163,32 @@ def routeCost(routeObject: RouteObject, instance: Instance):
 def temporaryRouteCost(route: Route, vehicle: Vehicle, instance: Instance):
     cost = compute_distance(route, instance) * vehicle.costs_km
     return cost
+
+
+def delete_empty_routes(list_of_routes: list[Route]) -> list[Route]:
+    no_empty_routes = list_of_routes.copy()
+    for r in list_of_routes:
+        if len(r.customer_list) < 3:
+            no_empty_routes.remove(r)
+    return no_empty_routes
+
+def vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: List[Vehicle], instance: Instance):
+    list_of_routes.sort(key=lambda x: x.current_cost, reverse=True)  # orders routes by cost descending
+    # print(f"Routes costs descending: {list(map(lambda x: x.current_cost, listOfRoutes))}")
+    list_of_available_vehicles = initial_list_of_vehicles.copy()
+    dummyAtego = Vehicle("MercedesBenzAtego", "Paris", "999999")
+
+    for r in list_of_routes:  # check all routes. Before this they should be ordered by their costs descending
+        # costBefore = r.current_cost
+        best_vehicle = dummyAtego
+        best_cost = 10e10
+        for v in list_of_available_vehicles:  # check all available vehicles. This list should get shorter while we progress, because the best vehicles will be removed from it
+            if compute_total_demand(r.customer_list, instance) < v.payload_kg:  # feasibility check over payload. can be removed once we have penalty costs
+                tempCost = temporaryRouteCost(r.customer_list, v, instance)  # cost with the checked vehicle
+                if tempCost < best_cost:
+                    best_vehicle = v
+                    best_cost = tempCost
+        r.vehicle = best_vehicle  # assign the bestVehicle to the route
+        list_of_available_vehicles.remove(best_vehicle)  # remove the bestVehicle from available.
+        r.current_cost = routeCost(r, instance)  # update the route cost
+        print(f"Route cost after Vehicle Assignment: route {r}, vehicle {r.vehicle.type} {r.vehicle.plateNr}, cost: {r.current_cost}, demand {compute_total_demand(r.customer_list, instance)}")

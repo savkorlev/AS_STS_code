@@ -41,7 +41,7 @@ df_Shanghai_routes = pd.read_csv("data/Shanghai.routes", sep=' ')
 
 # 2. CREATING OUR TRUCKS
 listOfInitialVehicles = []
-dummyAtego = Vehicle("MercedesBenzAtego", "Paris", "000000") # this dummy vehicle is used after the sweep
+dummyAtego = Vehicle("MercedesBenzAtego", "Paris", "999999") # this dummy vehicle is used after the sweep
 
 city = "Paris"
 numAtego = 100
@@ -127,7 +127,6 @@ for r in initialListOfRoutes: # assigning costs to the routes, costs with the in
 
 initialListOfRoutes.sort(key=lambda x: x.current_cost, reverse=True) # orders routes by cost descending
 print(f"Routes costs descending: {list(map(lambda x: x.current_cost, initialListOfRoutes))}")
-
 for r in initialListOfRoutes: # check all routes. Before this they should be ordered by their costs descending
     # costBefore = r.current_cost
     bestVehicle = dummyAtego
