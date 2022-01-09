@@ -45,8 +45,8 @@ dummyAtego = Vehicle("MercedesBenzAtego", "Paris", "999999") # this dummy vehicl
 
 city = "Paris"
 numAtego = 100
-numVWtrans = 50
-numECargoBike = 50
+numVWtrans = 0
+numECargoBike = 0
 
 for i in range(1, numAtego):
     vehicleType = "MercedesBenzAtego"
@@ -68,14 +68,14 @@ listOfAvailableVehicles = listOfInitialVehicles.copy()
 print(f"List of initial Vehicle payloads_kg: {list(map(lambda x: x.payload_kg, listOfInitialVehicles))}")  # MAP THINGY
 
 # 3. CREATING TEST DATASET AND ATTRIBUTES OF FUTURE INSTANCE
-testDimension = 40  # change this to use more or less customers of the data set. Max for Paris is 112. Also need to change the iloc for the nodes file
+testDimension = 112  # change this to use more or less customers of the data set. Max for Paris is 112. Also need to change the iloc for the nodes file
 
 # test_df_Paris_nodes = df_Paris_nodes.iloc[:20, :]                   # select elements from D0 to C19 in nodes
 # test_df_Paris_routes = df_Paris_routes.iloc[:2260, :]               # select elements from D0 to C19 in routes
-test_df_Paris_nodes = df_Paris_nodes.iloc[:40, :]                   # select elements from D0 to C40 in nodes
-test_df_Paris_routes = df_Paris_routes.iloc[:4633, :]               # select elements from D0 to C40 in routes
-# test_df_Paris_nodes = df_Paris_nodes
-# test_df_Paris_routes = df_Paris_routes
+# test_df_Paris_nodes = df_Paris_nodes.iloc[:40, :]                   # select elements from D0 to C40 in nodes
+# test_df_Paris_routes = df_Paris_routes.iloc[:4633, :]               # select elements from D0 to C40 in routes
+test_df_Paris_nodes = df_Paris_nodes
+test_df_Paris_routes = df_Paris_routes
 # print(test_df_Paris_nodes)
 # print(test_df_Paris_routes)
 

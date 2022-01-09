@@ -68,26 +68,34 @@ def sort_customers_by_sweep(instance: Instance) -> List[int]:
 
 
 def ouralgorithm(instance: Instance, listOfRoutes: List[RouteObject], function):
-    listOfCustomerList = list(map(lambda x: x.customer_list, listOfRoutes))
-    bestDistance = 10e10  # very big number
-    distancesSweep = compute_distances(listOfCustomerList, instance)
-    bestIteration = 0
-    print(f"Sweep solution: {listOfCustomerList}")
+    listOfCustomerList_sweep = list(map(lambda x: x.customer_list, listOfRoutes))
+    distancesSweep = compute_distances(listOfCustomerList_sweep, instance)
+    bestDistance = distancesSweep
+    bestIteration = -1
+    bestSolution_LoCL = listOfCustomerList_sweep.copy()  # copy solution from sweep as starting solution
+
+    print(f"Sweep solution: {listOfCustomerList_sweep}")
 
     print(list(map(lambda x: x.current_cost, listOfRoutes)))  # printing out costs of the routes after sweep but before costs are assigned [0,0,0,0...]
     for r in listOfRoutes:
         r.current_cost = routeCost(r, instance)
     print(list(map(lambda x: x.current_cost, listOfRoutes)))  # printing out costs of the routes after sweep after costs are assigned
 
-    for iteration in range(10):  # run our algorithm 10 times
+    """START OF THE BIG BAD LOOP
+    ------------------------------------------------------------------------------------------------------------------
+    ------------------------------------------------------------------------------------------------------------------
+    """
+    for iteration in range(100):  # run our algorithm 10 times
         print(f"New iteration__________{iteration}")
+        print(f"Routes at start of it {iteration}:          {bestSolution_LoCL}")
+
         # START OF DESTRUCTION PHASE
         # Random Removal Operation
         numberOfRemoved = random.randint(round(0.1 * (len(instance.q) - 1)), round(0.5 * (len(instance.q) - 1)))  # generate number customers to be removed
         listOfRemoved = random.sample(range(1, len(instance.q)), numberOfRemoved)  # generate customers to be removed, starting from 1 so depo isn't getting deleted
         listAfterDestruction = []
-        for i in range(len(listOfCustomerList)):
-            element = [e for e in listOfCustomerList[i] if e not in listOfRemoved]
+        for i in range(len(bestSolution_LoCL)):
+            element = [e for e in bestSolution_LoCL[i] if e not in listOfRemoved]
             listAfterDestruction.append(element)
         print(f"Customers to be removed: {listOfRemoved}")
         print(f"Routes after destruction:         {listAfterDestruction}")
@@ -168,8 +176,10 @@ def ouralgorithm(instance: Instance, listOfRoutes: List[RouteObject], function):
         print(f"Routes objects after insertion:   {list(map(lambda x: x.customer_list, listOfRoutes))}")
         # END OF THE COST INSERTION PHASE
 
+        # DELETING EMPTY ROUTES
+        """ Deleting routes currently causes out-of-bound-errors because we use List[List] and List[Route] in parallel"""
         # listOfRoutes = delete_empty_routes(listOfRoutes)
-        # print(f"Routes objects after removing empty routes: {list(map(lambda x: x.customer_list, listOfRoutes))}")
+        # print(f"Routes objects no empty routes:   {list(map(lambda x: x.customer_list, listOfRoutes))}")
 
         # START OF OPTIMIZATION PHASE
         listAfterInsertion = []
@@ -189,7 +199,7 @@ def ouralgorithm(instance: Instance, listOfRoutes: List[RouteObject], function):
         distancesOurAlgorythm = compute_distances(listAfterOptimization, instance)
         if distancesOurAlgorythm < bestDistance:
             bestDistance = distancesOurAlgorythm
-            bestSolution = listAfterOptimization
+            bestSolution_LoCL = listAfterOptimization
             bestIteration = iteration
         print(f"Total distance of the current iteration: {distancesOurAlgorythm}")
         print(f"The best distance: {bestDistance}")
@@ -205,7 +215,7 @@ def ouralgorithm(instance: Instance, listOfRoutes: List[RouteObject], function):
             f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {bestDistance}. Algorithms are equal")
     else:
         print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {bestDistance}. ourAlgorithm is better")
-    return bestSolution
+    return bestSolution_LoCL
 
 
 

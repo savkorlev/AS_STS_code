@@ -54,7 +54,7 @@ def next_fit_heuristic(customer_list: List[int], instance: Instance) -> Solution
     for c in customer_list:
         demand = instance.q[c]
 
-        if open_route_capacity_used + demand <= 900:  # 900 is a made-up number
+        if open_route_capacity_used + demand <= 2400:  # 900 is a made-up number
             # assign customer to route
             open_route.append(c)
             open_route_capacity_used += demand
