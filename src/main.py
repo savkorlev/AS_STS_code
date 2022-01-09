@@ -1,6 +1,6 @@
 import pandas as pd
 
-from instances.Construction import sort_customers_by_sweep, ouralgorithm
+from instances.Construction import sort_customers_by_sweep, ouralgorithm, random_sweep
 from instances.LocalSearch import find_first_improvement_2Opt, find_first_improvement_relocate, \
     find_first_improvement_exchange
 from instances.Route import RouteObject
@@ -43,17 +43,17 @@ df_Shanghai_routes = pd.read_csv("data/Shanghai.routes", sep=' ')
 truck1 = Vehicle("MercedesBenzAtego", "Paris", "000000")
 truck2 = Vehicle("VWTransporter", "Paris", "000001")
 truck3 = Vehicle("DouzeV2ECargoBike", "Paris", "000002")
-listOfInitialVehicles = [truck1, truck2, truck3]
+listOfInitialVehicles = [truck1, truck2, truck3] # this needs to be filled with the vehicles the company has availiable
 
-print(list(map(lambda x: x.payload_kg, listOfInitialVehicles)))  # MAP THINGY
+print(f"List of initial Vehicle payloads_kg: {list(map(lambda x: x.payload_kg, listOfInitialVehicles))}")  # MAP THINGY
 
 # 3. CREATING TEST DATASET AND ATTRIBUTES OF FUTURE INSTANCE
-testDimension = 20  # change this to use more or less customers of the data set. Max for Paris is 112. Also need to change the iloc for the nodes file
+testDimension = 40  # change this to use more or less customers of the data set. Max for Paris is 112. Also need to change the iloc for the nodes file
 
-test_df_Paris_nodes = df_Paris_nodes.iloc[:20, :]                   # select elements from D0 to C19 in nodes
-test_df_Paris_routes = df_Paris_routes.iloc[:2260, :]               # select elements from D0 to C19 in routes
-# test_df_Paris_nodes = df_Paris_nodes.iloc[:40, :]                   # select elements from D0 to C40 in nodes
-# test_df_Paris_routes = df_Paris_routes.iloc[:4633, :]               # select elements from D0 to C40 in routes
+# test_df_Paris_nodes = df_Paris_nodes.iloc[:20, :]                   # select elements from D0 to C19 in nodes
+# test_df_Paris_routes = df_Paris_routes.iloc[:2260, :]               # select elements from D0 to C19 in routes
+test_df_Paris_nodes = df_Paris_nodes.iloc[:40, :]                   # select elements from D0 to C40 in nodes
+test_df_Paris_routes = df_Paris_routes.iloc[:4633, :]               # select elements from D0 to C40 in routes
 # test_df_Paris_nodes = df_Paris_nodes
 # test_df_Paris_routes = df_Paris_routes
 # print(test_df_Paris_nodes)
@@ -78,23 +78,26 @@ ourInstance = Instance(testDimension, listOfInitialVehicles, testDemandParis, te
 print(coordinates)
 
 # 5. SIMPLE SOLUTION
-solution = next_fit_heuristic_naive(ourInstance)
-# Update: by adding an 'f' before a string, you allow for so-called string interpolation, i.e., you can use
-#  {} to access variables from the outer scope which will be inserted at this point in the string.
-print(f"Next-Fit-Heuristic | #Vehicles: {len(solution)}, distance: {compute_distances(solution, ourInstance)}")
+# solution = next_fit_heuristic_naive(ourInstance)
+# print(f"Next-Fit-Heuristic | #Vehicles: {len(solution)}, distance: {compute_distances(solution, ourInstance)}")
 
 # 6. SWEEP HEURISTIC
-solutionSweep = next_fit_heuristic(sort_customers_by_sweep(ourInstance), ourInstance)
-print(f"Sweep Heuristic | #Vehicles: {len(solutionSweep)}, distance: {compute_distances(solutionSweep, ourInstance)}, is_feasible: {is_feasible(solutionSweep, ourInstance)}")
-# assignedTrucksSweep = truckAssigning(solutionSweep, ourInstance)
-# print(assignedTrucksSweep[0])
-# print(assignedTrucksSweep[1])
-# print(assignedTrucksSweep[2])
-# print(assignedTrucksSweep[3])
+# solutionSweep = next_fit_heuristic(sort_customers_by_sweep(ourInstance), ourInstance)
+# print(f"Sweep Heuristic | #Vehicles: {len(solutionSweep)}, distance: {compute_distances(solutionSweep, ourInstance)}, is_feasible: {is_feasible(solutionSweep, ourInstance)}")
+
+bestDistanceRandomSweep = 10e10
+for i in range(10):
+    tempSolutionRandomSweep = random_sweep(ourInstance)
+    tempDistance = compute_distances(tempSolutionRandomSweep, ourInstance)
+    # print(f"Rand Sweep Heuristic, temp distance: {compute_distances(tempSolutionRandomSweep, ourInstance)}")
+    if  tempDistance < bestDistanceRandomSweep:
+        solutionRandomSweep = tempSolutionRandomSweep.copy()
+        bestDistanceRandomSweep = tempDistance
+print(f"Rand Sweep Heuristic, #Vehicles: {len(solutionRandomSweep)}, distance: {compute_distances(solutionRandomSweep, ourInstance)}")
 
 # 7 CREATING ROUTE OBJECTS
 initialListOfRoutes = []
-for i in solutionSweep:
+for i in solutionRandomSweep:
     initialListOfRoutes.append(RouteObject(i, truck1))
 print(initialListOfRoutes)
 
