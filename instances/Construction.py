@@ -1,6 +1,8 @@
 import math
+import os
 import random
 import copy
+import sys
 from typing import List
 
 from instances.LocalSearch import hillclimbing, find_first_improvement_2Opt
@@ -101,7 +103,8 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], functio
             for rc in temp_listOfRemoved:
                 if rc in r.customer_list:
                     r.customer_list.remove(rc)
-                    #temp_listOfRemoved.remove(rc)
+
+                    # temp_listOfRemoved.remove(rc)  # causes a bug where customers dont get deleted TODO: Fix this bug
 
         # listAfterDestruction = []
         # for i in range(len(bestSolution_beforeDestruction)):
@@ -214,7 +217,12 @@ Routes after destruction:         [[0, 30, 16, 17, 15, 8, 13, 0], [0, 0], [0, 3,
         # count customers
         customer_count = 0
         for r in listOfRoutes:
-            customer_count += len(r.customer_list) - 2
+            customer_count += len(r.customer_list) - 2  # -2 because of two depots in each customer_list
+        # if customer_count != 111: # this needs to be set to the exact amount of customers we have, and then it can be used to check if we lose/gain customers
+        #     print(f"Error! Customer Count is: {customer_count}")
+        #     os._exit()
+
+
         print(f"customer count check: {customer_count}")
 
 

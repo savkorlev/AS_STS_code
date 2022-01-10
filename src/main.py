@@ -48,8 +48,8 @@ dummyAtego = Vehicle("MercedesBenzAtego", "Paris", "999999") # this dummy vehicl
 
 #set all the initial conditions for vehicles here
 city = "Paris"
-numAtego = 20
-numVWtrans = 10
+numAtego = 21
+numVWtrans = 0
 numECargoBike = 0
 #TODO put the vehicle creation into util
 for i in range(numAtego):
@@ -68,10 +68,12 @@ for i in range(numECargoBike):
 
 print(f"List of initial Vehicle payloads_kg: {list(map(lambda x: x.payload_kg, listOfInitialVehicles))}")  # MAP THINGY
 
-maxIterations = 200  # sets how many iterations we want
+maxIterations = 100  # sets how many iterations we want
 
 # 3. CREATING TEST DATASET AND ATTRIBUTES OF FUTURE INSTANCE
-testDimension = 112  # change this to use more or less customers of the data set. Max for Paris is 112. Also need to change the iloc for the nodes file
+
+#set testDimension to 1 more than customers
+testDimension = 1 + 112  # change this to use more or less customers of the data set. Max for Paris is 112. Also need to change the iloc for the nodes file
 
 # test_df_Paris_nodes = df_Paris_nodes.iloc[:20, :]                   # select elements from D0 to C19 in nodes
 # test_df_Paris_routes = df_Paris_routes.iloc[:2260, :]               # select elements from D0 to C19 in routes

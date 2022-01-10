@@ -261,8 +261,7 @@ def penalty_cost(routeObject: RouteObject, instance: Instance, iteration: int) -
 
 def compute_overload(constraint: int, load: int) -> float:
     # Overload factor can be changed to our will. Probably should get smthing from literature
-    overload_factor = (max(load - constraint,
-                           0) / constraint)# ** 2  # we normalize the factor by the constraint (to not punish more because values are higher), then we square to punish bigger overloads much more
+    overload_factor = (max(load - constraint, 0) / constraint)# ** 2  # we normalize the factor by the constraint (to not punish more because values are higher), then we square to punish bigger overloads much more
     return overload_factor
 
 
