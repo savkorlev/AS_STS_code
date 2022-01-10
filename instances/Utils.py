@@ -1,4 +1,5 @@
 import random
+import numpy as np
 from typing import List, Dict, Tuple
 
 from instances import Trucks
@@ -163,11 +164,30 @@ def solution_cost(listOfRoutes: List[Route], instance: Instance) -> float:
         solutionCost = solutionCost + routeCost(r, instance)
     return solutionCost
 
-def routeCost(routeObject: RouteObject, instance: Instance):
+def routeCost(routeObject: RouteObject, instance: Instance) -> float:
+    #distance
     cost = compute_distance(routeObject.customer_list, instance) * routeObject.vehicle.costs_km
     return cost
 
-def temporaryRouteCost(route: Route, vehicle: Vehicle, instance: Instance):
+def penalty_cost(routeObject: RouteObject, instance: Instance, iteration: int) -> float:
+    # TODO: Choose suitable penalty-factor.
+    iteration_penalty = 5 + iteration * 5  # penalty in each iteration.
+
+    # payload_kg
+    constraint_kg = routeObject.vehicle.payload_kg
+    load_kg = compute_total_demand(routeObject.customer_list, instance)
+    overload_kg = compute_overload(constraint_kg, load_kg)
+    cost_kg = overload_kg * iteration_penalty
+
+    # combine
+    cost = cost_kg  # + all other penalized constraints
+    return cost
+
+def compute_overload(constraint: int, load: int) -> float:
+    overload_factor = (max(load - constraint, 0) / constraint) ** 2  # we normalize the factor by the constraint (to not punish more because values are higher), then we square to punish bigger overloads much more
+    return overload_factor
+
+def temporaryRouteCost(route: Route, vehicle: Vehicle, instance: Instance) -> float:
     cost = compute_distance(route, instance) * vehicle.costs_km
     return cost
 
@@ -199,3 +219,4 @@ def vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: Li
         list_of_available_vehicles.remove(best_vehicle)  # remove the bestVehicle from available.
         r.current_cost = routeCost(r, instance)  # update the route cost
         print(f"Route cost after Vehicle Assignment: route {r}, vehicle {r.vehicle.type} {r.vehicle.plateNr}, cost: {r.current_cost}, demand {compute_total_demand(r.customer_list, instance)}")
+

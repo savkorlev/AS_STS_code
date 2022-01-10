@@ -68,16 +68,18 @@ def sort_customers_by_sweep(instance: Instance) -> List[int]:
     return sorted_customers
 
 
-def ouralgorithm(instance: Instance, listOfRoutes: List[RouteObject], function, listOfInitialVehicles: List[Vehicle], coordinates_int: List): # coordinates_int is only for matplot
+
+
+def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], function, listOfInitialVehicles: List[Vehicle], coordinates_int: List): # coordinates_int is only for matplot
     # LoCL = List of Customer List
-    bestSolution_LoCL = list(map(lambda x: x.customer_list, listOfRoutes)) # copy solution from sweep as starting solution
+    # bestSolution_LoCL = list(map(lambda x: x.customer_list, listOfRoutes)) # copy solution from sweep as starting solution
+    listOfRoutes = initialSolution.copy()
+
     bestSolution = listOfRoutes.copy()
-    distancesSweep = compute_distances(list(map(lambda x: x.customer_list, listOfRoutes)), instance)
-    bestDistance = distancesSweep
+    # distancesSweep = compute_distances(list(map(lambda x: x.customer_list, listOfRoutes)), instance)
+    # bestDistance = distancesSweep
     bestCost = solution_cost(listOfRoutes, instance)
     bestIteration = -1
-
-
 
     print(f"Sweep solution: {list(map(lambda x: x.customer_list, listOfRoutes))}") # printing out customer lists after sweep
     print(f"Route costs:    {list(map(lambda x: x.current_cost, listOfRoutes))}")  # printing out costs of the routes after sweep after costs are assigned
@@ -86,9 +88,9 @@ def ouralgorithm(instance: Instance, listOfRoutes: List[RouteObject], function, 
     ------------------------------------------------------------------------------------------------------------------
     ------------------------------------------------------------------------------------------------------------------
     """
-    for iteration in range(10):  # run our algorithm 10 times
+    for iteration in range(100):  # run our algorithm 10 times
         print(f"New iteration__________{iteration}")
-        print(f"Routes at start of it {iteration}:          {list(map(lambda x: x.customer_list, listOfRoutes))}")
+        print(f"Routes at start of iter {iteration}:        {list(map(lambda x: x.customer_list, listOfRoutes))}")
 
         # START OF DESTRUCTION PHASE
         bestSolution_beforeDestruction = list(map(lambda x: x.customer_list, bestSolution))
@@ -96,6 +98,7 @@ def ouralgorithm(instance: Instance, listOfRoutes: List[RouteObject], function, 
         # Random Removal Operation
         numberOfRemoved = random.randint(round(0.1 * (len(instance.q) - 1)), round(0.5 * (len(instance.q) - 1)))  # generate number customers to be removed
         listOfRemoved = random.sample(range(1, len(instance.q)), numberOfRemoved)  # generate customers to be removed, starting from 1 so depo isn't getting deleted
+        listOfRemoved.sort()  # for better readability during debugging """ somehow this does not seem to work """
         listAfterDestruction = []
         for i in range(len(bestSolution_beforeDestruction)):
             element = [e for e in bestSolution_beforeDestruction[i] if e not in listOfRemoved]
@@ -104,16 +107,23 @@ def ouralgorithm(instance: Instance, listOfRoutes: List[RouteObject], function, 
         print(f"Routes after destruction:         {listAfterDestruction}")
 
         """ I encountered a bug here where after destructing we have more routes than before, and the order of the routes is changed. After destruction has 11 routes, before had 10.
+        data at bug:
+        
         New iteration__________8
 Routes at start of it 8:          [[0, 24, 15, 17, 6, x29, 0], [0, 20, 39, 37, 14, 9, 0], [0, 3, 31, 18, 10, 23, 19, 0], [0, 25, 36, 22, 13, 21, 11, 0], [0, 5, 38, 26, 12, 7, 33, 0], [0, 30, 16, 8, 1, 32, 0], [0, 2, 0], [0, 35, 34, 0], [0, 28, 4, 0], [0, 27, 0]]
 Customers to be removed: [35, 14, 29, 30, 34, 28, 31, 1, 17, 19, 32, 2, 7, 26, 18, 36]
 Routes after destruction:         [[0, 24, 15, 6, 0], [0, 3, 10, 23, 0], [0, 5, 38, 12, 33, 0], [0, 25, 22, 13, 21, 11, 0], [0, 16, 8, 0], [0, 0], [0, 0], [0, 20, 39, 37, 9, 0], [0, 0], [0, 4, 0], [0, 27, 0]]
+
+New iteration__________4
+Routes at start of iter 4:        [[0, 30, 16, 17, 15, 8, 13, 0], [0, 11, 21, 22, 2, 35, 36, 0], [0, 3, 18, 26, 6, 38, 33, 0], [0, 37, 14, 34, 23, 19, 0], [0, 24, 12, 39, 1, 32, 0], [0, 25, 10, 0], [0, 29, 0], [0, 31, 0], [0, 9, 4, 27, 0], [0, 28, 7, 0], [0, 5, 0], [0, 20, 0]]
+Customers to be removed: [20, 23, 32, 34, 39]
+Routes after destruction:         [[0, 30, 16, 17, 15, 8, 13, 0], [0, 0], [0, 3, 18, 26, 6, 38, 33, 0], [0, 11, 21, 22, 2, 35, 36, 0], [0, 24, 12, 1, 0], [0, 31, 0], [0, 37, 14, 19, 0], [0, 9, 4, 27, 0], [0, 28, 7, 0], [0, 5, 0], [0, 25, 10, 0], [0, 29, 0], [0, 0]]
         
         """
 
         for i in range(len(listAfterDestruction)):
             listOfRoutes[i].customer_list = listAfterDestruction[i].copy()  # turn list after destruction back into listOfRoutes
-        print(f"Routes objects after destruction: {list(map(lambda x: x.customer_list, listOfRoutes))}")
+        print(f"Route objects after destruction:  {list(map(lambda x: x.customer_list, listOfRoutes))}")
 
         # START OF THE COST INSERTION PHASE
         while len(listOfRemoved) > 0:
@@ -147,29 +157,24 @@ Routes after destruction:         [[0, 24, 15, 6, 0], [0, 3, 10, 23, 0], [0, 5, 
                 listOfRoutes.append(RouteObject(listToAppend, Vehicle("MercedesBenzAtego", "Paris", "999999")))  # create new route with dummy vehicle
             listOfRemoved.remove(bestCustomer)  # delete current bestCustomer from a list of removed customers
 
-        print(f"Routes objects after insertion:   {list(map(lambda x: x.customer_list, listOfRoutes))}")
+        print(f"Route objects after insertion:    {list(map(lambda x: x.customer_list, listOfRoutes))}")
         # END OF THE COST INSERTION PHASE
 
         # DELETING EMPTY ROUTES
-        """ Deleting routes currently causes out-of-bound-errors because we use List[List] and List[Route] in parallel"""
         listOfRoutes = delete_empty_routes(listOfRoutes)
-        print(f"Routes objects no empty routes:   {list(map(lambda x: x.customer_list, listOfRoutes))}")
+        print(f"Route objects no empty routes:    {list(map(lambda x: x.customer_list, listOfRoutes))}")
 
-        # START OF OPTIMIZATION PHASE
-        listAfterOptimization = []
-        # for r in listOfRoutes:
-        #     listAfterInsertion.append(r.customer_list)
 
+        # START OF OPTIMIZATION PHASE.
         listAfterOptimization = hillclimbing(list(map(lambda x: x.customer_list, listOfRoutes)), instance, function)
         for i in range(len(listAfterOptimization)):
             listOfRoutes[i].customer_list = listAfterOptimization[i].copy()
 
-        print(f"Routes after optimization:        {list(map(lambda x: x.customer_list, listOfRoutes))}")
+        print(f"Route objects after optimization: {list(map(lambda x: x.customer_list, listOfRoutes))}")
         # END OF OPTIMIZATION PHASE.
 
         # START OF VEHICLE SWAP PHASE
-        # def vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: List[Vehicle], instance: Instance):
-        vehicle_assignment(listOfRoutes, listOfInitialVehicles, instance)
+        vehicle_assignment(listOfRoutes, listOfInitialVehicles, instance) # def vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: List[Vehicle], instance: Instance):
         # END OF VEHICLE SWAP PHASE
 
 
@@ -196,17 +201,17 @@ Routes after destruction:         [[0, 24, 15, 6, 0], [0, 3, 10, 23, 0], [0, 5, 
 
         # plotTSP(bestSolution_LoCL, coordinates_int) # use this if you want to plot after every iteration
 
+    #     # END OF ACCEPTANCE PHASE
+    # TODO switch the final output to cost
+    # if distancesSweep < bestDistance:
+    #     print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {bestDistance}. Sweep is better")
+    # elif distancesSweep == bestDistance:
+    #     print(
+    #         f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {bestDistance}. Algorithms are equal")
+    # else:
+    #     print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {bestDistance}. ourAlgorithm is better")
 
-
-        # END OF ACCEPTANCE PHASE
-    if distancesSweep < bestDistance:
-        print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {bestDistance}. Sweep is better")
-    elif distancesSweep == bestDistance:
-        print(
-            f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {bestDistance}. Algorithms are equal")
-    else:
-        print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {bestDistance}. ourAlgorithm is better")
-
+    print(f"Finished after iteration {iteration}")
     return list(map(lambda x: x.customer_list, bestSolution))
     # return bestSolution_LoCL
 
