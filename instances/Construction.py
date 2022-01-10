@@ -17,7 +17,7 @@ def sweep_algorithm(instance: Instance) -> Solution:
     return next_fit_heuristic(sorted_customers, instance)
 
 
-def random_sweep(instance: Instance) -> Solution:
+def random_sweep(instance: Instance, initialVehicles: List[Vehicle]) -> Solution:
     customer_list = sort_customers_by_sweep(instance)
 
     # emulate changing the starting angle by rotating the list of customers
@@ -28,7 +28,7 @@ def random_sweep(instance: Instance) -> Solution:
     if random.randint(0, 1) == 1:
         customer_list.reverse()
 
-    return next_fit_heuristic(customer_list, instance)
+    return next_fit_heuristic(customer_list, instance, initialVehicles)
 
 
 def sort_customers_by_sweep(instance: Instance) -> List[int]:
@@ -70,28 +70,25 @@ def sort_customers_by_sweep(instance: Instance) -> List[int]:
 
 
 
-def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], function, listOfInitialVehicles: List[Vehicle], coordinates_int: List): # coordinates_int is only for matplot
-    # LoCL = List of Customer List
-    # bestSolution_LoCL = list(map(lambda x: x.customer_list, listOfRoutes)) # copy solution from sweep as starting solution
+def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], function, listOfInitialVehicles: List[Vehicle],
+                 listOfInitAvailableVehicles: List[Vehicle], maxIterations: int, coordinates_int: List): # coordinates_int is only for matplot
+    # START OF INITIALIZATION PHASE
     listOfRoutes = initialSolution.copy()
-
-    bestSolution = listOfRoutes.copy()
-    # distancesSweep = compute_distances(list(map(lambda x: x.customer_list, listOfRoutes)), instance)
-    # bestDistance = distancesSweep
-    bestCost = solution_cost(listOfRoutes, instance)
-    bestIteration = -1
+    list_of_available_vehicles = listOfInitAvailableVehicles.copy()
+    # setting the initial solution up so we can compare to it in acceptance phase
+    bestSolution = listOfRoutes.copy()  # set the initial solution as the best solution (until acceptance check)
+    bestCost = solution_cost(listOfRoutes, instance, 0, True) # used in acceptance check. iteration is hardcoded to 0.
+    bestIteration = -1 # used in acceptance check
 
     print(f"Sweep solution: {list(map(lambda x: x.customer_list, listOfRoutes))}") # printing out customer lists after sweep
     print(f"Route costs:    {list(map(lambda x: x.current_cost, listOfRoutes))}")  # printing out costs of the routes after sweep after costs are assigned
-
-    """START OF THE LOOP
-    ------------------------------------------------------------------------------------------------------------------
-    ------------------------------------------------------------------------------------------------------------------
-    """
-    for iteration in range(100):  # run our algorithm 10 times
+    # END OF INITIALIZATION PHASE
+    # -------------------------------------------------------------------------------------------------------------
+    # START OF THE LOOP
+    for iteration in range(maxIterations):  # run our algorithm multiple times
         print(f"New iteration__________{iteration}")
         print(f"Routes at start of iter {iteration}:        {list(map(lambda x: x.customer_list, listOfRoutes))}")
-
+        # -------------------------------------------------------------------------------------------------------------
         # START OF DESTRUCTION PHASE
         bestSolution_beforeDestruction = list(map(lambda x: x.customer_list, bestSolution))
 
@@ -120,11 +117,20 @@ Customers to be removed: [20, 23, 32, 34, 39]
 Routes after destruction:         [[0, 30, 16, 17, 15, 8, 13, 0], [0, 0], [0, 3, 18, 26, 6, 38, 33, 0], [0, 11, 21, 22, 2, 35, 36, 0], [0, 24, 12, 1, 0], [0, 31, 0], [0, 37, 14, 19, 0], [0, 9, 4, 27, 0], [0, 28, 7, 0], [0, 5, 0], [0, 25, 10, 0], [0, 29, 0], [0, 0]]
         
         """
+        # TODO: Remove bug, remove hack
+        while len(listOfRoutes) < len(listAfterDestruction): # HACK TO AVOID BUG
+            listOfRoutes.append(RouteObject([0,0], Vehicle("MercedesBenzAtego", "Paris", "999999")))
+            print(f"~ExtraRoute after Destruction~ Bug happened in iteration {iteration}")
 
         for i in range(len(listAfterDestruction)):
             listOfRoutes[i].customer_list = listAfterDestruction[i].copy()  # turn list after destruction back into listOfRoutes
         print(f"Route objects after destruction:  {list(map(lambda x: x.customer_list, listOfRoutes))}")
 
+        listOfRoutes = delete_empty_routes(listOfRoutes) # HACK TO AVOID BUG
+        # END OF RANDOM DESTRUCTION
+        # END OF DESTRUCTION PHASE
+        #  -------------------------------------------------------------------------------------------------------------
+        # START OF INSERTION PHASE
         # START OF THE COST INSERTION PHASE
         while len(listOfRemoved) > 0:
 
@@ -133,53 +139,64 @@ Routes after destruction:         [[0, 30, 16, 17, 15, 8, 13, 0], [0, 0], [0, 3,
             bestCustomer = 0
 
             for r in listOfRoutes:
-                r.current_cost = routeCost(r, instance) # recalculate route cost after destruction
+                r.current_cost = routeCost(r, instance, iteration, True) # recalculate route cost after destruction
             # print(list(map(lambda x: x.current_cost, listOfRoutes)))  # printing out costs of the routes after i-th loop of the insertion phase
-
             for customerIndex in range(len(listOfRemoved)):  # iterating over list of removed customers
                 for i in listOfRoutes:  # iterating over routes in listOfRoutes
                     for j in range(len(i.customer_list) - 1):  # iterating over positions in a route
                         costWithout = i.current_cost
                         temporaryCustomerList = i.customer_list.copy()
                         temporaryCustomerList.insert(j + 1, listOfRemoved[customerIndex])
-                        costWith = temporaryRouteCost(temporaryCustomerList, i.vehicle, instance)
+                        costWith = temporaryRouteCost(temporaryCustomerList, i.vehicle, instance, iteration, True)
                         insertionCost = costWith - costWithout
-                        if (insertionCost < bestInsertionCost) & (compute_total_demand(i.customer_list, instance) + instance.q[listOfRemoved[customerIndex]] < i.vehicle.payload_kg): # & feasibilityCheck(instance, listAfterDestruction, listOfRemoved, customerIndex, i)
+                        if (insertionCost < bestInsertionCost): #\
+                                # & (compute_total_demand(i.customer_list, instance) + instance.q[listOfRemoved[customerIndex]] < i.vehicle.payload_kg): # & feasibilityCheck(instance, listAfterDestruction, listOfRemoved, customerIndex, i)
                             bestInsertionCost = insertionCost
                             bestPosition = (i, j + 1)
                             bestCustomer = listOfRemoved[customerIndex]
 
-            if bestInsertionCost != 10e10:
+            bestNewRouteCost = 10e10
+            for v in list_of_available_vehicles: # check if a new route would be cheaper
+                newCustomerList = [0, bestCustomer, 0]
+                newRouteCost = temporaryRouteCost(newCustomerList, v, instance, iteration, True)  # check cost of new route
+                if newRouteCost < bestNewRouteCost:
+                    bestNewRouteCost = newRouteCost
+                    bestNewVehicle = v
+
+            if bestInsertionCost < bestNewRouteCost:
                 bestPosition[0].customer_list.insert(bestPosition[1], bestCustomer) # insert bestCustomer to the best feasible route for them
             else:
-                bestCustomer = listOfRemoved[0]  # if there are no feasible routes then open a new route and place 1st customer there
-                listToAppend = [0, bestCustomer, 0]
-                listOfRoutes.append(RouteObject(listToAppend, Vehicle("MercedesBenzAtego", "Paris", "999999")))  # create new route with dummy vehicle
+                newRoute = RouteObject(newCustomerList, bestNewVehicle)  # create a new RouteObject
+                newRoute.current_cost = newRouteCost
+                listOfRoutes.append(newRoute)  # add newRoute to list of routes
+                list_of_available_vehicles.remove(bestNewVehicle)
             listOfRemoved.remove(bestCustomer)  # delete current bestCustomer from a list of removed customers
 
         print(f"Route objects after insertion:    {list(map(lambda x: x.customer_list, listOfRoutes))}")
         # END OF THE COST INSERTION PHASE
-
+        # END OF INSERTION PHASE
+        # -------------------------------------------------------------------------------------------------------------
+        # START OF OPTIMIZATION PHASE.
         # DELETING EMPTY ROUTES
         listOfRoutes = delete_empty_routes(listOfRoutes)
         print(f"Route objects no empty routes:    {list(map(lambda x: x.customer_list, listOfRoutes))}")
 
-
-        # START OF OPTIMIZATION PHASE.
-        listAfterOptimization = hillclimbing(list(map(lambda x: x.customer_list, listOfRoutes)), instance, function)
+        # START OF LOCAL OPTIMIZATION 2-opt
+        """ 2-opt currently optimizes for distance. Since it is inter-route, I am fine with this. - Christopher"""
+        listAfterOptimization = hillclimbing(list(map(lambda x: x.customer_list, listOfRoutes)), instance, function) #TODO remove function from ouralgorithm arguments, call 2-opt here directly
         for i in range(len(listAfterOptimization)):
-            listOfRoutes[i].customer_list = listAfterOptimization[i].copy()
-
+            listOfRoutes[i].customer_list = listAfterOptimization[i].copy()  # put the optimized customer lists back into our RouteObjects
         print(f"Route objects after optimization: {list(map(lambda x: x.customer_list, listOfRoutes))}")
-        # END OF OPTIMIZATION PHASE.
+        # END OF LOCAL OPTIMIZATION 2-opt
 
         # START OF VEHICLE SWAP PHASE
-        vehicle_assignment(listOfRoutes, listOfInitialVehicles, instance) # def vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: List[Vehicle], instance: Instance):
+        list_of_available_vehicles = vehicle_assignment(listOfRoutes, listOfInitialVehicles, instance) # def vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: List[Vehicle], instance: Instance):
         # END OF VEHICLE SWAP PHASE
-
-
+        # END OF OPTIMIZATION PHASE.
+        # -------------------------------------------------------------------------------------------------------------
         # START OF ACCEPTANCE PHASE
-        costThisIteration = solution_cost(listOfRoutes, instance)
+        bestCost = solution_cost(bestSolution, instance, iteration, True)
+        costThisIteration = solution_cost(listOfRoutes, instance, iteration, True)
         if costThisIteration < bestCost:
             bestCost = costThisIteration
             bestSolution = listOfRoutes.copy()
@@ -201,7 +218,9 @@ Routes after destruction:         [[0, 30, 16, 17, 15, 8, 13, 0], [0, 0], [0, 3,
 
         # plotTSP(bestSolution_LoCL, coordinates_int) # use this if you want to plot after every iteration
 
-    #     # END OF ACCEPTANCE PHASE
+        # END OF ACCEPTANCE PHASE
+    # -------------------------------------------------------------------------------------------------------------
+    # END OF LOOP
     # TODO switch the final output to cost
     # if distancesSweep < bestDistance:
     #     print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {bestDistance}. Sweep is better")
@@ -214,30 +233,4 @@ Routes after destruction:         [[0, 30, 16, 17, 15, 8, 13, 0], [0, 0], [0, 3,
     print(f"Finished after iteration {iteration}")
     return list(map(lambda x: x.customer_list, bestSolution))
     # return bestSolution_LoCL
-
-
-
-# def truckAssigning(solution: Solution, instance: Instance):  # currently hardcoded
-#     # listOfPayloads = []
-#     # for i in instance.Q:
-#     #     listOfPayloads.append(i.capacity)
-#     assignedTrucks = []
-#     licencePlate = 000000
-#     for i in solution:
-#         check = compute_total_demand(i, instance)
-#         if 2800 > check > 905:
-#             assignedTrucks.append(MercedesBenzAtego(licencePlate))
-#         elif check > 883:
-#             assignedTrucks.append(StreetScooterWORKL(licencePlate))
-#         elif check > 720:
-#             assignedTrucks.append(VWTransporter(licencePlate))
-#         elif check > 670:
-#             assignedTrucks.append(StreetScooterWORK(licencePlate))
-#         elif check > 100:
-#             assignedTrucks.append(VWCaddypanelvan(licencePlate))
-#         else:
-#             assignedTrucks.append(DouzeV2ECargoBike(licencePlate))
-#         licencePlate += 1
-#
-#     return assignedTrucks
-# # END OF TRUCK ASSIGNING PHASE
+# -------------------------------------------------------------------------------------------------------------

@@ -6,7 +6,7 @@ from instances.LocalSearch import find_first_improvement_2Opt, find_first_improv
 from instances.Route import RouteObject
 from instances.Trucks import Vehicle
 from instances.Utils import Instance, next_fit_heuristic_naive, compute_distances, next_fit_heuristic, is_feasible, \
-    compute_total_demand, routeCost, temporaryRouteCost, compute_distance, vehicle_assignment
+    compute_total_demand, routeCost, temporaryRouteCost, compute_distance, vehicle_assignment, solution_cost
 from instances.Plot import draw_routes, plotTSP
 
 # import os
@@ -46,21 +46,21 @@ dummyAtego = Vehicle("MercedesBenzAtego", "Paris", "999999") # this dummy vehicl
 
 #set all the initial conditions for vehicles here
 city = "Paris"
-numAtego = 20
+numAtego = 10
 numVWtrans = 10
-numECargoBike = 10
+numECargoBike = 5
 
-for i in range(1, numAtego):
+for i in range(numAtego):
     vehicleType = "MercedesBenzAtego"
-    numberplate = "1MBA" + str(i).zfill(3)
+    numberplate = "1MBA" + str(i+1).zfill(3)
     listOfInitialVehicles.append(Vehicle(vehicleType, city, numberplate))
-for i in range(1, numVWtrans):
+for i in range(numVWtrans):
     vehicleType = "VWTransporter"
-    numberplate = "2VWT" + str(i).zfill(3)
+    numberplate = "2VWT" + str(i+1).zfill(3)
     listOfInitialVehicles.append(Vehicle(vehicleType, city, numberplate))
-for i in range(1, numECargoBike):
+for i in range(numECargoBike):
     vehicleType = "DouzeV2ECargoBike"
-    numberplate = "7ECB" + str(i).zfill(3)
+    numberplate = "7ECB" + str(i+1).zfill(3)
 
     listOfInitialVehicles.append(Vehicle(vehicleType, city, numberplate))
 
@@ -78,6 +78,8 @@ test_df_Paris_routes = df_Paris_routes.iloc[:4633, :]               # select ele
 # print(test_df_Paris_nodes)
 # print(test_df_Paris_routes)
 
+maxIterations = 10  # sets how many iterations we want
+
 testDemandParis = list(test_df_Paris_nodes.loc[:, "Demand[kg]"])    # select demand column and convert it to a list
 # print(testDemandParis)
 
@@ -93,7 +95,8 @@ for row, content in test_df_Paris_nodes.iterrows():
     coordinates.append(coordinate)
 print(coordinates)
 
-# coordinates for matplot
+# coordinates for matplot START
+# TODO: Get this shit out of main and into Plot
 LonParisInt = []
 LonParis = list(test_df_Paris_nodes.loc[:, "Lon"])
 for lon in LonParis:
@@ -112,46 +115,46 @@ coordinates_int = []
 for i in range(len(LonParisInt)):
     cord_int = (LonParisInt[i], LatParisInt[i])
     coordinates_int.append(cord_int)
-# coordinates for matplot end
-
+# coordinates for matplot END
 
 # 4. CREATING INSTANCE
 ourInstance = Instance(testDimension, listOfInitialVehicles, testDemandParis, testParisDistances, coordinates)
 
 # 6. SWEEP HEURISTIC
-""" old sweep heuristic that runs only once
-# solutionSweep = next_fit_heuristic(sort_customers_by_sweep(ourInstance), ourInstance)
-# print(f"Sweep Heuristic | #Vehicles: {len(solutionSweep)}, distance: {compute_distances(solutionSweep, ourInstance)}, is_feasible: {is_feasible(solutionSweep, ourInstance)}")
-"""
-
-bestDistanceRandomSweep = 10e10
+""" The Sweep Heuristic will only work if we have enough payload_kg capacity to assign all customers to feasible [kg] routes"""
+bestCostRandomSweep = 10e10
 for i in range(10): # we run the sweep heuristic multiple times with different starting angles to get a good starting solution
-    tempSolutionRandomSweep = random_sweep(ourInstance)
-    tempDistance = compute_distances(tempSolutionRandomSweep, ourInstance)
+    tempSolutionRandomSweep = random_sweep(ourInstance, listOfInitialVehicles)
+    tempCost = solution_cost(tempSolutionRandomSweep, ourInstance, 0, True)
     # print(f"Rand Sweep Heuristic, temp distance: {compute_distances(tempSolutionRandomSweep, ourInstance)}")
-    if  tempDistance < bestDistanceRandomSweep:
+    if tempCost < bestCostRandomSweep:
         solutionRandomSweep = tempSolutionRandomSweep.copy()
-        bestDistanceRandomSweep = tempDistance
-print(f"Rand Sweep Heuristic, #Vehicles: {len(solutionRandomSweep)}, distance: {compute_distances(solutionRandomSweep, ourInstance)}")
+        bestCostRandomSweep = tempCost
+print(f"Rand Sweep Heuristic, #Vehicles: {len(solutionRandomSweep)}, cost: {bestCostRandomSweep}")
 
-plotTSP(solutionRandomSweep, coordinates_int, 'r')  # matplot of sweep solution
+plotTSP(list(map(lambda x: x.customer_list, solutionRandomSweep)), coordinates_int, 'r')  # matplot of sweep solution
 
 # 7 CREATING ROUTE OBJECTS
-initialListOfRoutes = []
-for i in solutionRandomSweep: # we turn the solution of random sweep (a nested list[list]) into a list[Route] with objects of Class Route
-    initialListOfRoutes.append(RouteObject(i, dummyAtego)) # we start all with the same truck
+initialListOfRoutes = solutionRandomSweep
+# for i in solutionRandomSweep: # we turn the solution of random sweep (a nested list[list]) into a list[Route] with objects of Class Route
+#     initialListOfRoutes.append(RouteObject(i, dummyAtego)) # we start all with the same truck
 
 
 # 7.1 Vehicle Assignment after Sweep
-for r in initialListOfRoutes: # assigning costs to the routes, costs with the initial dummy vehicle assignment
-    r.current_cost = routeCost(r, ourInstance)
+# for r in initialListOfRoutes: # assigning costs to the routes, costs with the initial dummy vehicle assignment. This is needed because the vehicle assignment goes for the most expensive route first.
+#     r.current_cost = routeCost(r, ourInstance, 0, False)
+listOfInitAvailableVehicles = vehicle_assignment(initialListOfRoutes, listOfInitialVehicles, ourInstance, 0, True)  # vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: List[Vehicle], instance: Instance):
 
-# vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: List[Vehicle], instance: Instance):
-vehicle_assignment(initialListOfRoutes, listOfInitialVehicles, ourInstance)
-
+""" testing penalty costs
+# initialListOfRoutes[0].customer_list.insert(1, 5)
+# initialListOfRoutes[0].customer_list.insert(1, 6)
+# initialListOfRoutes[0].customer_list.insert(1, 7)
+# initialListOfRoutes[0].vehicle = Vehicle("DouzeV2ECargoBike", city, "000000")
+test_penalty_cost = routeCost(initialListOfRoutes[0], ourInstance, 5, True)
+"""
 
 # 8. OUR ALGORITHM (DESTRUCTION + INSERTION + OPTIMIZATION + ACCEPTANCE)
-solutionOur = ouralgorithm(ourInstance, initialListOfRoutes, find_first_improvement_2Opt, listOfInitialVehicles, coordinates_int)
+solutionOur = ouralgorithm(ourInstance, initialListOfRoutes, find_first_improvement_2Opt, listOfInitialVehicles, listOfInitAvailableVehicles, maxIterations, coordinates_int)
 # lenOfSolutionOur = len(solutionOur)
 # for i in range(lenOfSolutionOur):
 #     print(f"Sum of demands of a {i} route: " + str(compute_total_demand(solutionOur[i], ourInstance)))
