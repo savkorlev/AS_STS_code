@@ -77,7 +77,7 @@ def next_fit_heuristic(all_customers: List[int], instance: Instance, initialVehi
             # open new route and assign customer
             randomVehicle = random.choice(availiableVehicles)
             while demand > randomVehicle.payload_kg:  # makes sure we only start if we have a vehicle that can fit the customer
-                randomVehicle = random.choice(availiableVehicles)
+                randomVehicle = random.choice(availiableVehicles) # TODO: Fix this. Currently it can lead to an infinite loop, if we only have vehicles left that are smaller than the customers left.
             open_route = [0, c]
             open_route_capacity_used = demand
 
@@ -262,7 +262,7 @@ def penalty_cost(routeObject: RouteObject, instance: Instance, iteration: int) -
 def compute_overload(constraint: int, load: int) -> float:
     # Overload factor can be changed to our will. Probably should get smthing from literature
     overload_factor = (max(load - constraint,
-                           0) / constraint) ** 2  # we normalize the factor by the constraint (to not punish more because values are higher), then we square to punish bigger overloads much more
+                           0) / constraint)# ** 2  # we normalize the factor by the constraint (to not punish more because values are higher), then we square to punish bigger overloads much more
     return overload_factor
 
 
@@ -280,12 +280,14 @@ def vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: Li
     list_of_available_vehicles = initial_list_of_vehicles.copy()
     dummyAtego = Vehicle("MercedesBenzAtego", "Paris", "999999")
 
+    counter = 0
     for r in list_of_routes:  # check all routes. Before this they should be ordered by their costs descending
+        counter += 1
         # costBefore = r.current_cost
         best_vehicle = dummyAtego
         best_cost = 10e10
         for v in list_of_available_vehicles:  # check all available vehicles. This list should get shorter while we progress, because the best vehicles will be removed from it
-            # if compute_total_demand(r.customer_list, instance) < v.payload_kg:  # feasibility check over payload. can be removed once we have penalty costs TODO: Implement penalty_cost here
+            # if compute_total_demand(r.customer_list, instance) < v.payload_kg:  # feasibility check over payload. can be removed once we have penalty costs
             r.vehicle = v
             tempCost = routeCost(r, instance, iteration, penalty_active)  # cost with the checked vehicle
             if tempCost < best_cost:
@@ -294,5 +296,5 @@ def vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: Li
         r.vehicle = best_vehicle  # assign the bestVehicle to the route
         list_of_available_vehicles.remove(best_vehicle)  # remove the bestVehicle from available.
         r.current_cost = routeCost(r, instance, iteration, penalty_active)  # update the route cost
-        print(f"Route cost after Vehicle Assignment: route {r}, vehicle {r.vehicle.type} {r.vehicle.plateNr}, cost: {r.current_cost}, demand {compute_total_demand(r.customer_list, instance)}, feasible: {r.currently_feasible}")
+        print(f"Route cost after Vehicle Assignment: route {counter} , vehicle {r.vehicle.type} {r.vehicle.plateNr}, cost: {r.current_cost:.2f}, demand {compute_total_demand(r.customer_list, instance)}, customerCount: {len(r.customer_list)-2}, feasible: {r.currently_feasible}")
     return list_of_available_vehicles

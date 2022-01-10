@@ -1,5 +1,6 @@
 import math
 import random
+import copy
 from typing import List
 
 from instances.LocalSearch import hillclimbing, find_first_improvement_2Opt
@@ -69,39 +70,50 @@ def sort_customers_by_sweep(instance: Instance) -> List[int]:
 
 
 
-
+#TODO: Check all copy operations
 def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], function, listOfInitialVehicles: List[Vehicle],
                  listOfInitAvailableVehicles: List[Vehicle], maxIterations: int, coordinates_int: List): # coordinates_int is only for matplot
     # START OF INITIALIZATION PHASE
-    listOfRoutes = initialSolution.copy()
     list_of_available_vehicles = listOfInitAvailableVehicles.copy()
     # setting the initial solution up so we can compare to it in acceptance phase
-    bestSolution = listOfRoutes.copy()  # set the initial solution as the best solution (until acceptance check)
-    bestCost = solution_cost(listOfRoutes, instance, 0, True) # used in acceptance check. iteration is hardcoded to 0.
+    bestSolution = initialSolution.copy()  # set the initial solution as the best solution (until acceptance check)
     bestIteration = -1 # used in acceptance check
 
-    print(f"Sweep solution: {list(map(lambda x: x.customer_list, listOfRoutes))}") # printing out customer lists after sweep
-    print(f"Route costs:    {list(map(lambda x: x.current_cost, listOfRoutes))}")  # printing out costs of the routes after sweep after costs are assigned
+    print(f"Sweep solution: {list(map(lambda x: x.customer_list, bestSolution))}") # printing out customer lists after sweep
+    print(f"Route costs:    {list(map(lambda x: x.current_cost, bestSolution))}")  # printing out costs of the routes after sweep after costs are assigned
     # END OF INITIALIZATION PHASE
     # -------------------------------------------------------------------------------------------------------------
     # START OF THE LOOP
     for iteration in range(maxIterations):  # run our algorithm multiple times
         print(f"New iteration__________{iteration}")
-        print(f"Routes at start of iter {iteration}:        {list(map(lambda x: x.customer_list, listOfRoutes))}")
+        print(f"Routes at start of iter {iteration}:        {list(map(lambda x: x.customer_list, bestSolution))}")
         # -------------------------------------------------------------------------------------------------------------
         # START OF DESTRUCTION PHASE
-        bestSolution_beforeDestruction = list(map(lambda x: x.customer_list, bestSolution))
+        # bestSolution_beforeDestruction = list(map(lambda x: x.customer_list, bestSolution))
+        listOfRoutes = copy.deepcopy(bestSolution)  # at the start of each iteration, set the list of routes to best known solution
 
         # Random Removal Operation
         numberOfRemoved = random.randint(round(0.1 * (len(instance.q) - 1)), round(0.5 * (len(instance.q) - 1)))  # generate number customers to be removed
         listOfRemoved = random.sample(range(1, len(instance.q)), numberOfRemoved)  # generate customers to be removed, starting from 1 so depo isn't getting deleted
         listOfRemoved.sort()  # for better readability during debugging """ somehow this does not seem to work """
-        listAfterDestruction = []
-        for i in range(len(bestSolution_beforeDestruction)):
-            element = [e for e in bestSolution_beforeDestruction[i] if e not in listOfRemoved]
-            listAfterDestruction.append(element)
-        print(f"Customers to be removed: {listOfRemoved}")
-        print(f"Routes after destruction:         {listAfterDestruction}")
+        temp_listOfRemoved = listOfRemoved.copy()
+        for r in listOfRoutes:
+            for rc in temp_listOfRemoved:
+                if rc in r.customer_list:
+                    r.customer_list.remove(rc)
+                    #temp_listOfRemoved.remove(rc)
+
+        # listAfterDestruction = []
+        # for i in range(len(bestSolution_beforeDestruction)):
+        #     element = [e for e in bestSolution_beforeDestruction[i] if e not in listOfRemoved]
+        #     listAfterDestruction.append(element)
+        print(f"Customers to be removed:          {listOfRemoved}")
+        print(f"Routes after destruction:         {list(map(lambda x: x.customer_list, listOfRoutes))}")
+        #print(f"Routes after destruction:         {listAfterDestruction}")
+
+        for r in listOfRoutes:
+            r.current_cost = routeCost(r, instance, iteration, True)  # recalculate route cost after destruction
+
 
         """ I encountered a bug here where after destructing we have more routes than before, and the order of the routes is changed. After destruction has 11 routes, before had 10.
         data at bug:
@@ -117,6 +129,8 @@ Customers to be removed: [20, 23, 32, 34, 39]
 Routes after destruction:         [[0, 30, 16, 17, 15, 8, 13, 0], [0, 0], [0, 3, 18, 26, 6, 38, 33, 0], [0, 11, 21, 22, 2, 35, 36, 0], [0, 24, 12, 1, 0], [0, 31, 0], [0, 37, 14, 19, 0], [0, 9, 4, 27, 0], [0, 28, 7, 0], [0, 5, 0], [0, 25, 10, 0], [0, 29, 0], [0, 0]]
         
         """
+
+        """
         # TODO: Remove bug, remove hack
         while len(listOfRoutes) < len(listAfterDestruction): # HACK TO AVOID BUG
             listOfRoutes.append(RouteObject([0,0], Vehicle("MercedesBenzAtego", "Paris", "999999")))
@@ -127,6 +141,7 @@ Routes after destruction:         [[0, 30, 16, 17, 15, 8, 13, 0], [0, 0], [0, 3,
         print(f"Route objects after destruction:  {list(map(lambda x: x.customer_list, listOfRoutes))}")
 
         listOfRoutes = delete_empty_routes(listOfRoutes) # HACK TO AVOID BUG
+        """
         # END OF RANDOM DESTRUCTION
         # END OF DESTRUCTION PHASE
         #  -------------------------------------------------------------------------------------------------------------
@@ -138,8 +153,7 @@ Routes after destruction:         [[0, 30, 16, 17, 15, 8, 13, 0], [0, 0], [0, 3,
             bestPosition = (0, 0)
             bestCustomer = 0
 
-            for r in listOfRoutes:
-                r.current_cost = routeCost(r, instance, iteration, True) # recalculate route cost after destruction
+
             # print(list(map(lambda x: x.current_cost, listOfRoutes)))  # printing out costs of the routes after i-th loop of the insertion phase
             for customerIndex in range(len(listOfRemoved)):  # iterating over list of removed customers
                 for i in listOfRoutes:  # iterating over routes in listOfRoutes
@@ -170,6 +184,7 @@ Routes after destruction:         [[0, 30, 16, 17, 15, 8, 13, 0], [0, 0], [0, 3,
                 newRoute.current_cost = newRouteCost
                 listOfRoutes.append(newRoute)  # add newRoute to list of routes
                 list_of_available_vehicles.remove(bestNewVehicle)
+
             listOfRemoved.remove(bestCustomer)  # delete current bestCustomer from a list of removed customers
 
         print(f"Route objects after insertion:    {list(map(lambda x: x.customer_list, listOfRoutes))}")
@@ -195,15 +210,25 @@ Routes after destruction:         [[0, 30, 16, 17, 15, 8, 13, 0], [0, 0], [0, 3,
         # END OF OPTIMIZATION PHASE.
         # -------------------------------------------------------------------------------------------------------------
         # START OF ACCEPTANCE PHASE
+
+        # count customers
+        customer_count = 0
+        for r in listOfRoutes:
+            customer_count += len(r.customer_list) - 2
+        print(f"customer count check: {customer_count}")
+
+
         bestCost = solution_cost(bestSolution, instance, iteration, True)
+        print(f"Best known cost before this iteration: {bestCost}")
+        print(f"Best iteration before this one: {bestIteration}")
         costThisIteration = solution_cost(listOfRoutes, instance, iteration, True)
         if costThisIteration < bestCost:
             bestCost = costThisIteration
             bestSolution = listOfRoutes.copy()
             bestIteration = iteration
         print(f"Total cost of the current iteration: {costThisIteration}")
-        print(f"The best known cost: {bestCost}")
-        print(f"The best iteration: {bestIteration}")
+        print(f"Best known cost: {bestCost}")
+        print(f"Best iteration: {bestIteration}\n")
 
 
 

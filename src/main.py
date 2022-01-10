@@ -1,3 +1,5 @@
+import sys
+
 import pandas as pd
 
 from instances.Construction import sort_customers_by_sweep, ouralgorithm, random_sweep
@@ -46,10 +48,10 @@ dummyAtego = Vehicle("MercedesBenzAtego", "Paris", "999999") # this dummy vehicl
 
 #set all the initial conditions for vehicles here
 city = "Paris"
-numAtego = 10
+numAtego = 20
 numVWtrans = 10
-numECargoBike = 5
-
+numECargoBike = 0
+#TODO put the vehicle creation into util
 for i in range(numAtego):
     vehicleType = "MercedesBenzAtego"
     numberplate = "1MBA" + str(i+1).zfill(3)
@@ -66,22 +68,34 @@ for i in range(numECargoBike):
 
 print(f"List of initial Vehicle payloads_kg: {list(map(lambda x: x.payload_kg, listOfInitialVehicles))}")  # MAP THINGY
 
+maxIterations = 200  # sets how many iterations we want
+
 # 3. CREATING TEST DATASET AND ATTRIBUTES OF FUTURE INSTANCE
-testDimension = 40  # change this to use more or less customers of the data set. Max for Paris is 112. Also need to change the iloc for the nodes file
+testDimension = 112  # change this to use more or less customers of the data set. Max for Paris is 112. Also need to change the iloc for the nodes file
 
 # test_df_Paris_nodes = df_Paris_nodes.iloc[:20, :]                   # select elements from D0 to C19 in nodes
 # test_df_Paris_routes = df_Paris_routes.iloc[:2260, :]               # select elements from D0 to C19 in routes
-test_df_Paris_nodes = df_Paris_nodes.iloc[:40, :]                   # select elements from D0 to C40 in nodes
-test_df_Paris_routes = df_Paris_routes.iloc[:4633, :]               # select elements from D0 to C40 in routes
-# test_df_Paris_nodes = df_Paris_nodes
-# test_df_Paris_routes = df_Paris_routes
+# test_df_Paris_nodes = df_Paris_nodes.iloc[:40, :]                   # select elements from D0 to C40 in nodes
+# test_df_Paris_routes = df_Paris_routes.iloc[:4633, :]               # select elements from D0 to C40 in routes
+test_df_Paris_nodes = df_Paris_nodes
+test_df_Paris_routes = df_Paris_routes
 # print(test_df_Paris_nodes)
 # print(test_df_Paris_routes)
 
-maxIterations = 10  # sets how many iterations we want
+
 
 testDemandParis = list(test_df_Paris_nodes.loc[:, "Demand[kg]"])    # select demand column and convert it to a list
 # print(testDemandParis)
+
+# test feasibility for sweep
+sumOfDemand = sum(testDemandParis)
+sumOfCapacity = numAtego * 2800 + numVWtrans * 883 + numECargoBike * 100
+
+if sumOfCapacity < sumOfDemand:
+    print(f"Not enough Capacity ({sumOfCapacity}) for Demand ({sumOfDemand})")
+    sys.exit()
+
+
 
 testParisDistances = {}                                             # the purpose of the following up loop is
 for row, content in test_df_Paris_routes.iterrows():                # to create tuples with distances from one Id

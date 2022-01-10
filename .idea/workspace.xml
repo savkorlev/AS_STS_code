@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) penalty_cost: started implementing functions for penalty costs. This is the last commit before I start removing hard feasibility checks.&#10;2) &quot;extra routes after destruction&quot; bug in destroy operation still happens">
+    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) penalty_cost: switched everything to penalty cost&#10;2) allow opening of new route in insertion phase if cheaper than existing route&#10;2) &quot;extra routes after destruction&quot; bug in destroy operation still happens. This commit is mostly for seeing this bug happen.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instances/Construction.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Construction.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instances/Utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Utils.py" afterDir="false" />
@@ -71,7 +71,7 @@
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="settings.editor.selected.configurable" value="preferences.sourceCode" />
+    <property name="settings.editor.selected.configurable" value="preferences.editor.code.editing" />
   </component>
   <component name="RunManager" selected="Python.main">
     <configuration name="TestConstruction" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
@@ -219,7 +219,7 @@
       <workItem from="1641391510370" duration="1654000" />
       <workItem from="1641639752595" duration="7662000" />
       <workItem from="1641648048470" duration="13836000" />
-      <workItem from="1641791837027" duration="21495000" />
+      <workItem from="1641791837027" duration="30869000" />
     </task>
     <task id="LOCAL-00001" summary="Let's see">
       <created>1637839022626</created>
@@ -536,7 +536,14 @@
       <option name="project" value="LOCAL" />
       <updated>1641797281418</updated>
     </task>
-    <option name="localTasksCounter" value="46" />
+    <task id="LOCAL-00046" summary="1) penalty_cost: switched everything to penalty cost&#10;2) allow opening of new route in insertion phase if cheaper than existing route&#10;2) &quot;extra routes after destruction&quot; bug in destroy operation still happens. This commit is mostly for seeing this bug happen.">
+      <created>1641819654866</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1641819654866</updated>
+    </task>
+    <option name="localTasksCounter" value="47" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -569,7 +576,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="1) insertion part without checking for feasibility" />
     <MESSAGE value="1) got insertion algorithm working (check in-line comments!)" />
     <MESSAGE value="Add optimization to ourAlgorithm and add a class of local search" />
     <MESSAGE value="added Christophers local directory" />
@@ -594,7 +600,8 @@
     <MESSAGE value="1) semi-working matplot" />
     <MESSAGE value="1) colored routes work now&#10;2) acceptance check switched to costs&#10;3) less ListsOfCustomerLists used, more List[Route]&#10;4) stuck at a bug in destruction phase, more routes after destruction" />
     <MESSAGE value="1) penalty_cost: started implementing functions for penalty costs. This is the last commit before I start removing hard feasibility checks.&#10;2) &quot;extra routes after destruction&quot; bug in destroy operation still happens" />
-    <option name="LAST_COMMIT_MESSAGE" value="1) penalty_cost: started implementing functions for penalty costs. This is the last commit before I start removing hard feasibility checks.&#10;2) &quot;extra routes after destruction&quot; bug in destroy operation still happens" />
+    <MESSAGE value="1) penalty_cost: switched everything to penalty cost&#10;2) allow opening of new route in insertion phase if cheaper than existing route&#10;2) &quot;extra routes after destruction&quot; bug in destroy operation still happens. This commit is mostly for seeing this bug happen." />
+    <option name="LAST_COMMIT_MESSAGE" value="1) penalty_cost: switched everything to penalty cost&#10;2) allow opening of new route in insertion phase if cheaper than existing route&#10;2) &quot;extra routes after destruction&quot; bug in destroy operation still happens. This commit is mostly for seeing this bug happen." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -615,14 +622,16 @@
     </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
-        <watch expression="bestSolution_beforeDestruction" language="Python" />
-        <watch expression="listAfterDestruction" />
-        <watch expression="listOfRemoved" />
+        <watch expression="listOfRoutes" />
+        <watch expression="bestSolution" />
+        <watch expression="bestIteration" />
+        <watch expression="bestCost" />
+        <watch expression="iteration" />
       </configuration>
     </watches-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/main_py$TestConstruction.coverage" NAME="TestConstruction Coverage Results" MODIFIED="1640299941018" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1641819326620" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1641829312442" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
