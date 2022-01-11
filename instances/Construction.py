@@ -73,7 +73,7 @@ def sort_customers_by_sweep(instance: Instance) -> List[int]:
 
 
 #TODO: Check all copy operations
-def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], function, listOfInitialVehicles: List[Vehicle],
+def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfInitialVehicles: List[Vehicle],
                  listOfInitAvailableVehicles: List[Vehicle], maxIterations: int, coordinates_int: List): # coordinates_int is only for matplot
     # START OF INITIALIZATION PHASE
     list_of_available_vehicles = listOfInitAvailableVehicles.copy()
@@ -201,7 +201,7 @@ Routes after destruction:         [[0, 30, 16, 17, 15, 8, 13, 0], [0, 0], [0, 3,
 
         # START OF LOCAL OPTIMIZATION 2-opt
         """ 2-opt currently optimizes for distance. Since it is inter-route, I am fine with this. - Christopher"""
-        listAfterOptimization = hillclimbing(list(map(lambda x: x.customer_list, listOfRoutes)), instance, function) #TODO remove function from ouralgorithm arguments, call 2-opt here directly
+        listAfterOptimization = hillclimbing(list(map(lambda x: x.customer_list, listOfRoutes)), instance, find_first_improvement_2Opt) #TODO remove function from ouralgorithm arguments, call 2-opt here directly
         for i in range(len(listAfterOptimization)):
             listOfRoutes[i].customer_list = listAfterOptimization[i].copy()  # put the optimized customer lists back into our RouteObjects
         print(f"Route objects after optimization: {list(map(lambda x: x.customer_list, listOfRoutes))}")

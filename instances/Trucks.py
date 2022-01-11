@@ -29,6 +29,28 @@ class Vehicle:
         # int range # we can use range for both ICEV & BEV
         # int operating_hours
 
+
+def create_vehicles(city: str, num_Atego: int, num_VWTrans: int, num_VWCaddy: int, num_eFUSO: int,
+                    num_eScooterWL: int, num_eScooterWS: int, num_eCargoBike: int) -> list[Vehicle]:
+    listOfInitialVehicles = []
+
+    for i in range(num_Atego):
+        vehicleType = "MercedesBenzAtego"
+        numberplate = "1MBA" + str(i + 1).zfill(3)
+        listOfInitialVehicles.append(Vehicle(vehicleType, city, numberplate))
+    for i in range(num_VWTrans):
+        vehicleType = "VWTransporter"
+        numberplate = "2VWT" + str(i + 1).zfill(3)
+        listOfInitialVehicles.append(Vehicle(vehicleType, city, numberplate))
+    for i in range(num_eCargoBike):
+        vehicleType = "DouzeV2ECargoBike"
+        numberplate = "7ECB" + str(i + 1).zfill(3)
+        listOfInitialVehicles.append(Vehicle(vehicleType, city, numberplate))
+
+    return listOfInitialVehicles
+
+
+""" old stuff """
         # class MercedesBenzAtego:
         #
         #     def __init__(self, plateNum: int):
