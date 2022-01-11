@@ -7,8 +7,7 @@ from instances.Utils import Instance, temporaryRouteCost, routeCost
 def random_removal(instance: Instance) -> list:
     """ random removal simply samples from the customer list in instance.q
     """
-    numberOfRemoved = random.randint(round(0.1 * (len(instance.q) - 1)),
-                                     round(0.5 * (len(instance.q) - 1)))  # generate number customers to be removed
+    numberOfRemoved = random.randint(round(0.1 * (len(instance.q) - 1)), round(0.1 * (len(instance.q) - 1)))  # generate number customers to be removed
     listOfRemoved = random.sample(range(1, len(instance.q)),
                                   numberOfRemoved)  # generate customers to be removed, starting from 1 so depo isn't getting deleted
     return listOfRemoved
@@ -27,8 +26,7 @@ def expensive_removal(currentSolution: list[RouteObject], instance: Instance, it
     for r in currentSolution:
         r.current_cost = routeCost(r, instance, iteration, True) # recalculate all the routeCosts. Because we start a new iteration, penalty costs are updated.
 
-    numberOfRemoved = random.randint(round(0.1 * (len(instance.q) - 1)),
-                                     round(0.5 * (len(instance.q) - 1)))  # generate number customers to be removed
+    numberOfRemoved = random.randint(round(0.1 * (len(instance.q) - 1)), round(0.1 * (len(instance.q) - 1)))  # generate number customers to be removed
     tupleList = []  # we will save all customers and their cost in this list, so we can later sort by cost
     for r in currentSolution:  # iterate over all routes
         complete_route = r.customer_list.copy()  # make a copy so we dont accidentally change the route inside the routeObject

@@ -241,7 +241,7 @@ def routeCost(routeObject: RouteObject, instance: Instance, iteration: int, pena
 
 def penalty_cost(routeObject: RouteObject, instance: Instance, iteration: int) -> float:
     # TODO: Choose suitable penalty-factor.
-    iteration_penalty = 5 + iteration * 5  # penalty in each iteration.
+    iteration_penalty = 5 + iteration * 1  # penalty in each iteration.
 
     # payload_kg
     constraint_kg = routeObject.vehicle.payload_kg

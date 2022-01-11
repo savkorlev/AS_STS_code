@@ -7,6 +7,7 @@ import sys
 from typing import List
 
 from instances.DestructionOps import random_removal, expensive_removal
+from instances.InsertionOps import cheapest_insertion_iterative
 from instances.LocalSearch import hillclimbing, find_first_improvement_2Opt
 from instances.Plot import plotTSP
 from instances.Route import RouteObject
@@ -79,7 +80,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
                  listOfInitAvailableVehicles: List[Vehicle], maxIterations: int, coordinates_int: List): # coordinates_int is only for matplot
     # START OF INITIALIZATION PHASE
     starttime = datetime.datetime.now()
-    list_of_available_vehicles = listOfInitAvailableVehicles.copy()
+    list_of_available_vehicles = copy.deepcopy(listOfInitAvailableVehicles)
     initialCost = solution_cost(initialSolution, instance, 0, False)  # saving the initial cost (only feasible costs) to compare in the end
     # setting the initial solution up so we can compare to it in acceptance phase
     bestSolution = initialSolution.copy()  # set the initial solution as the best solution (until acceptance check)
@@ -100,8 +101,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
         # bestSolution_beforeDestruction = list(map(lambda x: x.customer_list, bestSolution))
         listOfRoutes = copy.deepcopy(bestSolution)  # at the start of each iteration, set the list of routes to best known solution
 
-
-        if random.uniform(0, 1) > 0.33:
+        if random.uniform(0, 1) >= 0.1:  # pick a destroy operation
             # Random Removal Operation
             listOfRemoved = random_removal(instance)
             destroy_op_used = "random_removal"
@@ -114,12 +114,11 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
 
         temp_listOfRemoved = listOfRemoved.copy()
         for r in listOfRoutes:
-            for rc in temp_listOfRemoved:
+            for rc in temp_listOfRemoved:  # TODO: turn into while loop, if customer is removed from temp_list, iterate. Bucket?
                 if rc in r.customer_list:
                     r.customer_list.remove(rc)
 
                     # temp_listOfRemoved.remove(rc)  # causes a bug where customers dont get deleted TODO: Fix this bug
-
 
         print(f"Customers to be removed:          {listOfRemoved}")
         print(f"Routes after destruction:         {list(map(lambda x: x.customer_list, listOfRoutes))}")
@@ -129,49 +128,9 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
         # END OF DESTRUCTION PHASE
         #  -------------------------------------------------------------------------------------------------------------
         # START OF INSERTION PHASE
-        # START OF THE COST INSERTION PHASE
-        while len(listOfRemoved) > 0:
-
-            bestInsertionCost = 10e10  # very big number
-            bestPosition = (0, 0)
-            bestCustomer = 0
-
-
-            # print(list(map(lambda x: x.current_cost, listOfRoutes)))  # printing out costs of the routes after i-th loop of the insertion phase
-            for customerIndex in range(len(listOfRemoved)):  # iterating over list of removed customers
-                for i in listOfRoutes:  # iterating over routes in listOfRoutes
-                    for j in range(len(i.customer_list) - 1):  # iterating over positions in a route
-                        costWithout = i.current_cost
-                        temporaryCustomerList = i.customer_list.copy()
-                        temporaryCustomerList.insert(j + 1, listOfRemoved[customerIndex])
-                        costWith = temporaryRouteCost(temporaryCustomerList, i.vehicle, instance, iteration, True)
-                        insertionCost = costWith - costWithout
-                        if (insertionCost < bestInsertionCost): #\
-                                # & (compute_total_demand(i.customer_list, instance) + instance.q[listOfRemoved[customerIndex]] < i.vehicle.payload_kg): # & feasibilityCheck(instance, listAfterDestruction, listOfRemoved, customerIndex, i)
-                            bestInsertionCost = insertionCost
-                            bestPosition = (i, j + 1)
-                            bestCustomer = listOfRemoved[customerIndex]
-
-            bestNewRouteCost = 10e10
-            for v in list_of_available_vehicles: # check if a new route would be cheaper
-                newCustomerList = [0, bestCustomer, 0]
-                newRouteCost = temporaryRouteCost(newCustomerList, v, instance, iteration, True)  # check cost of new route
-                if newRouteCost < bestNewRouteCost:
-                    bestNewRouteCost = newRouteCost
-                    bestNewVehicle = v
-
-            if bestInsertionCost < bestNewRouteCost:
-                bestPosition[0].customer_list.insert(bestPosition[1], bestCustomer) # insert bestCustomer to the best feasible route for them
-            else:
-                newRoute = RouteObject(newCustomerList, bestNewVehicle)  # create a new RouteObject
-                newRoute.current_cost = newRouteCost
-                listOfRoutes.append(newRoute)  # add newRoute to list of routes
-                list_of_available_vehicles.remove(bestNewVehicle)
-
-            listOfRemoved.remove(bestCustomer)  # delete current bestCustomer from a list of removed customers
-
+        # cheapest insertion with new  after 1 customer is assigned
+        cheapest_insertion_iterative(listOfRoutes, listOfRemoved, list_of_available_vehicles, instance, iteration)
         print(f"Route objects after insertion:    {list(map(lambda x: x.customer_list, listOfRoutes))}")
-        # END OF THE COST INSERTION PHASE
         # END OF INSERTION PHASE
         # -------------------------------------------------------------------------------------------------------------
         # START OF OPTIMIZATION PHASE.

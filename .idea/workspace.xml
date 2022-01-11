@@ -4,10 +4,14 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) added comments that summarize the run after it finishes">
-      <change afterPath="$PROJECT_DIR$/instances/DestructionOps.py" afterDir="false" />
+    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) added expensive_removal. Currently, set to happen 33% of the time with random_removal happening 67%.">
+      <change afterPath="$PROJECT_DIR$/instances/InsertionOps.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instances/Construction.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Construction.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instances/DestructionOps.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/DestructionOps.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instances/Pseudocode.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Pseudocode.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instances/Utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -220,14 +224,7 @@
       <workItem from="1641639752595" duration="7662000" />
       <workItem from="1641648048470" duration="13836000" />
       <workItem from="1641791837027" duration="36977000" />
-      <workItem from="1641881216445" duration="12659000" />
-    </task>
-    <task id="LOCAL-00002" summary="Let's see">
-      <created>1637839248196</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1637839248196</updated>
+      <workItem from="1641881216445" duration="26763000" />
     </task>
     <task id="LOCAL-00003" summary="Commit via InteliJ">
       <created>1637839586612</created>
@@ -565,7 +562,14 @@
       <option name="project" value="LOCAL" />
       <updated>1641887263807</updated>
     </task>
-    <option name="localTasksCounter" value="51" />
+    <task id="LOCAL-00051" summary="1) added expensive_removal. Currently, set to happen 33% of the time with random_removal happening 67%.">
+      <created>1641895862994</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1641895862995</updated>
+    </task>
+    <option name="localTasksCounter" value="52" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -598,7 +602,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="1) Added multiple algorythm's runs (for loop)&#10;2) Added the test class&#10;3) Figured out the error (to be discussed)" />
     <MESSAGE value="1) Fixed the bug (open route)&#10;2) Made iterative acceptance check&#10;3) Changed the project's working repository" />
     <MESSAGE value="1) Added the return keyword to acceptance check that returns bestSolution after acceptance check&#10;2) Fixed the grammar" />
     <MESSAGE value="1) Changed the Trucks classes to represent the actual Trucks we have&#10;2) Now we're passing a list of Trucks to create an instance&#10;3) Added the truckAssigning function that assigns appropriate trucks to the respective routes&#10;4) Tried to add the feasibility check function (to Utils), but it doesn't work now for some reason, so I reverted the changes" />
@@ -623,7 +626,8 @@
     <MESSAGE value="1) ~lost customers~ bug seems to be fixed&#10;2) stable version, ready to add more constraints &amp; more operators" />
     <MESSAGE value="1) cleaned up main&#10;1.1 put vehicle creation into a function in trucks&#10;1.2 put coordinates -&gt; int_coordinates into a function in Plot&#10;1.3 reordered some stuff and deleted some old comments" />
     <MESSAGE value="1) added comments that summarize the run after it finishes" />
-    <option name="LAST_COMMIT_MESSAGE" value="1) added comments that summarize the run after it finishes" />
+    <MESSAGE value="1) added expensive_removal. Currently, set to happen 33% of the time with random_removal happening 67%." />
+    <option name="LAST_COMMIT_MESSAGE" value="1) added expensive_removal. Currently, set to happen 33% of the time with random_removal happening 67%." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -655,6 +659,6 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/main_py$TestConstruction.coverage" NAME="TestConstruction Coverage Results" MODIFIED="1640299941018" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1641891811149" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1641919052192" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
