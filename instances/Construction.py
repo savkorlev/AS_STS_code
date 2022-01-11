@@ -7,7 +7,7 @@ import sys
 from typing import List
 
 from instances.DestructionOps import random_removal, expensive_removal
-from instances.InsertionOps import cheapest_insertion_iterative
+from instances.InsertionOps import cheapest_insertion_iterative, regret_insertion
 from instances.LocalSearch import hillclimbing, find_first_improvement_2Opt
 from instances.Plot import plotTSP
 from instances.Route import RouteObject
@@ -101,7 +101,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
         # bestSolution_beforeDestruction = list(map(lambda x: x.customer_list, bestSolution))
         listOfRoutes = copy.deepcopy(bestSolution)  # at the start of each iteration, set the list of routes to best known solution
 
-        if random.uniform(0, 1) >= 0.1:  # pick a destroy operation
+        if random.uniform(0, 1) >= 0.2:  # pick a destroy operation
             # Random Removal Operation
             listOfRemoved = random_removal(instance)
             destroy_op_used = "random_removal"
@@ -114,7 +114,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
 
         temp_listOfRemoved = listOfRemoved.copy()
         for r in listOfRoutes:
-            for rc in temp_listOfRemoved:  # TODO: turn into while loop, if customer is removed from temp_list, iterate. Bucket?
+            for rc in temp_listOfRemoved:  # TODO: turn into while len(temp_listOfRemoved) > 0 loop
                 if rc in r.customer_list:
                     r.customer_list.remove(rc)
 
@@ -128,8 +128,15 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
         # END OF DESTRUCTION PHASE
         #  -------------------------------------------------------------------------------------------------------------
         # START OF INSERTION PHASE
-        # cheapest insertion with new  after 1 customer is assigned
-        cheapest_insertion_iterative(listOfRoutes, listOfRemoved, list_of_available_vehicles, instance, iteration)
+        if random.uniform(0, 1) >= 0.5:  # pick a destroy operation
+            # cheapest insertion with new  after 1 customer is assigned
+            cheapest_insertion_iterative(listOfRoutes, listOfRemoved, list_of_available_vehicles, instance, iteration)
+            insert_op_used = "cheapest_insert"
+        else:
+            # regret insertion
+            regret_insertion(listOfRoutes, listOfRemoved, list_of_available_vehicles, instance, iteration)
+            insert_op_used = "regret_insert"
+
         print(f"Route objects after insertion:    {list(map(lambda x: x.customer_list, listOfRoutes))}")
         # END OF INSERTION PHASE
         # -------------------------------------------------------------------------------------------------------------
@@ -172,7 +179,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
             bestCost = costThisIteration
             bestSolution = listOfRoutes.copy()
             bestIteration = iteration
-            listImprovingIterations.append((iteration, destroy_op_used))
+            listImprovingIterations.append((iteration, destroy_op_used, insert_op_used))
         print(f"Total cost of the current iteration: {costThisIteration}")
         print(f"Best known cost: {bestCost}")
         print(f"Best iteration: {bestIteration}\n")

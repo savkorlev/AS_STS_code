@@ -46,12 +46,17 @@ df_Paris_routes = pd.read_csv("data/Paris.routes", sep=' ')
 #set testDimension to 1 more than customers
 testDimension = 1 + 112  # change this to use more or less customers of the data set. Max for Paris is 112. Also need to change the iloc for the nodes file
 
-# test_df_Paris_nodes = df_Paris_nodes.iloc[:20, :]                   # select elements from D0 to C19 in nodes
-# test_df_Paris_routes = df_Paris_routes.iloc[:2260, :]               # select elements from D0 to C19 in routes
-# test_df_Paris_nodes = df_Paris_nodes.iloc[:40, :]                   # select elements from D0 to C40 in nodes
-# test_df_Paris_routes = df_Paris_routes.iloc[:4633, :]               # select elements from D0 to C40 in routes
-test_df_Paris_nodes = df_Paris_nodes
-test_df_Paris_routes = df_Paris_routes
+# DON'T FORGET TO SET MORE VEHICLES IF YOU HAVE MORE CUSTOMERS
+
+if testDimension == 20:
+    test_df_Paris_nodes = df_Paris_nodes.iloc[:20, :]                   # select elements from D0 to C19 in nodes
+    test_df_Paris_routes = df_Paris_routes.iloc[:2260, :]               # select elements from D0 to C19 in routes
+if testDimension == 40:
+    test_df_Paris_nodes = df_Paris_nodes.iloc[:40, :]                   # select elements from D0 to C40 in nodes
+    test_df_Paris_routes = df_Paris_routes.iloc[:4633, :]               # select elements from D0 to C40 in routes
+if testDimension == 113:
+    test_df_Paris_nodes = df_Paris_nodes                                  # select all elements (choose if 112 customers)
+    test_df_Paris_routes = df_Paris_routes                                # select all elements (choose if 112 customers)
 # print(test_df_Paris_nodes)
 # print(test_df_Paris_routes)
 
@@ -78,6 +83,7 @@ city = "Paris"
 num_Atego = 20
 num_VWTrans = 20
 num_eCargoBike = 0
+# TODO: Since we dont have to deal with multiple trips, we can change a lot of checks that test routeCost for every available vehicle. They will check the same vehicle type multiple times. We only have to check once per vehicle type + check if at least 1 is available. Check regret_insert for how this can be done.
 
 # create vehicles via function in Trucks.py-file
 listOfInitialVehicles = create_vehicles(city, num_Atego, num_VWTrans, 0, 0, 0, 0, num_eCargoBike)
