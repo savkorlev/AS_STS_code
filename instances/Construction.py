@@ -6,6 +6,7 @@ import copy
 import sys
 from typing import List
 
+from instances.DestructionOps import random_removal, expensive_removal
 from instances.LocalSearch import hillclimbing, find_first_improvement_2Opt
 from instances.Plot import plotTSP
 from instances.Route import RouteObject
@@ -99,10 +100,18 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
         # bestSolution_beforeDestruction = list(map(lambda x: x.customer_list, bestSolution))
         listOfRoutes = copy.deepcopy(bestSolution)  # at the start of each iteration, set the list of routes to best known solution
 
-        # Random Removal Operation
-        numberOfRemoved = random.randint(round(0.1 * (len(instance.q) - 1)), round(0.5 * (len(instance.q) - 1)))  # generate number customers to be removed
-        listOfRemoved = random.sample(range(1, len(instance.q)), numberOfRemoved)  # generate customers to be removed, starting from 1 so depo isn't getting deleted
-        listOfRemoved.sort()  # for better readability during debugging """ somehow this does not seem to work """
+
+        if random.uniform(0, 1) > 0.33:
+            # Random Removal Operation
+            listOfRemoved = random_removal(instance)
+            destroy_op_used = "random_removal"
+        else:
+            # Expensive Removal Operation
+            listOfRemoved = expensive_removal(listOfRoutes, instance, iteration)
+            destroy_op_used = "expensive_removal"
+
+        listOfRemoved.sort()  # for better readability during debugging
+
         temp_listOfRemoved = listOfRemoved.copy()
         for r in listOfRoutes:
             for rc in temp_listOfRemoved:
@@ -111,46 +120,12 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
 
                     # temp_listOfRemoved.remove(rc)  # causes a bug where customers dont get deleted TODO: Fix this bug
 
-        # listAfterDestruction = []
-        # for i in range(len(bestSolution_beforeDestruction)):
-        #     element = [e for e in bestSolution_beforeDestruction[i] if e not in listOfRemoved]
-        #     listAfterDestruction.append(element)
+
         print(f"Customers to be removed:          {listOfRemoved}")
         print(f"Routes after destruction:         {list(map(lambda x: x.customer_list, listOfRoutes))}")
-        #print(f"Routes after destruction:         {listAfterDestruction}")
 
         for r in listOfRoutes:
             r.current_cost = routeCost(r, instance, iteration, True)  # recalculate route cost after destruction
-
-
-        """ I encountered a bug here where after destructing we have more routes than before, and the order of the routes is changed. After destruction has 11 routes, before had 10.
-        data at bug:
-        
-        New iteration__________8
-Routes at start of it 8:          [[0, 24, 15, 17, 6, x29, 0], [0, 20, 39, 37, 14, 9, 0], [0, 3, 31, 18, 10, 23, 19, 0], [0, 25, 36, 22, 13, 21, 11, 0], [0, 5, 38, 26, 12, 7, 33, 0], [0, 30, 16, 8, 1, 32, 0], [0, 2, 0], [0, 35, 34, 0], [0, 28, 4, 0], [0, 27, 0]]
-Customers to be removed: [35, 14, 29, 30, 34, 28, 31, 1, 17, 19, 32, 2, 7, 26, 18, 36]
-Routes after destruction:         [[0, 24, 15, 6, 0], [0, 3, 10, 23, 0], [0, 5, 38, 12, 33, 0], [0, 25, 22, 13, 21, 11, 0], [0, 16, 8, 0], [0, 0], [0, 0], [0, 20, 39, 37, 9, 0], [0, 0], [0, 4, 0], [0, 27, 0]]
-
-New iteration__________4
-Routes at start of iter 4:        [[0, 30, 16, 17, 15, 8, 13, 0], [0, 11, 21, 22, 2, 35, 36, 0], [0, 3, 18, 26, 6, 38, 33, 0], [0, 37, 14, 34, 23, 19, 0], [0, 24, 12, 39, 1, 32, 0], [0, 25, 10, 0], [0, 29, 0], [0, 31, 0], [0, 9, 4, 27, 0], [0, 28, 7, 0], [0, 5, 0], [0, 20, 0]]
-Customers to be removed: [20, 23, 32, 34, 39]
-Routes after destruction:         [[0, 30, 16, 17, 15, 8, 13, 0], [0, 0], [0, 3, 18, 26, 6, 38, 33, 0], [0, 11, 21, 22, 2, 35, 36, 0], [0, 24, 12, 1, 0], [0, 31, 0], [0, 37, 14, 19, 0], [0, 9, 4, 27, 0], [0, 28, 7, 0], [0, 5, 0], [0, 25, 10, 0], [0, 29, 0], [0, 0]]
-        
-        """
-
-        """
-        # TODO: Remove bug, remove hack
-        while len(listOfRoutes) < len(listAfterDestruction): # HACK TO AVOID BUG
-            listOfRoutes.append(RouteObject([0,0], Vehicle("MercedesBenzAtego", "Paris", "999999")))
-            print(f"~ExtraRoute after Destruction~ Bug happened in iteration {iteration}")
-
-        for i in range(len(listAfterDestruction)):
-            listOfRoutes[i].customer_list = listAfterDestruction[i].copy()  # turn list after destruction back into listOfRoutes
-        print(f"Route objects after destruction:  {list(map(lambda x: x.customer_list, listOfRoutes))}")
-
-        listOfRoutes = delete_empty_routes(listOfRoutes) # HACK TO AVOID BUG
-        """
-        # END OF RANDOM DESTRUCTION
         # END OF DESTRUCTION PHASE
         #  -------------------------------------------------------------------------------------------------------------
         # START OF INSERTION PHASE
@@ -226,10 +201,9 @@ Routes after destruction:         [[0, 30, 16, 17, 15, 8, 13, 0], [0, 0], [0, 3,
         # if customer_count != 111: # this needs to be set to the exact amount of customers we have, and then it can be used to check if we lose/gain customers
         #     print(f"Error! Customer Count is: {customer_count}")
         #     os._exit()
-
-
         print(f"customer count check: {customer_count}")
 
+        print(f"Destroy Operation used: {destroy_op_used}.")
 
         bestCost = solution_cost(bestSolution, instance, iteration, True)
         print(f"Best known cost before this iteration: {bestCost}")
@@ -239,7 +213,7 @@ Routes after destruction:         [[0, 30, 16, 17, 15, 8, 13, 0], [0, 0], [0, 3,
             bestCost = costThisIteration
             bestSolution = listOfRoutes.copy()
             bestIteration = iteration
-            listImprovingIterations.append(iteration)
+            listImprovingIterations.append((iteration, destroy_op_used))
         print(f"Total cost of the current iteration: {costThisIteration}")
         print(f"Best known cost: {bestCost}")
         print(f"Best iteration: {bestIteration}\n")
