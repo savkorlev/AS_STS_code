@@ -93,7 +93,7 @@ if sumOfCapacity < sumOfDemand * 1.1: #1.1 is 10% safety factor
 
 # 4. SET MAX ITERATIONS
 """ logically, this should not be here. But this way we have all the parameters we need to set for a run nearby"""
-maxIterations = 10  # sets how many iterations we want
+maxIterations = 100  # sets how many iterations we want
 
 # 5. CREATING INSTANCE
 ourInstance = Instance(testDimension, listOfInitialVehicles, testDemandParis, testParisDistances, coordinates)

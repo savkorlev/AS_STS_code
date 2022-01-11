@@ -1,3 +1,4 @@
+import datetime
 import math
 import os
 import random
@@ -76,10 +77,14 @@ def sort_customers_by_sweep(instance: Instance) -> List[int]:
 def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfInitialVehicles: List[Vehicle],
                  listOfInitAvailableVehicles: List[Vehicle], maxIterations: int, coordinates_int: List): # coordinates_int is only for matplot
     # START OF INITIALIZATION PHASE
+    starttime = datetime.datetime.now()
     list_of_available_vehicles = listOfInitAvailableVehicles.copy()
+    initialCost = solution_cost(initialSolution, instance, 0, False)  # saving the initial cost (only feasible costs) to compare in the end
     # setting the initial solution up so we can compare to it in acceptance phase
     bestSolution = initialSolution.copy()  # set the initial solution as the best solution (until acceptance check)
     bestIteration = -1 # used in acceptance check
+    listImprovingIterations = []
+
 
     print(f"Sweep solution: {list(map(lambda x: x.customer_list, bestSolution))}") # printing out customer lists after sweep
     print(f"Route costs:    {list(map(lambda x: x.current_cost, bestSolution))}")  # printing out costs of the routes after sweep after costs are assigned
@@ -234,36 +239,23 @@ Routes after destruction:         [[0, 30, 16, 17, 15, 8, 13, 0], [0, 0], [0, 3,
             bestCost = costThisIteration
             bestSolution = listOfRoutes.copy()
             bestIteration = iteration
+            listImprovingIterations.append(iteration)
         print(f"Total cost of the current iteration: {costThisIteration}")
         print(f"Best known cost: {bestCost}")
         print(f"Best iteration: {bestIteration}\n")
-
-
-
-        # distancesOurAlgorythm = compute_distances(listAfterOptimization, instance)
-        # if distancesOurAlgorythm < bestDistance: # will be replaced by Sim Annealing
-        #     bestDistance = distancesOurAlgorythm
-        #     bestSolution_LoCL = listAfterOptimization
-        #     bestIteration = iteration
-        # print(f"Total distance of the current iteration: {distancesOurAlgorythm}")
-        # print(f"The best distance: {bestDistance}")
-        # print(f"The best iteration: {bestIteration}")
-
         # plotTSP(bestSolution_LoCL, coordinates_int) # use this if you want to plot after every iteration
-
         # END OF ACCEPTANCE PHASE
     # -------------------------------------------------------------------------------------------------------------
     # END OF LOOP
-    # TODO switch the final output to cost
-    # if distancesSweep < bestDistance:
-    #     print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {bestDistance}. Sweep is better")
-    # elif distancesSweep == bestDistance:
-    #     print(
-    #         f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {bestDistance}. Algorithms are equal")
-    # else:
-    #     print(f"Sweep Heuristic distance: {distancesSweep}, ourAlgorithm distance: {bestDistance}. ourAlgorithm is better")
-
     print(f"Finished after iteration {iteration}")
+
+    improvement = 100 - ((bestCost / initialCost) * 100)
+    imp_per_it = improvement / (iteration + 1)
+    print(f"Initialization cost [feasible]: {initialCost:.2f}, ourAlgorithm cost: {bestCost:.2f}.")
+    print(f"We improved by {improvement:.2f}%. Average improvement per iteration: {imp_per_it:.2f}%.")
+    print(f"We improved in the following iterations: {listImprovingIterations}.")
+    endtime = datetime.datetime.now()
+    print(f"Length of the run: {endtime - starttime}.\n")
+    print(str(endtime))
+
     return list(map(lambda x: x.customer_list, bestSolution))
-    # return bestSolution_LoCL
-# -------------------------------------------------------------------------------------------------------------
