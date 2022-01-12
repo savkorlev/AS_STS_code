@@ -4,11 +4,13 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) put the insertion phase code into a function in InsertionOps.py&#10;2) changed some parameters and wrote documentation on how to change parameters.">
+    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) added regret_insertion">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instances/Construction.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Construction.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instances/InsertionOps.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/InsertionOps.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instances/Route.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Route.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instances/Utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -221,14 +223,8 @@
       <workItem from="1641639752595" duration="7662000" />
       <workItem from="1641648048470" duration="13836000" />
       <workItem from="1641791837027" duration="36977000" />
-      <workItem from="1641881216445" duration="32120000" />
-    </task>
-    <task id="LOCAL-00004" summary="Commit via InteliJ">
-      <created>1637839692213</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1637839692213</updated>
+      <workItem from="1641881216445" duration="32275000" />
+      <workItem from="1641965231231" duration="8270000" />
     </task>
     <task id="LOCAL-00005" summary="Commit via PyCharm">
       <created>1637839764432</created>
@@ -566,7 +562,14 @@
       <option name="project" value="LOCAL" />
       <updated>1641921749959</updated>
     </task>
-    <option name="localTasksCounter" value="53" />
+    <task id="LOCAL-00053" summary="1) added regret_insertion">
+      <created>1641928266802</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1641928266802</updated>
+    </task>
+    <option name="localTasksCounter" value="54" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -599,7 +602,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="1) Added the return keyword to acceptance check that returns bestSolution after acceptance check&#10;2) Fixed the grammar" />
     <MESSAGE value="1) Changed the Trucks classes to represent the actual Trucks we have&#10;2) Now we're passing a list of Trucks to create an instance&#10;3) Added the truckAssigning function that assigns appropriate trucks to the respective routes&#10;4) Tried to add the feasibility check function (to Utils), but it doesn't work now for some reason, so I reverted the changes" />
     <MESSAGE value="1) Switched to original data from the test data&#10;2) Made the algorithm run 100 times&#10;3) Inserted acceptance check within ouralgorithm&#10;4) Assigning properties' values inside class declarations" />
     <MESSAGE value="1) Utils 900 is a made-up number for now (in sweep)&#10;2) Added costs (currently per km in Paris) to Trucks" />
@@ -624,7 +626,8 @@
     <MESSAGE value="1) added comments that summarize the run after it finishes" />
     <MESSAGE value="1) added expensive_removal. Currently, set to happen 33% of the time with random_removal happening 67%." />
     <MESSAGE value="1) put the insertion phase code into a function in InsertionOps.py&#10;2) changed some parameters and wrote documentation on how to change parameters." />
-    <option name="LAST_COMMIT_MESSAGE" value="1) put the insertion phase code into a function in InsertionOps.py&#10;2) changed some parameters and wrote documentation on how to change parameters." />
+    <MESSAGE value="1) added regret_insertion" />
+    <option name="LAST_COMMIT_MESSAGE" value="1) added regret_insertion" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -635,9 +638,9 @@
           </properties>
         </breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/instances/InsertionOps.py</url>
-          <line>50</line>
-          <option name="timeStamp" value="11" />
+          <url>file://$PROJECT_DIR$/instances/Utils.py</url>
+          <line>75</line>
+          <option name="timeStamp" value="16" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -661,6 +664,6 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/main_py$TestConstruction.coverage" NAME="TestConstruction Coverage Results" MODIFIED="1640299941018" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1641928080469" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1641973642965" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

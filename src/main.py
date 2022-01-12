@@ -2,14 +2,10 @@ import sys
 
 import pandas as pd
 
-from instances.Construction import sort_customers_by_sweep, ouralgorithm, random_sweep
-from instances.LocalSearch import find_first_improvement_2Opt, find_first_improvement_relocate, \
-    find_first_improvement_exchange
-from instances.Route import RouteObject
-from instances.Trucks import Vehicle, create_vehicles
-from instances.Utils import Instance, next_fit_heuristic_naive, compute_distances, next_fit_heuristic, is_feasible, \
-    compute_total_demand, routeCost, temporaryRouteCost, compute_distance, vehicle_assignment, solution_cost
-from instances.Plot import draw_routes, plotTSP, create_list_int_coordinates
+from instances.Construction import ouralgorithm, random_sweep
+from instances.Trucks import create_vehicles
+from instances.Utils import Instance, vehicle_assignment, solution_cost
+from instances.Plot import plotTSP, create_list_int_coordinates
 
 # import os
 # os.chdir('C:/Users/Евгений/Desktop/TUM/WS 2021-2022/Advanced Seminar Sustainable Transportation Systems/AS_STS_code')
@@ -80,8 +76,8 @@ coordinates_int = create_list_int_coordinates(test_df_Paris_nodes)
 # 3. CREATING OUR VEHICLES
 # set the # of vehicles available to Sweep and Algorithm
 city = "Paris"
-num_Atego = 20
-num_VWTrans = 20
+num_Atego = 19
+num_VWTrans = 0
 num_eCargoBike = 0
 # TODO: Since we dont have to deal with multiple trips, we can change a lot of checks that test routeCost for every available vehicle. They will check the same vehicle type multiple times. We only have to check once per vehicle type + check if at least 1 is available. Check regret_insert for how this can be done.
 
@@ -89,20 +85,23 @@ num_eCargoBike = 0
 listOfInitialVehicles = create_vehicles(city, num_Atego, num_VWTrans, 0, 0, 0, 0, num_eCargoBike)
 print(f"List of initial Vehicle payloads_kg: {list(map(lambda x: x.payload_kg, listOfInitialVehicles))}")
 
-# test feasibility for sweep: We need to have enough capacity to carry all kg, +some safety. If not, the sweep will fail.
-# TODO: Fix infinite loop bug in Sweep, then delete this
+# test feasibility of our vehicle assignment. Need enough capacity to carry all demand.
 sumOfDemand = sum(testDemandParis)
 sumOfCapacity = num_Atego * 2800 + num_VWTrans * 883 + num_eCargoBike * 100
-if sumOfCapacity < sumOfDemand * 1.1: #1.1 is 10% safety factor
+if sumOfCapacity < sumOfDemand:
     print(f"Not enough Capacity ({sumOfCapacity}) for Demand ({sumOfDemand})")
-    sys.exit()
+#     # sys.exit()
 
 # 4. SET MAX ITERATIONS
 """ logically, this should not be here. But this way we have all the parameters we need to set for a run nearby"""
-maxIterations = 500  # sets how many iterations we want
+maxIterations = 100  # sets how many iterations we want
 
 # 5. CREATING INSTANCE
 ourInstance = Instance(testDimension, listOfInitialVehicles, testDemandParis, testParisDistances, coordinates)
+
+# testing new sweep heuristic
+
+
 
 # 6. SWEEP HEURISTIC
 """ The Sweep Heuristic will only work if we have enough payload_kg capacity to assign all customers to feasible [kg] routes"""

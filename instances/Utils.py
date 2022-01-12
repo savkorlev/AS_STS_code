@@ -1,3 +1,4 @@
+import copy
 import random
 import numpy as np
 from typing import List, Dict, Tuple
@@ -40,56 +41,99 @@ Route = List[int]
 Solution = List[Route]
 
 
-def next_fit_heuristic_naive(instance: Instance) -> Solution:
-    order = list(range(1, instance.n))
-    return next_fit_heuristic(order, instance)
+# def next_fit_heuristic_naive(instance: Instance) -> Solution:
+#     order = list(range(1, instance.n))
+#     return next_fit_heuristic(order, instance)
 
 
-def next_fit_heuristic(all_customers: List[int], instance: Instance, initialVehicles: List[Vehicle]) -> Solution:
-    routes: Solution = list()
-    open_route = [0]
-    open_route_capacity_used = 0
+def next_fit_heuristic(all_customers: List[int], instance: Instance, initialVehicles: List[Vehicle]) -> list():
+
+    """ penalty_cost_dummy_iteration sets the iteration that gives us the penalty cost for deciding if it is cheaper
+    to add a new route or to add to the last open route.
+    If this is chosen too high will only create feasible routes (if possible) and tends to overload the last vehicle available.
+    Setting it too low only creates infeasible routes.
+    A good idea seems to be to set it to 75% of maxIteration"""
+    penalty_cost_dummy_iteration = 75  # setting this parameter correctly is very important for the initial solution.
+
     listOfRoutes = []
+    availableVehicles = copy.deepcopy(initialVehicles)
 
-    availiableVehicles = initialVehicles.copy()
+    randomVehicle = random.choice(availableVehicles)
+    listOfRoutes.append(RouteObject([0, 0], randomVehicle))
+    availableVehicles.remove(randomVehicle)
 
-    randomVehicle = random.choice(availiableVehicles)
+    for current_customer in all_customers:
+        last_route = listOfRoutes[len(listOfRoutes) - 1]  # len - 1 gives us the last position
+        last_position = len(last_route.customer_list) - 1  # len - 1 gives us the last position
 
-    for c in all_customers:
-        demand = instance.q[c]
-        while (open_route_capacity_used == 0) & (demand > randomVehicle.payload_kg):  # makes sure we only start if we have a vehicle that can fit the customer
-            randomVehicle = random.choice(availiableVehicles)
+        temp_route = last_route.customer_list.copy()
+        temp_route.insert(last_position, current_customer)
+        cost_with = temporaryRouteCost(temp_route, last_route.vehicle, instance, penalty_cost_dummy_iteration, True)  # set iteration to something where it will already have reasonable penalties
+        cost_without = temporaryRouteCost(last_route.customer_list, last_route.vehicle, instance, penalty_cost_dummy_iteration, True)
+        last_route_cost = cost_with - cost_without
 
-        if open_route_capacity_used + demand <= randomVehicle.payload_kg: #random.uniform(100, 2400):  # 900 is a made-up number
-            # assign customer to route
-            open_route.append(c)
-            open_route_capacity_used += demand
 
+        if len(availableVehicles) > 0:  # only try to pick a new vehicle if we still have vehicles available
+            randomVehicle = random.choice(availableVehicles)
+            new_route_cost = temporaryRouteCost([0, current_customer, 0], randomVehicle, instance, penalty_cost_dummy_iteration, True)
+            if last_route_cost <= new_route_cost:
+                last_route.customer_list.insert(last_position, current_customer)
+            else:
+                new_route = RouteObject([0, current_customer, 0], randomVehicle)
+                listOfRoutes.append(new_route)
+                availableVehicles.remove(randomVehicle)
         else:
-            # close active route
-            open_route.append(0)
-            newRoute = RouteObject(open_route, randomVehicle)
-            newRoute.current_cost = routeCost(newRoute, instance, 0, True)
-            listOfRoutes.append(newRoute)
-
-            availiableVehicles.remove(randomVehicle)
-
-            # open new route and assign customer
-            randomVehicle = random.choice(availiableVehicles)
-            while demand > randomVehicle.payload_kg:  # makes sure we only start if we have a vehicle that can fit the customer
-                randomVehicle = random.choice(availiableVehicles) # TODO: Fix this. Currently it can lead to an infinite loop, if we only have vehicles left that are smaller than the customers left.
-            open_route = [0, c]
-            open_route_capacity_used = demand
-
-    # close active route
-    open_route.append(0)
-    newRoute = RouteObject(open_route, randomVehicle)
-    newRoute.current_cost = routeCost(newRoute, instance, 0, True)
-    listOfRoutes.append(newRoute)  # close the last route
+            last_route.customer_list.insert(last_position, current_customer)
 
     return listOfRoutes
 
-""" old next_fit_heuristic """
+
+""" old next_fit_heuristic built by Christopher. Can only create feasible routes."""
+# def next_fit_heuristic(all_customers: List[int], instance: Instance, initialVehicles: List[Vehicle]) -> Solution:
+#     routes: Solution = list()
+#     open_route = [0]
+#     open_route_capacity_used = 0
+#     listOfRoutes = []
+#
+#     availiableVehicles = copy.deepcopy(initialVehicles)
+#
+#     randomVehicle = random.choice(availiableVehicles)
+#
+#     for c in all_customers:
+#         demand = instance.q[c]
+#         while (open_route_capacity_used == 0) & (demand > randomVehicle.payload_kg):  # makes sure we only start if we have a vehicle that can fit the customer
+#             randomVehicle = random.choice(availiableVehicles)
+#
+#         if open_route_capacity_used + demand <= randomVehicle.payload_kg: #random.uniform(100, 2400):  # 900 is a made-up number
+#             # assign customer to route
+#             open_route.append(c)
+#             open_route_capacity_used += demand
+#
+#         else:
+#             # close active route
+#             open_route.append(0)
+#             newRoute = RouteObject(open_route, randomVehicle)
+#             newRoute.current_cost = routeCost(newRoute, instance, 0, True)
+#             listOfRoutes.append(newRoute)
+#
+#             availiableVehicles.remove(randomVehicle)
+#
+#             # open new route and assign customer
+#             randomVehicle = random.choice(availiableVehicles)
+#             while demand > randomVehicle.payload_kg:  # makes sure we only start if we have a vehicle that can fit the customer
+#                 randomVehicle = random.choice(availiableVehicles) # This can lead to an infinite loop, if we only have vehicles left that are smaller than the customers left.
+#             open_route = [0, c]
+#             open_route_capacity_used = demand
+#
+#     # close active route
+#     open_route.append(0)
+#     newRoute = RouteObject(open_route, randomVehicle)
+#     newRoute.current_cost = routeCost(newRoute, instance, 0, True)
+#     listOfRoutes.append(newRoute)  # close the last route
+#
+#     return listOfRoutes
+
+""" old next_fit_heuristic as used in life-coding """
 # def next_fit_heuristic(customer_list: List[int], instance: Instance) -> Solution:
 #     routes: Solution = list()
 #     open_route = [0]

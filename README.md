@@ -9,12 +9,19 @@ Decide if you want to run with 19, 39 or 112 (all) customers. The code will then
 3 options are currently supported. Gene can add more :)
     testDimension = 1 + **x**
 
-1.1 Iterations: For how many iteration the code can run. -> main.py
+1.1 maxIterations: For how many iteration the code can run. -> main.py
 Can be set in main.py, in the **maxIterations** variable. I use 30-100 for testing & 1000 to get a serious solution.
-Mostly depends on the run time tho, so if everything else is set up to run very fast, we can use more iterations.
+Mostly depends on the run time tho, so if everything else is set up to run very fast, 
+1.1.2 penalty_cost_dummy_iteration: Which iteration the initial solution should use to get its penalty costs. -> utils.py
+penalty_cost_dummy_iteration sets the iteration that gives us the penalty cost for deciding if it is cheaper to add a 
+new route or to add to the last open route.
+If this is chosen too high will only create feasible routes (if possible) and tends to overload the last vehicle available.
+Setting it too low only creates infeasible routes.
+A good idea seems to be to set it to 75% of maxIteration
+    penalty_cost_dummy_iteration = **75**  # setting this parameter correctly is very important for the initial solution.
 
 1.2 AvailableVehicles: How many vehicles we have available. -> main.py
-Can be set in main in "# 3. CREATING OUR VEHICLES". Must be enough to handle all demand in one tour + some safety.
+Can be set in main in "# 3. CREATING OUR VEHICLES".
     num_Atego = **20**
     num_VWTrans = **20**
     num_eCargoBike = **0**

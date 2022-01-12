@@ -28,12 +28,16 @@ def cheapest_insertion_iterative(listOfRoutes: list[RouteObject], listOfRemoved:
                         bestCustomer = listOfRemoved[customerIndex]
 
         bestNewRouteCost = 10e10
-        for v in list_of_available_vehicles: # check if a new route would be cheaper
-            newCustomerList = [0, bestCustomer, 0]
-            newRouteCost = temporaryRouteCost(newCustomerList, v, instance, iteration, True)  # check cost of new route
-            if newRouteCost < bestNewRouteCost:
-                bestNewRouteCost = newRouteCost
-                bestNewVehicle = v
+        lastVehicleType = "noVehicle"
+        if len(list_of_available_vehicles) > 0:  # only try to create new routes if we still have vehicle available
+            for v in list_of_available_vehicles:  # check if a new route would be cheaper
+                if v.type != lastVehicleType:  # since we don't hav multi-trips, all vehicels with the same type are equal. We therefore only need to check one of each type.
+                    newCustomerList = [0, bestCustomer, 0]
+                    newRouteCost = temporaryRouteCost(newCustomerList, v, instance, iteration, True)  # check cost of new route
+                    if newRouteCost < bestNewRouteCost:
+                        bestNewRouteCost = newRouteCost
+                        bestNewVehicle = v
+                    lastVehicleType = v.type
 
         if bestInsertionCost < bestNewRouteCost:
             bestPosition[0].customer_list.insert(bestPosition[1], bestCustomer) # insert bestCustomer to the best feasible route for them
@@ -58,15 +62,16 @@ def regret_insertion(listOfRoutes: list[RouteObject], listOfRemoved: list[int],
 
             bestNewRouteCost = 10e10
             lastVehicleType = "noVehicle"
-            for v in list_of_available_vehicles:  # check the cost of the cheapest new route with our customer
-                if v.type != lastVehicleType:
-                    newCustomerList = [0, current_customer, 0]
-                    newRouteCost = temporaryRouteCost(newCustomerList, v, instance, iteration, True)  # check cost of new route
-                    if newRouteCost < bestNewRouteCost:
-                        bestNewRouteCost = newRouteCost
-                        bestNewVehicle = v
-                lastVehicleType = v.type
-            customer_cost_tupleList.append((bestNewRouteCost, "new_route", v))
+            if len(list_of_available_vehicles) > 0:  # only try to create new routes if we still have vehicle available
+                for v in list_of_available_vehicles:  # check the cost of the cheapest new route with our customer
+                    if v.type != lastVehicleType:
+                        newCustomerList = [0, current_customer, 0]
+                        newRouteCost = temporaryRouteCost(newCustomerList, v, instance, iteration, True)  # check cost of new route
+                        if newRouteCost < bestNewRouteCost:
+                            bestNewRouteCost = newRouteCost
+                            bestNewVehicle = v
+                    lastVehicleType = v.type
+                customer_cost_tupleList.append((bestNewRouteCost, "new_route", v))
 
             for i in listOfRoutes:  # iterating over routes in listOfRoutes
                 for j in range(len(i.customer_list) - 1):  # iterating over positions in a route

@@ -16,12 +16,11 @@ from instances.Utils import Instance, Solution, next_fit_heuristic, compute_tota
     temporaryRouteCost, delete_empty_routes, vehicle_assignment, solution_cost
 
 
-def sweep_algorithm(instance: Instance) -> Solution:
-    # sort the customers according to the sweep
-    sorted_customers = sort_customers_by_sweep(instance)
-    # assign them to routes (next fit)
-    return next_fit_heuristic(sorted_customers, instance)
-
+# def sweep_algorithm(instance: Instance) -> Solution:
+#     # sort the customers according to the sweep
+#     sorted_customers = sort_customers_by_sweep(instance)
+#     # assign them to routes (next fit)
+#     return next_fit_heuristic(sorted_customers, instance)
 
 def random_sweep(instance: Instance, initialVehicles: List[Vehicle]) -> Solution:
     customer_list = sort_customers_by_sweep(instance)
@@ -81,9 +80,8 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
     # START OF INITIALIZATION PHASE
     starttime = datetime.datetime.now()
     list_of_available_vehicles = copy.deepcopy(listOfInitAvailableVehicles)
-    initialCost = solution_cost(initialSolution, instance, 0, False)  # saving the initial cost (only feasible costs) to compare in the end
     # setting the initial solution up so we can compare to it in acceptance phase
-    bestSolution = initialSolution.copy()  # set the initial solution as the best solution (until acceptance check)
+    bestSolution = copy.deepcopy(initialSolution)  # set the initial solution as the best solution (until acceptance check)
     bestIteration = -1 # used in acceptance check
     listImprovingIterations = []
 
@@ -189,9 +187,11 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
     # END OF LOOP
     print(f"Finished after iteration {iteration}")
 
+    initialCost = solution_cost(initialSolution, instance, iteration)
+
     improvement = 100 - ((bestCost / initialCost) * 100)
     imp_per_it = improvement / (iteration + 1)
-    print(f"Initialization cost [feasible]: {initialCost:.2f}, ourAlgorithm cost: {bestCost:.2f}.")
+    print(f"Initialization cost: {initialCost:.2f}, ourAlgorithm cost: {bestCost:.2f}.")
     print(f"We improved by {improvement:.2f}%. Average improvement per iteration: {imp_per_it:.2f}%.")
     print(f"We improved in the following iterations: {listImprovingIterations}.")
     endtime = datetime.datetime.now()
