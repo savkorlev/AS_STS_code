@@ -1,5 +1,6 @@
 # requires matplotlib package (https://matplotlib.org)
 # Note: PyPy might have problems with this lib
+import copy
 import random
 
 import matplotlib.pyplot as plt
@@ -30,13 +31,21 @@ def create_list_int_coordinates(df_nodes) -> list():  # didnt work with floats s
 # coordinates for matplot END
 
 
-def plotTSP(path, points, color):
+def plotTSP(routes, points, color, show_depot=True):
     """
-    path: List of lists with the different orders in which the nodes are visited
+    routes: List of lists with the different orders in which the nodes are visited
     points: coordinates for the different nodes
-    num_iters: number of paths that are in the path list
+    color: currently not used
+    show_depot: deletes depot from all paths if false
 
     """
+    path = copy.deepcopy(routes)  # need to deepcopy so we dont destroy the real route by drawing them without depot
+
+    if not show_depot:  # allows us to draw routes without depot, which gives a clearer picture
+        for r in path:
+            while 0 in r:
+                r.remove(0)
+
     a_scale = 35000  # size of the arrowhead
 
     for r in range(len(path)):
