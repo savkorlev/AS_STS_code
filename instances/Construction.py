@@ -12,67 +12,8 @@ from instances.LocalSearch import hillclimbing, find_first_improvement_2Opt
 from instances.Plot import plotTSP
 from instances.Route import RouteObject
 from instances.Trucks import Vehicle
-from instances.Utils import Instance, Solution, next_fit_heuristic, compute_total_demand, compute_distances, routeCost, \
+from instances.Utils import Instance, Solution, compute_total_demand, compute_distances, routeCost, \
     temporaryRouteCost, delete_empty_routes, vehicle_assignment, solution_cost
-
-
-# def sweep_algorithm(instance: Instance) -> Solution:
-#     # sort the customers according to the sweep
-#     sorted_customers = sort_customers_by_sweep(instance)
-#     # assign them to routes (next fit)
-#     return next_fit_heuristic(sorted_customers, instance)
-
-def random_sweep(instance: Instance, initialVehicles: List[Vehicle]) -> Solution:
-    customer_list = sort_customers_by_sweep(instance)
-
-    # emulate changing the starting angle by rotating the list of customers
-    rotate = random.randint(0, instance.n - 1)
-    customer_list = customer_list[rotate:] + customer_list[:rotate]
-
-    # emulate changing the direction of the sweep by reversing the list of customers
-    if random.randint(0, 1) == 1:
-        customer_list.reverse()
-
-    return next_fit_heuristic(customer_list, instance, initialVehicles)
-
-
-def sort_customers_by_sweep(instance: Instance) -> List[int]:
-    """
-    sorts the customer visits by their angle in a polar coordinate system with the depot at its center.
-    To break ties, the distance from the depot is used, then the id of the node itself (which is unique).
-    :param instance: corresponding instance
-    :return: list of ordered customers sorted by sweeping
-    """
-
-    center_x, center_y = instance.coordinates[0]
-
-    customers_angles = []
-    for i in range(1, instance.n):
-        node_x, node_y = instance.coordinates[i]
-        angle = math.atan2(node_y - center_y, node_x - center_x)
-        if angle < 0:
-            angle += 2.0 * math.pi
-
-        # Update: let be more expressive here and use a dict with named keys
-        customers_angles.append({'id': i, 'angle': angle, 'distance': instance.d[0, i]})
-
-    # Update: it's possibility that the order is not clearly defined, so we need break ties in the sorting
-    #  (two customers might have the same angle). We introduce the distance to the depot as the second feature
-    #  to be sorted against, with the id as a last resort (they are unique).
-    #  Tuples are naturally sorted by the first element first, and so on.
-    #  We exploit that and provide such a tuple as a key to the sort function
-    #
-    # before: customers_angles.sort(key=lambda entry: entry[1])
-
-    customers_angles.sort(key=lambda entry: (entry['angle'], entry['distance'], entry['id']))
-
-    sorted_customers = []
-    for entry in customers_angles:
-        sorted_customers.append(entry['id'])
-
-    return sorted_customers
-
-
 
 #TODO: Check all copy operations
 def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfInitialVehicles: List[Vehicle],
@@ -83,7 +24,24 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
     # setting the initial solution up so we can compare to it in acceptance phase
     bestSolution = copy.deepcopy(initialSolution)  # set the initial solution as the best solution (until acceptance check)
     bestIteration = -1 # used in acceptance check
-    listImprovingIterations = []
+
+    # setting up counters and lists for adaptive LNS and generating reports after algorithm finishes
+    weight_destroy_random = 50
+    counter_destroy_random_imp = 0
+    counter_destroy_random_rej = 0
+    weight_destroy_expensive = 50
+    counter_destroy_expensive_imp = 0
+    counter_destroy_expensive_rej = 0
+
+    weight_insert_cheapest = 50
+    counter_insert_cheapest_imp = 0
+    counter_insert_cheapest_rej = 0
+    weight_insert_regret = 50
+    counter_insert_regret_imp = 0
+    counter_insert_regret_rej = 0
+
+    listImprovingIterations = []  # collects all iterations where we found an improvement
+
 
 
     print(f"Sweep solution: {list(map(lambda x: x.customer_list, bestSolution))}") # printing out customer lists after sweep
@@ -93,20 +51,21 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
     # START OF THE LOOP
     for iteration in range(maxIterations):  # run our algorithm multiple times
         print(f"New iteration__________{iteration}")
-        print(f"Routes at start of iter {iteration}:        {list(map(lambda x: x.customer_list, bestSolution))}")
+        print(f"Routes at start of this iter:        {list(map(lambda x: x.customer_list, bestSolution))}")
         # -------------------------------------------------------------------------------------------------------------
         # START OF DESTRUCTION PHASE
         # bestSolution_beforeDestruction = list(map(lambda x: x.customer_list, bestSolution))
         listOfRoutes = copy.deepcopy(bestSolution)  # at the start of each iteration, set the list of routes to best known solution
 
-        if random.uniform(0, 1) >= 0.2:  # pick a destroy operation
-            # Random Removal Operation
+        destroy_ops = ['random_removal', 'expensive_removal']
+        destroy_weights = [weight_destroy_random, weight_destroy_expensive]
+        destroy_op_used_list = random.choices(destroy_ops, weights=destroy_weights)  # chooses an option from a weighed list
+        destroy_op_used = destroy_op_used_list[0]  # because the choices-operator returns a list
+
+        if destroy_op_used == 'random_removal':  # pick a destroy operation
             listOfRemoved = random_removal(instance)
-            destroy_op_used = "random_removal"
-        else:
-            # Expensive Removal Operation
+        elif destroy_op_used == 'expensive_removal':
             listOfRemoved = expensive_removal(listOfRoutes, instance, iteration)
-            destroy_op_used = "expensive_removal"
 
         listOfRemoved.sort()  # for better readability during debugging
 
@@ -126,14 +85,24 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
         # END OF DESTRUCTION PHASE
         #  -------------------------------------------------------------------------------------------------------------
         # START OF INSERTION PHASE
-        if random.uniform(0, 1) >= 0.5:  # pick a destroy operation
-            # cheapest insertion with new  after 1 customer is assigned
+        # if random.uniform(0, 1) >= 0.5:  # pick a destroy operation
+        #     # cheapest insertion with new  after 1 customer is assigned
+        #     cheapest_insertion_iterative(listOfRoutes, listOfRemoved, list_of_available_vehicles, instance, iteration)
+        #     insert_op_used = "cheapest_insert"
+        # else:
+        #     # regret insertion
+        #     regret_insertion(listOfRoutes, listOfRemoved, list_of_available_vehicles, instance, iteration)
+        #     insert_op_used = "regret_insert"
+
+        insert_ops = ['cheapest_insert', 'regret_insert']
+        insert_weights = [weight_insert_cheapest, weight_insert_regret]
+        insert_op_used_list = random.choices(insert_ops, weights=insert_weights)  # chooses an option from a weighed list
+        insert_op_used = insert_op_used_list[0]  # because the choices-operator returns a list
+
+        if insert_op_used == 'cheapest_insert':  # pick a destroy operation
             cheapest_insertion_iterative(listOfRoutes, listOfRemoved, list_of_available_vehicles, instance, iteration)
-            insert_op_used = "cheapest_insert"
-        else:
-            # regret insertion
+        elif insert_op_used == 'regret_insert':
             regret_insertion(listOfRoutes, listOfRemoved, list_of_available_vehicles, instance, iteration)
-            insert_op_used = "regret_insert"
 
         print(f"Route objects after insertion:    {list(map(lambda x: x.customer_list, listOfRoutes))}")
         # END OF INSERTION PHASE
@@ -178,6 +147,40 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
             bestSolution = listOfRoutes.copy()
             bestIteration = iteration
             listImprovingIterations.append((iteration, destroy_op_used, insert_op_used))
+
+
+            if destroy_op_used == 'random_removal':  # pick a destroy operation
+                weight_destroy_random = min(200, weight_destroy_random + 10)
+                counter_destroy_random_imp += 1
+            elif destroy_op_used == 'expensive_removal':
+                weight_destroy_expensive = min(200, weight_destroy_expensive + 10)
+                counter_destroy_expensive_imp += 1
+
+
+            if insert_op_used == 'cheapest_insert':  # pick a destroy operation
+                weight_insert_cheapest = min(200, weight_insert_cheapest + 10)
+                counter_insert_cheapest_imp += 1
+            elif insert_op_used == 'regret_insert':
+                weight_insert_regret = min(200, weight_insert_regret + 10)
+
+        else:
+
+            if destroy_op_used == 'random_removal':  # pick a destroy operation
+                weight_destroy_random = max(10, weight_destroy_random - 1)
+                counter_destroy_random_rej += 1
+            elif destroy_op_used == 'expensive_removal':
+                weight_destroy_expensive = max(10, weight_destroy_expensive - 1)
+                counter_destroy_expensive_rej += 1
+                counter_insert_regret_imp += 1
+
+            if insert_op_used == 'cheapest_insert':  # pick a destroy operation
+                weight_insert_cheapest = max(10, weight_insert_cheapest - 1)
+                counter_insert_cheapest_rej += 1
+            elif insert_op_used == 'regret_insert':
+                weight_insert_regret = max(10, weight_insert_regret - 1)
+                counter_insert_regret_rej += 1
+
+
         print(f"Total cost of the current iteration: {costThisIteration}")
         print(f"Best known cost: {bestCost}")
         print(f"Best iteration: {bestIteration}\n")
@@ -196,6 +199,15 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
     print(f"We improved in the following iterations: {listImprovingIterations}.")
     endtime = datetime.datetime.now()
     print(f"Length of the run: {endtime - starttime}.\n")
+
+    print(f"random_removal stats: improvements: {counter_destroy_random_imp}, rejected: {counter_destroy_random_rej}")
+    print(f"expensive_removal stats: improvements: {counter_destroy_expensive_imp}, rejected: {counter_destroy_expensive_rej}")
+    print(f"Weights at end of run: random_removal: {weight_destroy_random}, expensive_removal: {weight_destroy_expensive}")
+
+    print(f"cheapest_insert stats: improvements: {counter_insert_cheapest_imp}, rejected: {counter_insert_cheapest_rej}")
+    print(f"regret_insert stats: improvements: {counter_insert_regret_imp}, rejected: {counter_insert_regret_rej}")
+    print(f"Weights at end of run: cheapest_insert: {weight_insert_cheapest}, regret_insert: {weight_insert_regret}")
+
     print(str(endtime))
 
     return list(map(lambda x: x.customer_list, bestSolution))

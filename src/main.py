@@ -2,7 +2,8 @@ import sys
 
 import pandas as pd
 
-from instances.Construction import ouralgorithm, random_sweep
+from instances.Construction import ouralgorithm
+from instances.Intialization import random_sweep
 from instances.Trucks import create_vehicles
 from instances.Utils import Instance, vehicle_assignment, solution_cost
 from instances.Plot import plotTSP, create_list_int_coordinates
