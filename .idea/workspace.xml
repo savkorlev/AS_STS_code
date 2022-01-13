@@ -4,11 +4,13 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) added a plot-option without depots. Drawing without depots sometimes gives a clearer picture. To use it, set show_depot argument to False when calling plotTSP">
-      <change afterPath="$PROJECT_DIR$/instances/Intialization.py" afterDir="false" />
+    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) added a very simple form of adaptiveness. Weights get improved by +10 if improvement, decreased by -1 if rejected. This does not seem to improve the algorithm yet.">
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_06_01_22,_11_23_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_06_01_22__11_23__Changes_.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instances/Construction.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Construction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instances/Utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instances/DestructionOps.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/DestructionOps.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -223,28 +225,8 @@
       <workItem from="1641791837027" duration="36977000" />
       <workItem from="1641881216445" duration="32275000" />
       <workItem from="1641965231231" duration="9280000" />
-      <workItem from="1641979199262" duration="8116000" />
-    </task>
-    <task id="LOCAL-00007" summary="Commit via PyCharm">
-      <created>1637844692536</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1637844692537</updated>
-    </task>
-    <task id="LOCAL-00008" summary="Commit via PyCharm">
-      <created>1637844733464</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1637844733464</updated>
-    </task>
-    <task id="LOCAL-00009" summary="Adding data files as .csv">
-      <created>1638054865117</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1638054865117</updated>
+      <workItem from="1641979199262" duration="8647000" />
+      <workItem from="1642085904633" duration="6231000" />
     </task>
     <task id="LOCAL-00010" summary="1) reading data in main&#10;2) small corrections in files' names">
       <created>1638056253893</created>
@@ -568,7 +550,28 @@
       <option name="project" value="LOCAL" />
       <updated>1641974803948</updated>
     </task>
-    <option name="localTasksCounter" value="56" />
+    <task id="LOCAL-00056" summary="1) added a very simple form of adaptiveness. Weights get improved by +10 if improvement, decreased by -1 if rejected.">
+      <created>1641991953132</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1641991953132</updated>
+    </task>
+    <task id="LOCAL-00057" summary="1) added a very simple form of adaptiveness. Weights get improved by +10 if improvement, decreased by -1 if rejected.">
+      <created>1641992096233</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1641992096233</updated>
+    </task>
+    <task id="LOCAL-00058" summary="1) added a very simple form of adaptiveness. Weights get improved by +10 if improvement, decreased by -1 if rejected. This does not seem to improve the algorithm yet.">
+      <created>1641992410982</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1641992410982</updated>
+    </task>
+    <option name="localTasksCounter" value="59" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -601,8 +604,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="1) Utils 900 is a made-up number for now (in sweep)&#10;2) Added costs (currently per km in Paris) to Trucks" />
-    <MESSAGE value="1) Small comment in Construction class" />
     <MESSAGE value="1) Reverting changes (the version before the similated annealing)&#10;2) Small improvements in comments" />
     <MESSAGE value="1) Reverting changes" />
     <MESSAGE value="1) Small cosmetic improvements" />
@@ -626,7 +627,9 @@
     <MESSAGE value="1) added regret_insertion" />
     <MESSAGE value="1) changed the initial heuristic to allow starting with infeasible routes." />
     <MESSAGE value="1) added a plot-option without depots. Drawing without depots sometimes gives a clearer picture. To use it, set show_depot argument to False when calling plotTSP" />
-    <option name="LAST_COMMIT_MESSAGE" value="1) added a plot-option without depots. Drawing without depots sometimes gives a clearer picture. To use it, set show_depot argument to False when calling plotTSP" />
+    <MESSAGE value="1) added a very simple form of adaptiveness. Weights get improved by +10 if improvement, decreased by -1 if rejected." />
+    <MESSAGE value="1) added a very simple form of adaptiveness. Weights get improved by +10 if improvement, decreased by -1 if rejected. This does not seem to improve the algorithm yet." />
+    <option name="LAST_COMMIT_MESSAGE" value="1) added a very simple form of adaptiveness. Weights get improved by +10 if improvement, decreased by -1 if rejected. This does not seem to improve the algorithm yet." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -636,11 +639,6 @@
             <option name="notifyOnTerminate" value="true" />
           </properties>
         </breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/instances/Construction.py</url>
-          <line>96</line>
-          <option name="timeStamp" value="12" />
-        </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
@@ -663,6 +661,6 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/main_py$TestConstruction.coverage" NAME="TestConstruction Coverage Results" MODIFIED="1640299941018" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1641991833429" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1642091513329" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

@@ -116,7 +116,7 @@ for i in range(10): # we run the sweep heuristic multiple times with different s
         bestCostRandomSweep = tempCost
 print(f"Rand Sweep Heuristic, #Vehicles: {len(bestSolutionRandomSweep)}, cost: {bestCostRandomSweep}")
 
-plotTSP(list(map(lambda x: x.customer_list, bestSolutionRandomSweep)), coordinates_int, 'r')  # matplot of sweep solution
+# plotTSP(list(map(lambda x: x.customer_list, bestSolutionRandomSweep)), coordinates_int, 'r')  # matplot of sweep solution
 
 # 6.1 VehicleSwap for the SweepSolution
 listOfInitAvailableVehicles = vehicle_assignment(bestSolutionRandomSweep, listOfInitialVehicles, ourInstance, 0, True)  # vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: List[Vehicle], instance: Instance):
@@ -129,3 +129,4 @@ solutionOur = ouralgorithm(ourInstance, bestSolutionRandomSweep, listOfInitialVe
 #     print(f"Sum of demands of a {i} route: " + str(compute_total_demand(solutionOur[i], ourInstance)))
 # print(compute_distances(solutionOur, ourInstance))
 plotTSP(solutionOur, coordinates_int, 'g')
+plotTSP(solutionOur, coordinates_int, 'g', False)

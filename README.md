@@ -46,30 +46,37 @@ are punished much harder by squaring the overload_factor.
 
 
 
-2. Adaptive Weights
+2. Adaptive Weights -> Construction.py
 
-2.1 Destruction: To choose how often which destruction operation should be chosen. -> Construction.py
-Change the right side of the equation to pick random_removal more often (higher right side).
-        if random.uniform(0, 1) >= **0.1**:  # pick a destroy operation
-            # Random Removal Operation
-            listOfRemoved = random_removal(instance)
-            destroy_op_used = "random_removal"
+Adaptive weights decide how often an operation is picked. Operations are the rules used to destroy customers,
+insert customer and optimize a solution. These weights need to be chosen in a smart way, because they dictate how fast
+the code runs (some operations need more computation time) vs how many iterations we need to find a good solution
+(some operations only do random stuff, some operations are pretty smart). The tradeoff is how many iterations we need vs
+how much time an iteration needs on average.
+Also, different operations can be better or worse depending on how long the algorithm has lasted. In theory, random 
+stuff should happen at the start, smart stuff should happen near the end. In practice, I have seen that sometimes near the 
+end only a very random operator can find a better solution, because  we are in a deep local minimum.
+You can set the initial weights of each operator at the top of ourAlgorithm, before the loop start:
+    weight_destroy_random = **50**
+    weight_destroy_expensive = **50**
+Set the initial weight to 0 to completely turn off an operator.
+A formula is set up to pick an operator from a weighted list, so if we add a 3rd operator with for example weight = 100,
+it would be chosen 50% of the time compared to destroy_random (25%) and destroy_expensive (25%).
+    insert_op_used_list = random.choices(insert_ops, weights=insert_weights) # chooses an option from a weighed list
+You can also change how much a weight is changed after an iteration. After the acceptance check, we either:
+A) increase the weight if an operator was used in a successful iteration:
+        if costThisIteration < bestCost:
+            if destroy_op_used == 'random_removal':
+                    weight_destroy_random = min(**200**, weight_destroy_random + **iteration**)
+b) decrease the weight if the iteration was unsuccessful:
         else:
-            # Expensive Removal Operation
-            listOfRemoved = expensive_removal(listOfRoutes, instance, iteration)
-            destroy_op_used = "expensive_removal"
-
-2.2 Insertion: To choose how often which insert operation should be chosen. -> Construction.py
-Change the right side of the equation to pick cheapest_insertion more often (higher right side).
-        if random.uniform(0, 1) >= **0.5**:  # pick a destroy operation
-            # cheapest insertion with new  after 1 customer is assigned
-            cheapest_insertion_iterative(listOfRoutes, listOfRemoved, list_of_available_vehicles, instance, iteration)
-        else:
-            # regret insertion
-            regret_insertion(listOfRoutes, listOfRemoved, list_of_available_vehicles, instance, iteration)
-
-2.3 Optimization: Not yet implemented
-
+            if destroy_op_used == 'random_removal':  # pick a destroy operation
+                weight_destroy_random = max(**10**, weight_destroy_random - **1**)
+I have set it up that these weights can only be 10 < weight < 200. Also, since we don't find improvements very often,
+we get more weight for each success than we take away for every fail.
+And because it is much harder to find an improvement in a later iteration, we give +iteration (but never more than 200).
+You can change all of this, I have not tested it much. There are very fancy ways to compute the weight changes in
+literature, like having the change depend on HOW MUCH better/worse the new solution is. Maybe we can implement this later.
 
 
 3. Inside Destruction 

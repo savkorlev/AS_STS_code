@@ -6,7 +6,7 @@ import copy
 import sys
 from typing import List
 
-from instances.DestructionOps import random_removal, expensive_removal
+from instances.DestructionOps import random_removal, expensive_removal, route_removal
 from instances.InsertionOps import cheapest_insertion_iterative, regret_insertion
 from instances.LocalSearch import hillclimbing, find_first_improvement_2Opt
 from instances.Plot import plotTSP
@@ -26,12 +26,15 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
     bestIteration = -1 # used in acceptance check
 
     # setting up counters and lists for adaptive LNS and generating reports after algorithm finishes
-    weight_destroy_random = 50
+    weight_destroy_random = 50  # set initial weight for operation
     counter_destroy_random_imp = 0
     counter_destroy_random_rej = 0
     weight_destroy_expensive = 50
     counter_destroy_expensive_imp = 0
     counter_destroy_expensive_rej = 0
+    weight_destroy_route = 50
+    counter_destroy_route_imp = 0
+    counter_destroy_route_rej = 0
 
     weight_insert_cheapest = 50
     counter_insert_cheapest_imp = 0
@@ -51,14 +54,14 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
     # START OF THE LOOP
     for iteration in range(maxIterations):  # run our algorithm multiple times
         print(f"New iteration__________{iteration}")
-        print(f"Routes at start of this iter:        {list(map(lambda x: x.customer_list, bestSolution))}")
+        print(f"Routes at start of iteration:     {list(map(lambda x: x.customer_list, bestSolution))}")
         # -------------------------------------------------------------------------------------------------------------
         # START OF DESTRUCTION PHASE
         # bestSolution_beforeDestruction = list(map(lambda x: x.customer_list, bestSolution))
         listOfRoutes = copy.deepcopy(bestSolution)  # at the start of each iteration, set the list of routes to best known solution
 
-        destroy_ops = ['random_removal', 'expensive_removal']
-        destroy_weights = [weight_destroy_random, weight_destroy_expensive]
+        destroy_ops = ['random_removal', 'expensive_removal', 'route_removal']
+        destroy_weights = [weight_destroy_random, weight_destroy_expensive, weight_destroy_route]
         destroy_op_used_list = random.choices(destroy_ops, weights=destroy_weights)  # chooses an option from a weighed list
         destroy_op_used = destroy_op_used_list[0]  # because the choices-operator returns a list
 
@@ -66,6 +69,8 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
             listOfRemoved = random_removal(instance)
         elif destroy_op_used == 'expensive_removal':
             listOfRemoved = expensive_removal(listOfRoutes, instance, iteration)
+        elif destroy_op_used == 'route_removal':
+            listOfRemoved = route_removal(listOfRoutes)
 
         listOfRemoved.sort()  # for better readability during debugging
 
@@ -149,19 +154,23 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
             listImprovingIterations.append((iteration, destroy_op_used, insert_op_used))
 
 
-            if destroy_op_used == 'random_removal':  # pick a destroy operation
-                weight_destroy_random = min(200, weight_destroy_random + 10)
+            if destroy_op_used == 'random_removal':
+                weight_destroy_random = min(200, weight_destroy_random + iteration)
                 counter_destroy_random_imp += 1
             elif destroy_op_used == 'expensive_removal':
-                weight_destroy_expensive = min(200, weight_destroy_expensive + 10)
+                weight_destroy_expensive = min(200, weight_destroy_expensive + iteration)
                 counter_destroy_expensive_imp += 1
+            elif destroy_op_used == 'route_removal':
+                weight_destroy_route = min(200, weight_destroy_random + iteration)
+                counter_destroy_route_imp += 1
 
 
-            if insert_op_used == 'cheapest_insert':  # pick a destroy operation
-                weight_insert_cheapest = min(200, weight_insert_cheapest + 10)
+            if insert_op_used == 'cheapest_insert':
+                weight_insert_cheapest = min(200, weight_insert_cheapest + iteration)
                 counter_insert_cheapest_imp += 1
             elif insert_op_used == 'regret_insert':
-                weight_insert_regret = min(200, weight_insert_regret + 10)
+                weight_insert_regret = min(200, weight_insert_regret + iteration)
+                counter_insert_regret_imp += 1
 
         else:
 
@@ -171,7 +180,9 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
             elif destroy_op_used == 'expensive_removal':
                 weight_destroy_expensive = max(10, weight_destroy_expensive - 1)
                 counter_destroy_expensive_rej += 1
-                counter_insert_regret_imp += 1
+            elif destroy_op_used == 'route_removal':  # pick a destroy operation
+                weight_destroy_route = max(10, weight_destroy_route - 1)
+                counter_destroy_route_rej += 1
 
             if insert_op_used == 'cheapest_insert':  # pick a destroy operation
                 weight_insert_cheapest = max(10, weight_insert_cheapest - 1)
@@ -188,26 +199,31 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
         # END OF ACCEPTANCE PHASE
     # -------------------------------------------------------------------------------------------------------------
     # END OF LOOP
-    print(f"Finished after iteration {iteration}")
+    print(f"random_removal stats: improvements: {counter_destroy_random_imp}, rejected: {counter_destroy_random_rej}")
+    print(
+        f"expensive_removal stats: improvements: {counter_destroy_expensive_imp}, rejected: {counter_destroy_expensive_rej}")
+    print(f"route_removal stats: improvements: {counter_destroy_route_imp}, rejected: {counter_destroy_route_rej}")
+    print(
+        f"Weights at end of run: random_removal: {weight_destroy_random}, expensive_removal: {weight_destroy_expensive}, route_removal: {weight_destroy_route}")
+
+    print(
+        f"cheapest_insert stats: improvements: {counter_insert_cheapest_imp}, rejected: {counter_insert_cheapest_rej}")
+    print(f"regret_insert stats: improvements: {counter_insert_regret_imp}, rejected: {counter_insert_regret_rej}")
+    print(f"Weights at end of run: cheapest_insert: {weight_insert_cheapest}, regret_insert: {weight_insert_regret}")
+    print()
 
     initialCost = solution_cost(initialSolution, instance, iteration)
-
     improvement = 100 - ((bestCost / initialCost) * 100)
     imp_per_it = improvement / (iteration + 1)
+    print(f"Finished after iteration {iteration}")
     print(f"Initialization cost: {initialCost:.2f}, ourAlgorithm cost: {bestCost:.2f}.")
     print(f"We improved by {improvement:.2f}%. Average improvement per iteration: {imp_per_it:.2f}%.")
     print(f"We improved in the following iterations: {listImprovingIterations}.")
     endtime = datetime.datetime.now()
     print(f"Length of the run: {endtime - starttime}.\n")
-
-    print(f"random_removal stats: improvements: {counter_destroy_random_imp}, rejected: {counter_destroy_random_rej}")
-    print(f"expensive_removal stats: improvements: {counter_destroy_expensive_imp}, rejected: {counter_destroy_expensive_rej}")
-    print(f"Weights at end of run: random_removal: {weight_destroy_random}, expensive_removal: {weight_destroy_expensive}")
-
-    print(f"cheapest_insert stats: improvements: {counter_insert_cheapest_imp}, rejected: {counter_insert_cheapest_rej}")
-    print(f"regret_insert stats: improvements: {counter_insert_regret_imp}, rejected: {counter_insert_regret_rej}")
-    print(f"Weights at end of run: cheapest_insert: {weight_insert_cheapest}, regret_insert: {weight_insert_regret}")
-
     print(str(endtime))
+
+
+
 
     return list(map(lambda x: x.customer_list, bestSolution))
