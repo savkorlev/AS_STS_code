@@ -4,13 +4,10 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) added a very simple form of adaptiveness. Weights get improved by +10 if improvement, decreased by -1 if rejected. This does not seem to improve the algorithm yet.">
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_06_01_22,_11_23_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_06_01_22__11_23__Changes_.xml" beforeDir="false" />
+    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) improved adaptiveness&#10;2) added route_removal">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instances/Construction.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Construction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instances/DestructionOps.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/DestructionOps.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -100,15 +97,16 @@
       <method v="2" />
     </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <output_file path="$USER_HOME$/Documents/01_Uni/02_WS21-22/03-Di_AS_SustainableTransportSystems/outputs/2022-01-14_Outputs.txt" />
       <module name="AS_STS_code" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="C:\Users\Christopher\AppData\Local\Programs\Python\Python39\python.exe" />
+      <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="false" />
+      <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
@@ -226,14 +224,9 @@
       <workItem from="1641881216445" duration="32275000" />
       <workItem from="1641965231231" duration="9280000" />
       <workItem from="1641979199262" duration="8647000" />
-      <workItem from="1642085904633" duration="6231000" />
-    </task>
-    <task id="LOCAL-00010" summary="1) reading data in main&#10;2) small corrections in files' names">
-      <created>1638056253893</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1638056253893</updated>
+      <workItem from="1642085904633" duration="6492000" />
+      <workItem from="1642139319807" duration="1195000" />
+      <workItem from="1642141110972" duration="2938000" />
     </task>
     <task id="LOCAL-00011" summary="1) loading all files as .csv in main with &quot; &quot; as a separator&#10;2) lines 19 and 20 - check if data frame's access works (list columns and address them)">
       <created>1638057457407</created>
@@ -571,7 +564,14 @@
       <option name="project" value="LOCAL" />
       <updated>1641992410982</updated>
     </task>
-    <option name="localTasksCounter" value="59" />
+    <task id="LOCAL-00059" summary="1) improved adaptiveness&#10;2) added route_removal">
+      <created>1642092207814</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1642092207814</updated>
+    </task>
+    <option name="localTasksCounter" value="60" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -604,7 +604,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="1) Reverting changes (the version before the similated annealing)&#10;2) Small improvements in comments" />
     <MESSAGE value="1) Reverting changes" />
     <MESSAGE value="1) Small cosmetic improvements" />
     <MESSAGE value="1) Licence plates" />
@@ -629,7 +628,8 @@
     <MESSAGE value="1) added a plot-option without depots. Drawing without depots sometimes gives a clearer picture. To use it, set show_depot argument to False when calling plotTSP" />
     <MESSAGE value="1) added a very simple form of adaptiveness. Weights get improved by +10 if improvement, decreased by -1 if rejected." />
     <MESSAGE value="1) added a very simple form of adaptiveness. Weights get improved by +10 if improvement, decreased by -1 if rejected. This does not seem to improve the algorithm yet." />
-    <option name="LAST_COMMIT_MESSAGE" value="1) added a very simple form of adaptiveness. Weights get improved by +10 if improvement, decreased by -1 if rejected. This does not seem to improve the algorithm yet." />
+    <MESSAGE value="1) improved adaptiveness&#10;2) added route_removal" />
+    <option name="LAST_COMMIT_MESSAGE" value="1) improved adaptiveness&#10;2) added route_removal" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -661,6 +661,6 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/main_py$TestConstruction.coverage" NAME="TestConstruction Coverage Results" MODIFIED="1640299941018" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1642091513329" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1642144034780" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

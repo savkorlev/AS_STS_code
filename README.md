@@ -20,14 +20,20 @@ Setting it too low only creates infeasible routes.
 A good idea seems to be to set it to 75% of maxIteration
     penalty_cost_dummy_iteration = **75**  # setting this parameter correctly is very important for the initial solution.
 
-1.2 AvailableVehicles: How many vehicles we have available. -> main.py
+1.2 maxTime: for how long the code should run max. -> main.py
+Since we want to optimize for speed, and we need to compare with the speed of the ExcelSolver, we can now set a maxTime.
+This is useful to compare the speed of different parameter settings. The loop will stop after either maxTime or maxIterations
+are reached, so if you want only 1, set the other very high.
+    maxTime = **120.0**  # sets how much time the loop should maximally use
+
+1.3 AvailableVehicles: How many vehicles we have available. -> main.py
 Can be set in main in "# 3. CREATING OUR VEHICLES".
     num_Atego = **20**
     num_VWTrans = **20**
     num_eCargoBike = **0**
 
-1.3 Penalties
-1.3.1 penalty_cost: How much cost an overload creates. -> Utils.py 
+1.4 Penalties
+1.4.1 penalty_cost: How much cost an overload creates. -> Utils.py 
 We have to decide how we want to scale the penalty_cost with growing iterations. We could do linear growth / exponential
 growth etc. Additionally, the overload for the "iteration 0" can be set. It should probably not be 0, or we will put
 bikes everywhere...
@@ -37,7 +43,7 @@ compared to just 100 iterations. A good way to check is to see if the vehicle as
 If not, we need more penalty!
     penalty_cost(routeObject: RouteObject, instance: Instance, iteration: int) -> float:
         iteration_penalty = **5** + iteration * **1**  # penalty in each iteration.
-1.3.2 overload_factors: How hard we punish going over a capacity limit. -> Utils.py
+1.4.2 overload_factors: How hard we punish going over a capacity limit. -> Utils.py
 Check the compute_overload function in utils to see the exact function. We can for example set it so further deviations
 are punished much harder by squaring the overload_factor.
     compute_overload(constraint: int, load: int) -> float:

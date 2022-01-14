@@ -4,6 +4,7 @@ import os
 import random
 import copy
 import sys
+import time
 from typing import List
 
 from instances.DestructionOps import random_removal, expensive_removal, route_removal
@@ -17,7 +18,7 @@ from instances.Utils import Instance, Solution, compute_total_demand, compute_di
 
 #TODO: Check all copy operations
 def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfInitialVehicles: List[Vehicle],
-                 listOfInitAvailableVehicles: List[Vehicle], maxIterations: int, coordinates_int: List): # coordinates_int is only for matplot
+                 listOfInitAvailableVehicles: List[Vehicle], max_iterations: int, max_time: float, coordinates_int=[]): # coordinates_int is only for matplot
     # START OF INITIALIZATION PHASE
     starttime = datetime.datetime.now()
     list_of_available_vehicles = copy.deepcopy(listOfInitAvailableVehicles)
@@ -52,7 +53,13 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
     # END OF INITIALIZATION PHASE
     # -------------------------------------------------------------------------------------------------------------
     # START OF THE LOOP
-    for iteration in range(maxIterations):  # run our algorithm multiple times
+    iteration = 0  # iterations are counted up at the start of the loop, so we start with 0 to have the first iteration = 1
+    perf_starttime = time.perf_counter()  # starts the timer for our maxTime. Does not include the initialization. This is ok since the sweep is very short.
+    time_so_far = 0.0
+
+    while time_so_far < max_time and iteration < max_iterations:  # run until either maxIterations or maxTime is reached. Will do 1 last loop after maxTime.
+        iteration += 1  # count up the iterations
+
         print(f"New iteration__________{iteration}")
         print(f"Routes at start of iteration:     {list(map(lambda x: x.customer_list, bestSolution))}")
         # -------------------------------------------------------------------------------------------------------------
@@ -196,6 +203,8 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
         print(f"Best known cost: {bestCost}")
         print(f"Best iteration: {bestIteration}\n")
         # plotTSP(bestSolution_LoCL, coordinates_int) # use this if you want to plot after every iteration
+
+        time_so_far = time.perf_counter() - perf_starttime  # update time for maxTime
         # END OF ACCEPTANCE PHASE
     # -------------------------------------------------------------------------------------------------------------
     # END OF LOOP

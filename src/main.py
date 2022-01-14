@@ -42,6 +42,7 @@ df_Paris_routes = pd.read_csv("data/Paris.routes", sep=' ')
 # 2. CREATING TEST DATASET AND ATTRIBUTES OF FUTURE INSTANCE
 #set testDimension to 1 more than customers
 testDimension = 1 + 112  # change this to use more or less customers of the data set. Max for Paris is 112. Also need to change the iloc for the nodes file
+# 1 + either 19, 39 or 112
 
 # DON'T FORGET TO SET MORE VEHICLES IF YOU HAVE MORE CUSTOMERS
 
@@ -80,7 +81,7 @@ city = "Paris"
 num_Atego = 19
 num_VWTrans = 0
 num_eCargoBike = 0
-# TODO: Since we dont have to deal with multiple trips, we can change a lot of checks that test routeCost for every available vehicle. They will check the same vehicle type multiple times. We only have to check once per vehicle type + check if at least 1 is available. Check regret_insert for how this can be done.
+
 
 # create vehicles via function in Trucks.py-file
 listOfInitialVehicles = create_vehicles(city, num_Atego, num_VWTrans, 0, 0, 0, 0, num_eCargoBike)
@@ -96,6 +97,7 @@ if sumOfCapacity < sumOfDemand:
 # 4. SET MAX ITERATIONS
 """ logically, this should not be here. But this way we have all the parameters we need to set for a run nearby"""
 maxIterations = 500  # sets how many iterations we want
+maxTime = 17.0  # sets how much time the loop should maximally use
 
 # 5. CREATING INSTANCE
 ourInstance = Instance(testDimension, listOfInitialVehicles, testDemandParis, testParisDistances, coordinates)
@@ -123,7 +125,7 @@ listOfInitAvailableVehicles = vehicle_assignment(bestSolutionRandomSweep, listOf
 
 
 # 7. OUR ALGORITHM (DESTRUCTION + INSERTION + OPTIMIZATION + ACCEPTANCE)
-solutionOur = ouralgorithm(ourInstance, bestSolutionRandomSweep, listOfInitialVehicles, listOfInitAvailableVehicles, maxIterations, coordinates_int)
+solutionOur = ouralgorithm(ourInstance, bestSolutionRandomSweep, listOfInitialVehicles, listOfInitAvailableVehicles, maxIterations, maxTime, coordinates_int)
 # lenOfSolutionOur = len(solutionOur)
 # for i in range(lenOfSolutionOur):
 #     print(f"Sum of demands of a {i} route: " + str(compute_total_demand(solutionOur[i], ourInstance)))
