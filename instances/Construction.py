@@ -9,7 +9,7 @@ from typing import List
 
 from instances.DestructionOps import random_removal, expensive_removal, route_removal
 from instances.InsertionOps import cheapest_insertion_iterative, regret_insertion
-from instances.LocalSearch import hillclimbing, find_first_improvement_2Opt
+from instances.LocalSearch import hillclimbing, find_first_improvement_2Opt, vnd, find_first_improvement_relocate
 from instances.Plot import plotTSP
 from instances.Route import RouteObject
 from instances.Trucks import Vehicle
@@ -40,7 +40,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
     weight_insert_cheapest = 50
     counter_insert_cheapest_imp = 0
     counter_insert_cheapest_rej = 0
-    weight_insert_regret = 50
+    weight_insert_regret = 25
     counter_insert_regret_imp = 0
     counter_insert_regret_rej = 0
 
@@ -126,7 +126,13 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
 
         # START OF LOCAL OPTIMIZATION 2-opt
         """ 2-opt currently optimizes for distance. Since it is inter-route, I am fine with this. - Christopher"""
-        listAfterOptimization = hillclimbing(list(map(lambda x: x.customer_list, listOfRoutes)), instance, find_first_improvement_2Opt) #TODO remove function from ouralgorithm arguments, call 2-opt here directly
+        local_search_function = find_first_improvement_2Opt
+        # if random.uniform(0, 1) > 0.3:
+        #     local_search_function = find_first_improvement_2Opt
+        # else:
+        #     local_search_function = find_first_improvement_relocate
+
+        listAfterOptimization = hillclimbing(list(map(lambda x: x.customer_list, listOfRoutes)), instance, local_search_function)
         for i in range(len(listAfterOptimization)):
             listOfRoutes[i].customer_list = listAfterOptimization[i].copy()  # put the optimized customer lists back into our RouteObjects
         print(f"Route objects after optimization: {list(map(lambda x: x.customer_list, listOfRoutes))}")
@@ -179,7 +185,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
                 weight_insert_regret = min(200, weight_insert_regret + iteration)
                 counter_insert_regret_imp += 1
 
-        else:
+        else:  # if we dont accept current solution:
 
             if destroy_op_used == 'random_removal':  # pick a destroy operation
                 weight_destroy_random = max(10, weight_destroy_random - 1)

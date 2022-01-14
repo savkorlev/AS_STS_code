@@ -96,8 +96,8 @@ if sumOfCapacity < sumOfDemand:
 
 # 4. SET MAX ITERATIONS
 """ logically, this should not be here. But this way we have all the parameters we need to set for a run nearby"""
-maxIterations = 500  # sets how many iterations we want
-maxTime = 17.0  # sets how much time the loop should maximally use
+maxIterations = 300  # sets how many iterations we want
+maxTime = 5.0  # in Seconds. Sets how much time the loop should maximally use
 
 # 5. CREATING INSTANCE
 ourInstance = Instance(testDimension, listOfInitialVehicles, testDemandParis, testParisDistances, coordinates)

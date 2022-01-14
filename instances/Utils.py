@@ -84,36 +84,36 @@ def compute_total_demand(route: List[int], instance: Instance) -> int:
     return sum_demands
 
 
-def is_feasible(solution: Solution, instance: Instance) -> bool:
-    """
-    checks whether a solution (list of routes) is feasible, i.e.,
-    all customers are visited exactly once and the maximum load capacity Q is never exceeded
-    :param solution: list of routes
-    :param instance: corresponding instance
-    :return: True if feasible, False otherwise
-    """
-
-    listOfPayloads = []
-    for i in instance.Q:
-        listOfPayloads.append(i.payload_kg)
-
-    for route in solution:
-        load = compute_total_demand(route, instance)
-        if load > max(listOfPayloads):  # checking max capacity among the whole list
-            print(f"Error: load capacity is exceeded ({load} > {max(listOfPayloads)})")
-            return False
-
-    node_visited = [0] * instance.n
-    for route in solution:
-        for r_i in route:
-            node_visited[r_i] += 1
-
-    for v in range(1, instance.n):
-        if node_visited[v] != 1:
-            print(f"Error: node {v} has been visited {node_visited[v]} times")
-            return False
-
-    return True
+# def is_feasible(solution: Solution, instance: Instance) -> bool:
+#     """
+#     checks whether a solution (list of routes) is feasible, i.e.,
+#     all customers are visited exactly once and the maximum load capacity Q is never exceeded
+#     :param solution: list of routes
+#     :param instance: corresponding instance
+#     :return: True if feasible, False otherwise
+#     """5
+#
+#     listOfPayloads = []
+#     for i in instance.Q:
+#         listOfPayloads.append(i.payload_kg)
+#
+#     for route in solution:
+#         load = compute_total_demand(route, instance)
+#         if load > max(listOfPayloads):  # checking max capacity among the whole list
+#             print(f"Error: load capacity is exceeded ({load} > {max(listOfPayloads)})")
+#             return False
+#
+#     node_visited = [0] * instance.n
+#     for route in solution:
+#         for r_i in route:
+#             node_visited[r_i] += 1
+#
+#     for v in range(1, instance.n):
+#         if node_visited[v] != 1:
+#             print(f"Error: node {v} has been visited {node_visited[v]} times")
+#             return False
+#
+#     return True
 
 
 # def feasibilityCheck(instance: Instance, listAfterDestruction: List[int], listOfRemoved: List[int], customerIndex: int, i: int):
@@ -134,18 +134,18 @@ def solution_cost(listOfRoutes: List[Route], instance: Instance, iteration: int,
         solutionCost = solutionCost + routeCost(r, instance, iteration, penalty_active)
     return solutionCost
 
+""" I rewrote temporaryRouteCost to not create a RouteObject every time, but it did not improve calculation speed"""
 
-""" temporaryRouteCost is used in some instances (e.g. customer insertion) where we want to test how expensive a 
-Route will be after a change. Since we dont want to change the route itself, we call temporaryRouteCost() instead of
-routeCost(). temporaryRouteCost then creates a tempRoute object and calls routeCost(). This means we only have to make
-changes in routeCost, if we want to alter the way costs are calculated.
-There is probably a way to have routeCost take either a RouteObject or (customer_list + Vehicle) and then decide what
-to do depending on the arguments that got passed, but I'm not smart enough for that
-- Christopher 2022-01-10
-"""
 def temporaryRouteCost(customer_list: Route, vehicle: Vehicle, instance: Instance, iteration: int, penalty_active=True) -> float:
-    tempRoute = RouteObject(customer_list, vehicle)
-    cost = routeCost(tempRoute, instance, iteration, penalty_active)
+    # distance
+    cost_km = compute_distance(customer_list, instance) * vehicle.costs_km
+
+    # penalty
+    cost_penalty = 0
+    if penalty_active:  # checks if penalty_costs were enabled when calling the cost function
+        cost_penalty = penalty_cost(customer_list, vehicle, instance, iteration)
+
+    cost = cost_km + cost_penalty
     return cost
 
 
@@ -156,30 +156,77 @@ def routeCost(routeObject: RouteObject, instance: Instance, iteration: int, pena
     # penalty
     cost_penalty = 0
     if penalty_active:  # checks if penalty_costs were enabled when calling the cost function
-        cost_penalty = penalty_cost(routeObject, instance, iteration)
+        cost_penalty = penalty_cost(routeObject.customer_list, routeObject.vehicle, instance, iteration)
 
     cost = cost_km + cost_penalty
     return cost
 
-
-def penalty_cost(routeObject: RouteObject, instance: Instance, iteration: int) -> float:
+def penalty_cost(customer_list: list(), vehicle: Vehicle, instance: Instance, iteration: int) -> float:
     # TODO: Choose suitable penalty-factor.
     iteration_penalty = 5 + iteration * 1  # penalty in each iteration.
 
     # payload_kg
-    constraint_kg = routeObject.vehicle.payload_kg
-    load_kg = compute_total_demand(routeObject.customer_list, instance)
+    constraint_kg = vehicle.payload_kg
+    load_kg = compute_total_demand(customer_list, instance)
     overload_kg = compute_overload(constraint_kg, load_kg)
     cost_kg = overload_kg * iteration_penalty
 
     # combine
     penalty = cost_kg  # + all other penalized constraints
 
-    if penalty > 0:  # set the feasibility of the route by checking if penality > 0. TODO: Be careful if this is used for temp_costs (like for comparison in insertion)
-        routeObject.currently_feasible = False
-    else: routeObject.currently_feasible = True
+    # if penalty > 0:  # set the feasibility of the route by checking if penality > 0.
+    #     routeObject.currently_feasible = False
+    # else: routeObject.currently_feasible = True
 
     return penalty
+
+
+""" temporaryRouteCost is used in some instances (e.g. customer insertion) where we want to test how expensive a 
+Route will be after a change. Since we dont want to change the route itself, we call temporaryRouteCost() instead of
+routeCost(). temporaryRouteCost then creates a tempRoute object and calls routeCost(). This means we only have to make
+changes in routeCost, if we want to alter the way costs are calculated.
+There is probably a way to have routeCost take either a RouteObject or (customer_list + Vehicle) and then decide what
+to do depending on the arguments that got passed, but I'm not smart enough for that
+- Christopher 2022-01-10
+"""
+
+# def temporaryRouteCost(customer_list: Route, vehicle: Vehicle, instance: Instance, iteration: int, penalty_active=True) -> float:
+#     tempRoute = RouteObject(customer_list, vehicle)
+#     cost = routeCost(tempRoute, instance, iteration, penalty_active)
+#     return cost
+
+
+# def routeCost(routeObject: RouteObject, instance: Instance, iteration: int, penalty_active=True) -> float:
+#     # distance
+#     cost_km = compute_distance(routeObject.customer_list, instance) * routeObject.vehicle.costs_km
+#
+#     # penalty
+#     cost_penalty = 0
+#     if penalty_active:  # checks if penalty_costs were enabled when calling the cost function
+#         cost_penalty = penalty_cost(routeObject, instance, iteration)
+#
+#     cost = cost_km + cost_penalty
+#     return cost
+
+
+# def penalty_cost(routeObject: RouteObject, instance: Instance, iteration: int) -> float:
+#     # TODO: Choose suitable penalty-factor.
+#     iteration_penalty = 5 + iteration * 1  # penalty in each iteration.
+#
+#     # payload_kg
+#     constraint_kg = routeObject.vehicle.payload_kg
+#     load_kg = compute_total_demand(routeObject.customer_list, instance)
+#     overload_kg = compute_overload(constraint_kg, load_kg)
+#     cost_kg = overload_kg * iteration_penalty
+#
+#     # combine
+#     penalty = cost_kg  # + all other penalized constraints
+#
+#     if penalty > 0:  # set the feasibility of the route by checking if penality > 0. TODO: Be careful if this is used for temp_costs (like for comparison in insertion)
+#         routeObject.currently_feasible = False
+#     else: routeObject.currently_feasible = True
+#
+#     return penalty
 
 
 def compute_overload(constraint: int, load: int) -> float:

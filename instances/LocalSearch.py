@@ -77,17 +77,13 @@ def find_first_improvement_relocate(solution: Solution, instance: Instance) -> b
     :return: `True` if an improvement was found, otherwise `False`.
     """
 
-    listOfPayloads = []
-    for i in instance.Q:
-        listOfPayloads.append(i.capacity)
-
     # TODO: apply improvements from the exchange neighborhood here as well
 
     for r1_index, r1 in enumerate(solution): # List[Route]
         for i in range(1, len(r1) - 1): # except depot, all the nodes can be relocated
             for r2_index, r2 in enumerate(solution):
                 # demand of node to be relocated + total demands of route to have the relocated node > max capacity
-                if instance.q[r1[i]] + compute_total_demand(r2, instance) > max(listOfPayloads):
+                if instance.q[r1[i]] + compute_total_demand(r2, instance) > 2400:
                     continue
 
                 for j in range(1, len(r2)): # relocate the node to every position of the other route
@@ -118,10 +114,6 @@ def find_first_improvement_exchange(solution: Solution, instance: Instance) -> b
     :return: `True` if an improvement was found, otherwise `False`.
     """
 
-    listOfPayloads = []
-    for i in instance.Q:
-        listOfPayloads.append(i.capacity)
-
     current_distances = []
     for route in solution:
         current_distances.append(compute_distance(route, instance))
@@ -147,7 +139,7 @@ def find_first_improvement_exchange(solution: Solution, instance: Instance) -> b
                     # demand of route 2 - demand of swapped node in route 2 + demand of swapped node in route 1
                     new_demand_r2 = current_demand[r2_index] - instance.q[r2[j]] + instance.q[r1[i]]
 
-                    if new_demand_r1 > max(listOfPayloads) or new_demand_r2 > max(listOfPayloads): # exceed max capacity
+                    if new_demand_r1 > 2400 or new_demand_r2 > 2400: # exceed max capacity
                         continue
                     # - dist(i-1, i) - dist(i, i+1) + dist(i-1, j) + dist(j, i+1)
                     change_r1 = - instance.d[r1[i - 1], r1[i]] \

@@ -1,18 +1,63 @@
 
 class Vehicle:
-    def __init__(self, type: str, city: str, plateNr: str):
+    def __init__(self, type: str, city: str, plateNr: str, city_tax=0):
         self.plateNr = plateNr
         self.type = type
         self.city = city
+
         if type == "MercedesBenzAtego":
             self.payload_kg = 2800
-            self.costs_km = 0.28
+            self.payload_vol = 34.80
+            self.range_km = 99999
+            self.speed_factor = 1
+            if city == "Paris":
+                self.costs_km = 0.28
+                self.cost_km_in = 0.28 + city_tax
+                self.cost_m = 0.38
+            elif city == "NewYork":
+                self.costs_km = 0.16
+                self.cost_km_in = 0.16 + city_tax
+                self.cost_m = 0.43
+            elif city == "Shanghai":
+                self.costs_km = 0.18
+                self.cost_km_in = 0.18 + city_tax
+                self.cost_m = 0.13
+
         elif type == "VWTransporter":
             self.payload_kg = 883
-            self.costs_km = 0.16
+            self.payload_vol = 5.8
+            self.range_km = 99999
+            self.speed_factor = 1
+            if city == "Paris":
+                self.costs_km = 0.16
+                self.cost_km_in = 0.16 + city_tax
+                self.cost_m = 0.37
+            elif city == "NewYork":
+                self.costs_km = 0.10
+                self.cost_km_in = 0.10 + city_tax
+                self.cost_m = 0.46
+            elif city == "Shanghai":
+                self.costs_km = 0.11
+                self.cost_km_in = 0.11 + city_tax
+                self.cost_m = 0.11
+
         elif type == "DouzeV2ECargoBike":
             self.payload_kg = 100
-            self.costs_km = 0.05
+            self.payload_vol = 0.2
+            self.range_km = 128
+            self.speed_factor = 0.5
+            if city == "Paris":
+                self.costs_km = 0.05
+                self.cost_km_in = 0.05
+                self.cost_m = 0.37
+            elif city == "NewYork":
+                self.costs_km = 0.05
+                self.cost_km_in = 0.15
+                self.cost_m = 0.46
+            elif city == "Shanghai":
+                self.costs_km = 0.05
+                self.cost_km_in = 0.05
+                self.cost_m = 0.11
 
         # string vehicle_id # the vehicle id is probably needed to attach the vehicle to a route
         # string vehicle_type # vehicle type is needed to set constraints & prices

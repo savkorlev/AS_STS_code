@@ -4,10 +4,12 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) improved adaptiveness&#10;2) added route_removal">
+    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) added maxTime. We can now set both maxIterations and maxTime and the loop will finish after the first one has been reached. Useful to compare against the ExcelSolver">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instances/Construction.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Construction.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instances/LocalSearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/LocalSearch.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instances/Trucks.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Trucks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instances/Utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -226,14 +228,8 @@
       <workItem from="1641979199262" duration="8647000" />
       <workItem from="1642085904633" duration="6492000" />
       <workItem from="1642139319807" duration="1195000" />
-      <workItem from="1642141110972" duration="2938000" />
-    </task>
-    <task id="LOCAL-00011" summary="1) loading all files as .csv in main with &quot; &quot; as a separator&#10;2) lines 19 and 20 - check if data frame's access works (list columns and address them)">
-      <created>1638057457407</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1638057457407</updated>
+      <workItem from="1642141110972" duration="3097000" />
+      <workItem from="1642146357261" duration="10430000" />
     </task>
     <task id="LOCAL-00012" summary="Added hints">
       <created>1638200044845</created>
@@ -571,7 +567,14 @@
       <option name="project" value="LOCAL" />
       <updated>1642092207814</updated>
     </task>
-    <option name="localTasksCounter" value="60" />
+    <task id="LOCAL-00060" summary="1) added maxTime. We can now set both maxIterations and maxTime and the loop will finish after the first one has been reached. Useful to compare against the ExcelSolver">
+      <created>1642144111932</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1642144111933</updated>
+    </task>
+    <option name="localTasksCounter" value="61" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -604,7 +607,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="1) Reverting changes" />
     <MESSAGE value="1) Small cosmetic improvements" />
     <MESSAGE value="1) Licence plates" />
     <MESSAGE value="1) Licence plates (last time we had different trucks as classes)" />
@@ -629,7 +631,8 @@
     <MESSAGE value="1) added a very simple form of adaptiveness. Weights get improved by +10 if improvement, decreased by -1 if rejected." />
     <MESSAGE value="1) added a very simple form of adaptiveness. Weights get improved by +10 if improvement, decreased by -1 if rejected. This does not seem to improve the algorithm yet." />
     <MESSAGE value="1) improved adaptiveness&#10;2) added route_removal" />
-    <option name="LAST_COMMIT_MESSAGE" value="1) improved adaptiveness&#10;2) added route_removal" />
+    <MESSAGE value="1) added maxTime. We can now set both maxIterations and maxTime and the loop will finish after the first one has been reached. Useful to compare against the ExcelSolver" />
+    <option name="LAST_COMMIT_MESSAGE" value="1) added maxTime. We can now set both maxIterations and maxTime and the loop will finish after the first one has been reached. Useful to compare against the ExcelSolver" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -639,6 +642,11 @@
             <option name="notifyOnTerminate" value="true" />
           </properties>
         </breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/instances/LocalSearch.py</url>
+          <line>13</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
@@ -661,6 +669,6 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/main_py$TestConstruction.coverage" NAME="TestConstruction Coverage Results" MODIFIED="1640299941018" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1642144034780" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1642164199402" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
