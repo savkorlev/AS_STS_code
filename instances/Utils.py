@@ -1,4 +1,5 @@
 import copy
+import math
 import random
 import numpy as np
 from typing import List, Dict, Tuple
@@ -37,11 +38,17 @@ class Instance:
         self.coordinates = coordinates
 
         # algorithm will run until first of these conditions is met. Either iterations or time.
-        self.max_iterations = 3000
-        self.max_time = 5.0  # seconds
+        self.max_iterations = 300
+        self.max_time = 15.0  # seconds
+
+        """ the idea here is to fall back to our best known solution after getting away from it with SimAnnealing. 
+        We need to allow enough iterations for the accepted solution to be optimized enough to compete with the bestSolution
+        """
+        # todo: currently set up to check improvements over best solution. If we are still finding better local solutins, we should probably not fall back.
+        self.max_iterations_no_improvement = max(50, self.max_iterations * 0.05)
 
         self.init_temp = 0.9  # factor with which the solution of the 0. iteration is turned into first temperature -> ourAlgorithm()
-        self.cooling = 0.95  # factor with which temperature is reduced after every instance  -> simulated_annealing()
+        self.cooling = 0.99  # factor with which temperature is reduced after every instance  -> simulated_annealing()
 
         # set the initial weights for each operator
         self.init_weight_destroy_random = 50
@@ -293,3 +300,16 @@ def vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: Li
         r.current_cost = routeCost(r, instance, iteration, penalty_active)  # update the route cost
         print(f"Route cost after Vehicle Assignment: route {counter} , vehicle {r.vehicle.type} {r.vehicle.plateNr}, cost: {r.current_cost:.2f}, demand {compute_total_demand(r.customer_list, instance)}, customerCount: {len(r.customer_list)-2}, feasible: {r.currently_feasible}")
     return list_of_available_vehicles
+
+
+def simulated_annealing(instance: Instance, currentSolution: List[RouteObject], newSoluion: List[RouteObject], temp: float,
+                        iteration: int) -> bool:
+    # https://github.com/perrygeo/simanneal
+    curcost = solution_cost(currentSolution, instance, iteration, True)
+    newcost = solution_cost(newSoluion, instance, iteration, True)
+    accept = False
+    rand = random.random()
+    if newcost < curcost or (rand < math.exp((curcost - newcost) / temp)):
+        accept = True
+    temperature = instance.cooling * temp  # update temperature
+    return accept, newcost, temperature

@@ -1,5 +1,5 @@
 import sys
-
+import copy
 import pandas as pd
 
 from instances.Construction import ouralgorithm
@@ -7,6 +7,7 @@ from instances.Intialization import random_sweep
 from instances.Trucks import create_vehicles
 from instances.Utils import Instance, vehicle_assignment, solution_cost
 from instances.Plot import plotTSP, create_list_int_coordinates
+
 
 # import os
 # os.chdir('C:/Users/Евгений/Desktop/TUM/WS 2021-2022/Advanced Seminar Sustainable Transportation Systems/AS_STS_code')
@@ -120,7 +121,7 @@ for i in range(10): # we run the sweep heuristic multiple times with different s
     tempCost = solution_cost(tempSolutionRandomSweep, ourInstance, 0, True)
     # print(f"Rand Sweep Heuristic, temp distance: {compute_distances(tempSolutionRandomSweep, ourInstance)}")
     if tempCost < bestCostRandomSweep:
-        bestSolutionRandomSweep = tempSolutionRandomSweep.copy()
+        bestSolutionRandomSweep = copy.deepcopy(tempSolutionRandomSweep)
         bestCostRandomSweep = tempCost
 print(f"Rand Sweep Heuristic, #Vehicles: {len(bestSolutionRandomSweep)}, cost: {bestCostRandomSweep}")
 

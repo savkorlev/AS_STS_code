@@ -15,7 +15,8 @@ from instances.Plot import plotTSP
 from instances.Route import RouteObject
 from instances.Trucks import Vehicle
 from instances.Utils import Instance, Solution, compute_total_demand, routeCost, \
-    temporaryRouteCost, delete_empty_routes, vehicle_assignment, solution_cost
+    temporaryRouteCost, delete_empty_routes, vehicle_assignment, solution_cost, simulated_annealing
+
 
 #TODO: Check all copy operations
 def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfInitialVehicles: List[Vehicle],
@@ -48,7 +49,8 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
     listImprovingIterations = []  # collects all iterations where we found an improvement
 
     # setting up counter to check how long we had no improvement
-    iterations_no_improvement = 0
+    counter_iterations_no_improvement = 0
+    listFallbackIterations = []
 
     # set up parameters of simulated annealing
     currentSolution = copy.deepcopy(initialSolution)
@@ -185,7 +187,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
             bestSolution = copy.deepcopy(listOfRoutes)
             bestIteration = iteration
             listImprovingIterations.append((iteration, destroy_op_used, insert_op_used))
-            iterations_no_improvement = 0  # reset the counter
+            counter_iterations_no_improvement = 0  # reset the counter
 
             if destroy_op_used == 'random_removal':
                 weight_destroy_random = min(200, weight_destroy_random + iteration)
@@ -205,7 +207,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
                 counter_insert_regret_imp += 1
 
         else:  # if we dont find a better solution solution:
-            iterations_no_improvement += 1
+            counter_iterations_no_improvement += 1
 
             if destroy_op_used == 'random_removal':  # pick a destroy operation
                 weight_destroy_random = max(10, weight_destroy_random - 1)
@@ -224,9 +226,14 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
                 weight_insert_regret = max(10, weight_insert_regret - 1)
                 counter_insert_regret_rej += 1
 
+            if counter_iterations_no_improvement >= instance.max_iterations_no_improvement:  # if we cant find an improvement for very long, go back to the best known solution
+                currentSolution = copy.deepcopy(bestSolution)
+                counter_iterations_no_improvement = 0
+                listFallbackIterations.append((iteration, costThisIteration, bestCost))
+
         print(f"Total cost of the current iteration: {costThisIteration}")
         print(f"Best known cost: {bestCost}")
-        print(f"Best iteration: {bestIteration}, iterations without improvement: {iterations_no_improvement}\n")
+        print(f"Best iteration: {bestIteration}, iterations without improvement: {counter_iterations_no_improvement}\n")
         # plotTSP(bestSolution_LoCL, coordinates_int) # use this if you want to plot after every iteration
 
         time_so_far = time.perf_counter() - perf_starttime  # update time for maxTime
@@ -252,7 +259,8 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
     print(f"Finished after iteration {iteration}")
     print(f"Initialization cost: {initialCost:.2f}, ourAlgorithm cost: {bestCost:.2f}.")
     print(f"We improved by {improvement:.2f}%. Average improvement per iteration: {imp_per_it:.2f}%.")
-    print(f"We improved in the following iterations: {listImprovingIterations}.")
+    print(f"We improved {len(listImprovingIterations)} times, in the following iterations: {listImprovingIterations}.")
+    print(f"We fell back {len(listFallbackIterations)} times, in the following iterations: {listFallbackIterations}.")
     endtime = datetime.datetime.now()
     print(f"Length of the run: {endtime - starttime}.\n")
     print('accept: ' + str(accept_time) + ', iterations: ' + str(iteration) + ', ratio: ' + str(accept_time/iteration))  # todo: something seems not right here with accept_time. Seems way to high.
@@ -262,16 +270,3 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
 
 
     return list(map(lambda x: x.customer_list, bestSolution))
-
-
-def simulated_annealing(instance: Instance, currentSolution: List[RouteObject], newSoluion: List[RouteObject], temp: float,
-                        iteration: int) -> bool:
-    # https://github.com/perrygeo/simanneal
-    curcost = solution_cost(currentSolution, instance, iteration, True)
-    newcost = solution_cost(newSoluion, instance, iteration, True)
-    accept = False
-    rand = random.random()
-    if newcost < curcost or (rand < math.exp((curcost - newcost) / temp)):
-        accept = True
-    temperature = instance.cooling * temp  # update temperature
-    return accept, newcost, temperature
