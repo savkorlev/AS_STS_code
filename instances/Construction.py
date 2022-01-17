@@ -9,7 +9,8 @@ from typing import List
 
 from instances.DestructionOps import random_removal, expensive_removal, route_removal
 from instances.InsertionOps import cheapest_insertion_iterative, regret_insertion
-from instances.LocalSearch import hillclimbing, find_first_improvement_2Opt, vnd, find_first_improvement_relocate
+from instances.LocalSearch import hillclimbing, find_first_improvement_2Opt, vnd, find_first_improvement_relocate, \
+    find_best_improvement_2Opt
 from instances.Plot import plotTSP
 from instances.Route import RouteObject
 from instances.Trucks import Vehicle
@@ -18,7 +19,8 @@ from instances.Utils import Instance, Solution, compute_total_demand, compute_di
 
 #TODO: Check all copy operations
 def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfInitialVehicles: List[Vehicle],
-                 listOfInitAvailableVehicles: List[Vehicle], max_iterations: int, max_time: float, coordinates_int=[]): # coordinates_int is only for matplot
+                 listOfInitAvailableVehicles: List[Vehicle], max_iterations: int, max_time: float, init_temp: float,
+                 cooling: float, temp_iter: int, coordinates_int=[]): # coordinates_int is only for matplot
     # START OF INITIALIZATION PHASE
     starttime = datetime.datetime.now()
     list_of_available_vehicles = copy.deepcopy(listOfInitAvailableVehicles)
@@ -46,7 +48,11 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
 
     listImprovingIterations = []  # collects all iterations where we found an improvement
 
-
+    # set up parameters of simulated annealing
+    currentSolution = copy.deepcopy(initialSolution)
+    currentCost = solution_cost(initialSolution, instance, iteration=0, penalty_active=True)
+    temperature = init_temp * currentCost #  current cost is used to calculate initial temperature
+    accept_time = 0
 
     print(f"Sweep solution: {list(map(lambda x: x.customer_list, bestSolution))}") # printing out customer lists after sweep
     print(f"Route costs:    {list(map(lambda x: x.current_cost, bestSolution))}")  # printing out costs of the routes after sweep after costs are assigned
@@ -58,6 +64,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
     time_so_far = 0.0
 
     while time_so_far < max_time and iteration < max_iterations:  # run until either maxIterations or maxTime is reached. Will do 1 last loop after maxTime.
+        #for _ in range(temp_iter): ## experiment with looping over acceptanace phase
         iteration += 1  # count up the iterations
 
         print(f"New iteration__________{iteration}")
@@ -65,11 +72,13 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
         # -------------------------------------------------------------------------------------------------------------
         # START OF DESTRUCTION PHASE
         # bestSolution_beforeDestruction = list(map(lambda x: x.customer_list, bestSolution))
-        listOfRoutes = copy.deepcopy(bestSolution)  # at the start of each iteration, set the list of routes to best known solution
+        listOfRoutes = copy.deepcopy(
+            currentSolution)  # at the start of each iteration, set the list of routes to current known solution
 
         destroy_ops = ['random_removal', 'expensive_removal', 'route_removal']
         destroy_weights = [weight_destroy_random, weight_destroy_expensive, weight_destroy_route]
-        destroy_op_used_list = random.choices(destroy_ops, weights=destroy_weights)  # chooses an option from a weighed list
+        destroy_op_used_list = random.choices(destroy_ops,
+                                              weights=destroy_weights)  # chooses an option from a weighed list
         destroy_op_used = destroy_op_used_list[0]  # because the choices-operator returns a list
 
         if destroy_op_used == 'random_removal':  # pick a destroy operation
@@ -108,11 +117,13 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
 
         insert_ops = ['cheapest_insert', 'regret_insert']
         insert_weights = [weight_insert_cheapest, weight_insert_regret]
-        insert_op_used_list = random.choices(insert_ops, weights=insert_weights)  # chooses an option from a weighed list
+        insert_op_used_list = random.choices(insert_ops,
+                                             weights=insert_weights)  # chooses an option from a weighed list
         insert_op_used = insert_op_used_list[0]  # because the choices-operator returns a list
 
         if insert_op_used == 'cheapest_insert':  # pick a destroy operation
-            cheapest_insertion_iterative(listOfRoutes, listOfRemoved, list_of_available_vehicles, instance, iteration)
+            cheapest_insertion_iterative(listOfRoutes, listOfRemoved, list_of_available_vehicles, instance,
+                                         iteration)
         elif insert_op_used == 'regret_insert':
             regret_insertion(listOfRoutes, listOfRemoved, list_of_available_vehicles, instance, iteration)
 
@@ -126,20 +137,23 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
 
         # START OF LOCAL OPTIMIZATION 2-opt
         """ 2-opt currently optimizes for distance. Since it is inter-route, I am fine with this. - Christopher"""
-        local_search_function = find_first_improvement_2Opt
+        local_search_function = find_best_improvement_2Opt
         # if random.uniform(0, 1) > 0.3:
         #     local_search_function = find_first_improvement_2Opt
         # else:
         #     local_search_function = find_first_improvement_relocate
 
-        listAfterOptimization = hillclimbing(list(map(lambda x: x.customer_list, listOfRoutes)), instance, local_search_function)
+        listAfterOptimization = hillclimbing(list(map(lambda x: x.customer_list, listOfRoutes)), instance,
+                                             local_search_function)
         for i in range(len(listAfterOptimization)):
-            listOfRoutes[i].customer_list = listAfterOptimization[i].copy()  # put the optimized customer lists back into our RouteObjects
+            listOfRoutes[i].customer_list = listAfterOptimization[
+                i].copy()  # put the optimized customer lists back into our RouteObjects
         print(f"Route objects after optimization: {list(map(lambda x: x.customer_list, listOfRoutes))}")
         # END OF LOCAL OPTIMIZATION 2-opt
 
         # START OF VEHICLE SWAP PHASE
-        list_of_available_vehicles = vehicle_assignment(listOfRoutes, listOfInitialVehicles, instance) # def vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: List[Vehicle], instance: Instance):
+        list_of_available_vehicles = vehicle_assignment(listOfRoutes, listOfInitialVehicles,
+                                                        instance)  # def vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: List[Vehicle], instance: Instance):
         # END OF VEHICLE SWAP PHASE
         # END OF OPTIMIZATION PHASE.
         # -------------------------------------------------------------------------------------------------------------
@@ -159,13 +173,17 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
         bestCost = solution_cost(bestSolution, instance, iteration, True)
         print(f"Best known cost before this iteration: {bestCost}")
         print(f"Best iteration before this one: {bestIteration}")
-        costThisIteration = solution_cost(listOfRoutes, instance, iteration, True)
+        ## costThisIteration = solution_cost(listOfRoutes, instance, iteration, True)
+        accept, costThisIteration, temperature = simulated_annealing(instance, currentSolution, listOfRoutes, temperature,
+                                                                     iteration, cooling)
+        accept_time += accept
+        if accept:
+            currentSolution = listOfRoutes
         if costThisIteration < bestCost:
             bestCost = costThisIteration
-            bestSolution = listOfRoutes.copy()
+            bestSolution = copy.deepcopy(listOfRoutes)
             bestIteration = iteration
             listImprovingIterations.append((iteration, destroy_op_used, insert_op_used))
-
 
             if destroy_op_used == 'random_removal':
                 weight_destroy_random = min(200, weight_destroy_random + iteration)
@@ -176,7 +194,6 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
             elif destroy_op_used == 'route_removal':
                 weight_destroy_route = min(200, weight_destroy_random + iteration)
                 counter_destroy_route_imp += 1
-
 
             if insert_op_used == 'cheapest_insert':
                 weight_insert_cheapest = min(200, weight_insert_cheapest + iteration)
@@ -203,7 +220,6 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
             elif insert_op_used == 'regret_insert':
                 weight_insert_regret = max(10, weight_insert_regret - 1)
                 counter_insert_regret_rej += 1
-
 
         print(f"Total cost of the current iteration: {costThisIteration}")
         print(f"Best known cost: {bestCost}")
@@ -236,9 +252,23 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
     print(f"We improved in the following iterations: {listImprovingIterations}.")
     endtime = datetime.datetime.now()
     print(f"Length of the run: {endtime - starttime}.\n")
+    print('accept: ' + str(accept_time) + ', iterations: ' + str(iteration) + ', ratio: ' + str(accept_time/iteration))
     print(str(endtime))
 
 
 
 
     return list(map(lambda x: x.customer_list, bestSolution))
+
+
+def simulated_annealing(instance: Instance, currentSolution: List[RouteObject], newSoluion: List[RouteObject], temp: float,
+                        iteration: int, cooling: float) -> bool:
+    # https://github.com/perrygeo/simanneal
+    curcost = solution_cost(currentSolution, instance, iteration, True)
+    newcost = solution_cost(newSoluion, instance, iteration, True)
+    accept = False
+    rand = random.random()
+    if newcost < curcost or (rand < math.exp((curcost - newcost) / temp)):
+        accept = True
+    temperature = cooling * temp  # update temperature
+    return accept, newcost, temperature
