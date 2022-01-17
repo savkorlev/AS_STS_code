@@ -8,7 +8,7 @@ class RouteObject:
     def __init__(self, customer_list: list, vehicle: Vehicle):
         self.customer_list: list = customer_list
         self.vehicle: Vehicle = vehicle
-        self.currently_feasible: bool = False
+        self.currently_feasible: bool = False  # todo: we currently have no function set up to set this to true/false. We also currently never use this status.
         self.current_cost: float = 0
         # list customer_list = [0,0] # the list of customers (+depots)
         # Vehicle vehicle = "" # each route should know the vehicle object assigned to it. not just the vehicle type, but the vehicles unique ID / numberplate

@@ -14,13 +14,12 @@ from instances.LocalSearch import hillclimbing, find_first_improvement_2Opt, vnd
 from instances.Plot import plotTSP
 from instances.Route import RouteObject
 from instances.Trucks import Vehicle
-from instances.Utils import Instance, Solution, compute_total_demand, compute_distances, routeCost, \
+from instances.Utils import Instance, Solution, compute_total_demand, routeCost, \
     temporaryRouteCost, delete_empty_routes, vehicle_assignment, solution_cost
 
 #TODO: Check all copy operations
 def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfInitialVehicles: List[Vehicle],
-                 listOfInitAvailableVehicles: List[Vehicle], max_iterations: int, max_time: float, init_temp: float,
-                 cooling: float, temp_iter: int, coordinates_int=[]): # coordinates_int is only for matplot
+                 listOfInitAvailableVehicles: List[Vehicle], coordinates_int=[]): # coordinates_int is only for matplot
     # START OF INITIALIZATION PHASE
     starttime = datetime.datetime.now()
     list_of_available_vehicles = copy.deepcopy(listOfInitAvailableVehicles)
@@ -28,30 +27,33 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
     bestSolution = copy.deepcopy(initialSolution)  # set the initial solution as the best solution (until acceptance check)
     bestIteration = -1 # used in acceptance check
 
-    # setting up counters and lists for adaptive LNS and generating reports after algorithm finishes
-    weight_destroy_random = 50  # set initial weight for operation
+    # setting up weights, counters and lists for adaptive LNS and generating reports after algorithm finishes
+    weight_destroy_random = instance.init_weight_destroy_random  # set initial weight for operation
     counter_destroy_random_imp = 0
     counter_destroy_random_rej = 0
-    weight_destroy_expensive = 50
+    weight_destroy_expensive = instance.init_weight_destroy_expensive
     counter_destroy_expensive_imp = 0
     counter_destroy_expensive_rej = 0
-    weight_destroy_route = 50
+    weight_destroy_route = instance.init_weight_destroy_route
     counter_destroy_route_imp = 0
     counter_destroy_route_rej = 0
 
-    weight_insert_cheapest = 50
+    weight_insert_cheapest = instance.init_weight_insert_cheapest
     counter_insert_cheapest_imp = 0
     counter_insert_cheapest_rej = 0
-    weight_insert_regret = 25
+    weight_insert_regret = instance.init_weight_insert_regret
     counter_insert_regret_imp = 0
     counter_insert_regret_rej = 0
 
     listImprovingIterations = []  # collects all iterations where we found an improvement
 
+    # setting up counter to check how long we had no improvement
+    iterations_no_improvement = 0
+
     # set up parameters of simulated annealing
     currentSolution = copy.deepcopy(initialSolution)
     currentCost = solution_cost(initialSolution, instance, iteration=0, penalty_active=True)
-    temperature = init_temp * currentCost #  current cost is used to calculate initial temperature
+    temperature = instance.init_temp * currentCost #  current cost is used to calculate initial temperature
     accept_time = 0
 
     print(f"Sweep solution: {list(map(lambda x: x.customer_list, bestSolution))}") # printing out customer lists after sweep
@@ -63,8 +65,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
     perf_starttime = time.perf_counter()  # starts the timer for our maxTime. Does not include the initialization. This is ok since the sweep is very short.
     time_so_far = 0.0
 
-    while time_so_far < max_time and iteration < max_iterations:  # run until either maxIterations or maxTime is reached. Will do 1 last loop after maxTime.
-        #for _ in range(temp_iter): ## experiment with looping over acceptanace phase
+    while time_so_far < instance.max_time and iteration < instance.max_iterations:  # run until either maxIterations or maxTime is reached. Will do 1 last loop after maxTime.
         iteration += 1  # count up the iterations
 
         print(f"New iteration__________{iteration}")
@@ -175,15 +176,16 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
         print(f"Best iteration before this one: {bestIteration}")
         ## costThisIteration = solution_cost(listOfRoutes, instance, iteration, True)
         accept, costThisIteration, temperature = simulated_annealing(instance, currentSolution, listOfRoutes, temperature,
-                                                                     iteration, cooling)
+                                                                     iteration)
         accept_time += accept
         if accept:
             currentSolution = listOfRoutes
-        if costThisIteration < bestCost:
+        if costThisIteration < bestCost:  # only if we find a BETTER solution, does not depend on acceptance. todo: revise this
             bestCost = costThisIteration
             bestSolution = copy.deepcopy(listOfRoutes)
             bestIteration = iteration
             listImprovingIterations.append((iteration, destroy_op_used, insert_op_used))
+            iterations_no_improvement = 0  # reset the counter
 
             if destroy_op_used == 'random_removal':
                 weight_destroy_random = min(200, weight_destroy_random + iteration)
@@ -202,7 +204,8 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
                 weight_insert_regret = min(200, weight_insert_regret + iteration)
                 counter_insert_regret_imp += 1
 
-        else:  # if we dont accept current solution:
+        else:  # if we dont find a better solution solution:
+            iterations_no_improvement += 1
 
             if destroy_op_used == 'random_removal':  # pick a destroy operation
                 weight_destroy_random = max(10, weight_destroy_random - 1)
@@ -223,7 +226,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
 
         print(f"Total cost of the current iteration: {costThisIteration}")
         print(f"Best known cost: {bestCost}")
-        print(f"Best iteration: {bestIteration}\n")
+        print(f"Best iteration: {bestIteration}, iterations without improvement: {iterations_no_improvement}\n")
         # plotTSP(bestSolution_LoCL, coordinates_int) # use this if you want to plot after every iteration
 
         time_so_far = time.perf_counter() - perf_starttime  # update time for maxTime
@@ -252,7 +255,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
     print(f"We improved in the following iterations: {listImprovingIterations}.")
     endtime = datetime.datetime.now()
     print(f"Length of the run: {endtime - starttime}.\n")
-    print('accept: ' + str(accept_time) + ', iterations: ' + str(iteration) + ', ratio: ' + str(accept_time/iteration))
+    print('accept: ' + str(accept_time) + ', iterations: ' + str(iteration) + ', ratio: ' + str(accept_time/iteration))  # todo: something seems not right here with accept_time. Seems way to high.
     print(str(endtime))
 
 
@@ -262,7 +265,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
 
 
 def simulated_annealing(instance: Instance, currentSolution: List[RouteObject], newSoluion: List[RouteObject], temp: float,
-                        iteration: int, cooling: float) -> bool:
+                        iteration: int) -> bool:
     # https://github.com/perrygeo/simanneal
     curcost = solution_cost(currentSolution, instance, iteration, True)
     newcost = solution_cost(newSoluion, instance, iteration, True)
@@ -270,5 +273,5 @@ def simulated_annealing(instance: Instance, currentSolution: List[RouteObject], 
     rand = random.random()
     if newcost < curcost or (rand < math.exp((curcost - newcost) / temp)):
         accept = True
-    temperature = cooling * temp  # update temperature
+    temperature = instance.cooling * temp  # update temperature
     return accept, newcost, temperature

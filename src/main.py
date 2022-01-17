@@ -94,17 +94,19 @@ if sumOfCapacity < sumOfDemand:
     print(f"Not enough Capacity ({sumOfCapacity}) for Demand ({sumOfDemand})")
 #     # sys.exit()
 
-# 4. SET MAX ITERATIONS
-""" logically, this should not be here. But this way we have all the parameters we need to set for a run nearby"""
-maxIterations = 3000  # sets how many iterations we want
-maxTime = 18.0  # in Seconds. Sets how much time the loop should maximally use
+# # 5. SET MAX ITERATIONS
+# """ logically, this should not be here. But this way we have all the parameters we need to set for a run nearby"""
+# maxIterations = 3000  # sets how many iterations we want
+# maxTime = 18.0  # in Seconds. Sets how much time the loop should maximally use
+# ITERATION PARAMETERS ARE NOW SET IN THE INSTANCE
 
 # 5. CREATING INSTANCE
 ourInstance = Instance(testDimension, listOfInitialVehicles, testDemandParis, testParisDistances, coordinates)
 
-# SET PARAMETERS of SIMULATED ANNEALING
-init_temp = 0.9
-cooling = 0.85
+# # SET PARAMETERS of SIMULATED ANNEALING
+# init_temp = 0.9
+# cooling = 0.85
+# SIM ANNEALING PARAMETERS ARE NOW SET IN THE INSTANCE
 
 # testing new sweep heuristic
 
@@ -130,7 +132,7 @@ listOfInitAvailableVehicles = vehicle_assignment(bestSolutionRandomSweep, listOf
 
 # 7. OUR ALGORITHM (DESTRUCTION + INSERTION + OPTIMIZATION + ACCEPTANCE)
 solutionOur = ouralgorithm(ourInstance, bestSolutionRandomSweep, listOfInitialVehicles, listOfInitAvailableVehicles,
-                           maxIterations, maxTime, init_temp, cooling, coordinates_int)
+                           coordinates_int)
 # lenOfSolutionOur = len(solutionOur)
 # for i in range(lenOfSolutionOur):
 #     print(f"Sum of demands of a {i} route: " + str(compute_total_demand(solutionOur[i], ourInstance)))

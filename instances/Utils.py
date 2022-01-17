@@ -36,6 +36,29 @@ class Instance:
         self.d = d
         self.coordinates = coordinates
 
+        # algorithm will run until first of these conditions is met. Either iterations or time.
+        self.max_iterations = 3000
+        self.max_time = 5.0  # seconds
+
+        self.init_temp = 0.9  # factor with which the solution of the 0. iteration is turned into first temperature -> ourAlgorithm()
+        self.cooling = 0.95  # factor with which temperature is reduced after every instance  -> simulated_annealing()
+
+        # set the initial weights for each operator
+        self.init_weight_destroy_random = 50
+        self.init_weight_destroy_expensive = 50
+        self.init_weight_destroy_route = 50
+        self.init_weight_insert_cheapest = 50
+        self.init_weight_insert_regret = 25
+
+
+        self.init_penalty = 5  # starting penalty costs in the 0. iteration -> penalty_cost()
+        self.step_penalty = 1  # step by which penalty grows in every iteration -> penalty_cost()
+        # TODO: Choose suitable penalty-factor. Maybe depending on max_iterations?
+
+        self.penalty_cost_iteration_for_initialization = 0.75 * self.max_iterations   # setting this parameter correctly is very important for the initial solution.
+
+
+
 
 Route = List[int]
 Solution = List[Route]
@@ -46,13 +69,13 @@ Solution = List[Route]
 #     return next_fit_heuristic(order, instance)
 
 
-def compute_distances(solution: Solution, instance: Instance) -> float:
-    sum_distances = 0.0
-
-    for route in solution:
-        sum_distances += compute_distance(route, instance)
-
-    return sum_distances
+# def compute_distances(solution: Solution, instance: Instance) -> float:
+#     sum_distances = 0.0
+#
+#     for route in solution:
+#         sum_distances += compute_distance(route, instance)
+#
+#     return sum_distances
 
 
 def compute_distances_objects(solution: Solution, instance: Instance) -> float:
@@ -138,12 +161,13 @@ def solution_cost(listOfRoutes: List[Route], instance: Instance, iteration: int,
 
 def temporaryRouteCost(customer_list: Route, vehicle: Vehicle, instance: Instance, iteration: int, penalty_active=True) -> float:
     # distance
-    cost_km = compute_distance(customer_list, instance) * vehicle.costs_km
+    distance = compute_distance(customer_list, instance)
+    cost_km = distance * vehicle.costs_km
 
     # penalty
     cost_penalty = 0
     if penalty_active:  # checks if penalty_costs were enabled when calling the cost function
-        cost_penalty = penalty_cost(customer_list, vehicle, instance, iteration)
+        cost_penalty = penalty_cost(customer_list, vehicle, instance, iteration, distance)
 
     cost = cost_km + cost_penalty
     return cost
@@ -151,25 +175,27 @@ def temporaryRouteCost(customer_list: Route, vehicle: Vehicle, instance: Instanc
 
 def routeCost(routeObject: RouteObject, instance: Instance, iteration: int, penalty_active=True) -> float:
     # distance
-    cost_km = compute_distance(routeObject.customer_list, instance) * routeObject.vehicle.costs_km
+    distance = compute_distance(routeObject.customer_list, instance)
+    cost_km = distance * routeObject.vehicle.costs_km
 
     # penalty
     cost_penalty = 0
     if penalty_active:  # checks if penalty_costs were enabled when calling the cost function
-        cost_penalty = penalty_cost(routeObject.customer_list, routeObject.vehicle, instance, iteration)
+        cost_penalty = penalty_cost(routeObject.customer_list, routeObject.vehicle, instance, iteration, distance)
 
     cost = cost_km + cost_penalty
     return cost
 
-def penalty_cost(customer_list: list(), vehicle: Vehicle, instance: Instance, iteration: int) -> float:
-    # TODO: Choose suitable penalty-factor.
-    iteration_penalty = 5 + iteration * 1  # penalty in each iteration.
+def penalty_cost(customer_list: list(), vehicle: Vehicle, instance: Instance, iteration: int, distance: float) -> float:
+    iteration_penalty = instance.init_penalty + iteration * instance.step_penalty  # penalty in each iteration.
 
     # payload_kg
     constraint_kg = vehicle.payload_kg
     load_kg = compute_total_demand(customer_list, instance)
     overload_kg = compute_overload(constraint_kg, load_kg)
     cost_kg = overload_kg * iteration_penalty
+
+    # range
 
     # combine
     penalty = cost_kg  # + all other penalized constraints

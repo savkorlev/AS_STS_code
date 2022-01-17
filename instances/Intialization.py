@@ -9,12 +9,11 @@ from instances.Utils import Instance, temporaryRouteCost
 
 def next_fit_heuristic(all_customers: list[int], instance: Instance, initialVehicles: list[Vehicle]) -> list():
 
-    """ penalty_cost_dummy_iteration sets the iteration that gives us the penalty cost for deciding if it is cheaper
+    """ penalty_cost_iteration_for_initialization sets the iteration that gives us the penalty cost for deciding if it is cheaper
     to add a new route or to add to the last open route.
     If this is chosen too high will only create feasible routes (if possible) and tends to overload the last vehicle available.
     Setting it too low only creates infeasible routes.
     A good idea seems to be to set it to 75% of maxIteration"""
-    penalty_cost_dummy_iteration = 75  # setting this parameter correctly is very important for the initial solution.
 
     listOfRoutes = []
     availableVehicles = copy.deepcopy(initialVehicles)
@@ -29,14 +28,14 @@ def next_fit_heuristic(all_customers: list[int], instance: Instance, initialVehi
 
         temp_route = last_route.customer_list.copy()
         temp_route.insert(last_position, current_customer)
-        cost_with = temporaryRouteCost(temp_route, last_route.vehicle, instance, penalty_cost_dummy_iteration, True)  # set iteration to something where it will already have reasonable penalties
-        cost_without = temporaryRouteCost(last_route.customer_list, last_route.vehicle, instance, penalty_cost_dummy_iteration, True)
+        cost_with = temporaryRouteCost(temp_route, last_route.vehicle, instance, instance.penalty_cost_iteration_for_initialization, True)  # set iteration to something where it will already have reasonable penalties
+        cost_without = temporaryRouteCost(last_route.customer_list, last_route.vehicle, instance, instance.penalty_cost_iteration_for_initialization, True)
         last_route_cost = cost_with - cost_without
 
 
         if len(availableVehicles) > 0:  # only try to pick a new vehicle if we still have vehicles available
             randomVehicle = random.choice(availableVehicles)
-            new_route_cost = temporaryRouteCost([0, current_customer, 0], randomVehicle, instance, penalty_cost_dummy_iteration, True)
+            new_route_cost = temporaryRouteCost([0, current_customer, 0], randomVehicle, instance, instance.penalty_cost_iteration_for_initialization, True)
             if last_route_cost <= new_route_cost:
                 last_route.customer_list.insert(last_position, current_customer)
             else:
