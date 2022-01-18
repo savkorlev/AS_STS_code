@@ -8,7 +8,7 @@ import time
 from typing import List
 
 from instances.DestructionOps import random_removal, expensive_removal, route_removal
-from instances.InsertionOps import cheapest_insertion_iterative, regret_insertion
+from instances.InsertionOps import cheapest_insertion_iterative, regret_insertion, regret_insertion_faster
 from instances.LocalSearch import hillclimbing, find_first_improvement_2Opt, vnd, find_first_improvement_relocate, \
     find_best_improvement_2Opt
 from instances.Plot import plotTSP
@@ -118,6 +118,11 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
         #     regret_insertion(listOfRoutes, listOfRemoved, list_of_available_vehicles, instance, iteration)
         #     insert_op_used = "regret_insert"
 
+        #  testing new ops
+        # regret_insertion_faster(listOfRoutes, listOfRemoved, list_of_available_vehicles, instance,
+        #                              iteration)
+
+
         insert_ops = ['cheapest_insert', 'regret_insert']
         insert_weights = [weight_insert_cheapest, weight_insert_regret]
         insert_op_used_list = random.choices(insert_ops,
@@ -140,11 +145,12 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
 
         # START OF LOCAL OPTIMIZATION 2-opt
         """ 2-opt currently optimizes for distance. Since it is inter-route, I am fine with this. - Christopher"""
-        local_search_function = find_best_improvement_2Opt
+
         # if random.uniform(0, 1) > 0.3:
         #     local_search_function = find_first_improvement_2Opt
         # else:
         #     local_search_function = find_first_improvement_relocate
+        local_search_function = find_best_improvement_2Opt
 
         listAfterOptimization = hillclimbing(list(map(lambda x: x.customer_list, listOfRoutes)), instance,
                                              local_search_function)

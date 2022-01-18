@@ -45,7 +45,7 @@ class Vehicle:
             self.payload_kg = 100
             self.payload_vol = 0.2
             self.range_km = 128
-            self.speed_factor = 0.5
+            self.speed_factor = 0.5  # todo: we have to think about the speed of the bike compared to the other vehicles. Also maybe the unloading speed.
             if city == "Paris":
                 self.costs_km = 0.05
                 self.cost_km_in = 0.05

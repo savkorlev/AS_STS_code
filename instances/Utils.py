@@ -38,8 +38,8 @@ class Instance:
         self.coordinates = coordinates
 
         # algorithm will run until first of these conditions is met. Either iterations or time.
-        self.max_iterations = 15000
-        self.max_time = 900.0  # seconds
+        self.max_iterations = 550
+        self.max_time = 30.0  # seconds
 
         """ the idea here is to fall back to our best known solution after getting away from it with SimAnnealing. 
         We need to allow enough iterations for the accepted solution to be optimized enough to compete with the bestSolution

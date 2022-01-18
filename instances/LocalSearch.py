@@ -1,5 +1,6 @@
 ####
 # Procedures to improve complete solutions
+from instances.Route import RouteObject
 from instances.Utils import compute_distance, Solution, Instance, compute_total_demand
 
 
@@ -31,8 +32,8 @@ def vnd(solution: Solution, instance: Instance) -> Solution:
         improvement = find_first_improvement_2Opt(solution, instance)
         if not improvement: # no improvement from 2Opt -> relocate
             improvement = find_first_improvement_relocate(solution, instance)
-            if not improvement: # no improvement from relocate -> exchange
-                improvement = find_first_improvement_exchange(solution, instance)
+            # if not improvement: # no improvement from relocate -> exchange
+            #     improvement = find_first_improvement_exchange(solution, instance)
     return solution
 
 def find_first_improvement_2Opt(solution: Solution, instance: Instance) -> bool:
@@ -189,4 +190,63 @@ def find_best_improvement_2Opt(solution: Solution, instance: Instance) -> bool:
         if best_2opt is not None:
             solution[r_index] = route[:best_2opt[0]] + list(reversed(route[best_2opt[0]:(best_2opt[1]+1)])) + route[(best_2opt[1]+1):]
             return True
+    return False
+
+
+def find_first_improvement_exchange_christopher(list_of_Routes: list[RouteObject], instance: Instance) -> bool:
+    """
+    search for the first improving exchange
+    Example: [[0,1,2,0],[0,3,4,5,0]] => [[0,4,2,0],[0,3,1,5,0]]
+        A exchange move could be to swap customer 4 between 1.
+    :param list_of_Routes: list of routes to improve
+    :param instance: corresponding instance
+    :return: `True` if an improvement was found, otherwise `False`.
+    """
+
+    current_distances = []
+    for route in solution:
+        current_distances.append(compute_distance(route, instance))
+
+    current_demand = []
+    for route in solution:
+        current_demand.append(compute_total_demand(route, instance))
+
+    for r1_index, r1 in enumerate(solution):
+        for i in range(1, len(r1)-1): # except depot, all the nodes can be relocated
+
+            # TODO: remove symmetry in the neighborhood - each pair exchange is tested twice!
+
+            for r2_index, r2 in enumerate(solution):
+                if r1_index == r2_index: # same route
+                    # no intra route optimization for now
+                    # TODO: implement case for intra route optimization
+                    continue
+
+                for j in range(1, len(r2) - 1):
+                    # demand of route 1 - demand of swapped node in route 1 + demand of swapped node in route 2
+                    new_demand_r1 = current_demand[r1_index] - instance.q[r1[i]] + instance.q[r2[j]]
+                    # demand of route 2 - demand of swapped node in route 2 + demand of swapped node in route 1
+                    new_demand_r2 = current_demand[r2_index] - instance.q[r2[j]] + instance.q[r1[i]]
+
+                    if new_demand_r1 > 2400 or new_demand_r2 > 2400: # exceed max capacity
+                        continue
+                    # - dist(i-1, i) - dist(i, i+1) + dist(i-1, j) + dist(j, i+1)
+                    change_r1 = - instance.d[r1[i - 1], r1[i]] \
+                                - instance.d[r1[i], r1[i+1]] \
+                                + instance.d[r1[i-1], r2[j]] \
+                                + instance.d[r2[j], r1[i+1]]
+                    # - dist(j-1, j) - dist(j, j+1) + dist(j-1, i) + dist(i, j+1)
+                    change_r2 = - instance.d[r2[j - 1], r2[j]] \
+                                - instance.d[r2[j], r2[j + 1]] \
+                                + instance.d[r2[j - 1], r1[i]] \
+                                + instance.d[r1[i], r2[j + 1]]
+
+                    if change_r1 + change_r2 < -0.000001: # if overall distance becomes smaller
+                        # only create the new route if it's an improvement
+                        new_r1 = r1[:i] + [r2[j]] + r1[i + 1:]
+                        new_r2 = r2[:j] + [r1[i]] + r2[j + 1:]
+
+                        solution[r1_index] = new_r1
+                        solution[r2_index] = new_r2
+                        return True
     return False

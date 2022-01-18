@@ -42,7 +42,7 @@ df_Paris_routes = pd.read_csv("data/Paris.routes", sep=' ')
 
 # 2. CREATING TEST DATASET AND ATTRIBUTES OF FUTURE INSTANCE
 #set testDimension to 1 more than customers
-testDimension = 1 + 112  # change this to use more or less customers of the data set. Max for Paris is 112. Also need to change the iloc for the nodes file
+testDimension = 1 + 19  # change this to use more or less customers of the data set. Max for Paris is 112. Also need to change the iloc for the nodes file
 # 1 + either 19, 39 or 112
 
 # DON'T FORGET TO SET MORE VEHICLES IF YOU HAVE MORE CUSTOMERS
@@ -108,9 +108,6 @@ ourInstance = Instance(testDimension, listOfInitialVehicles, testDemandParis, te
 # init_temp = 0.9
 # cooling = 0.85
 # SIM ANNEALING PARAMETERS ARE NOW SET IN THE INSTANCE
-
-# testing new sweep heuristic
-
 
 
 # 6. SWEEP HEURISTIC
