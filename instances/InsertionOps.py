@@ -52,7 +52,7 @@ def cheapest_insertion_iterative(listOfRoutes: list[RouteObject], listOfRemoved:
 
 def regret_insertion(listOfRoutes: list[RouteObject], listOfRemoved: list[int],
                      list_of_available_vehicles: list[Vehicle], instance: Instance, iteration: int):
-    while len(listOfRemoved) > 0:  # TODO: the last customer could go to his best position immediately. This can be problematic if only 1 customer was removed at the start.
+    while len(listOfRemoved) > 0:  # TODO: the last customer could go to his best position immediately. This can be problematic if only 1 customer was removed at the start. Probably no big time saves to gain here.
         regret_tupleList = []  # will hold all customers and their regrets + best position
 
         # print(list(map(lambda x: x.current_cost, listOfRoutes)))  # printing out costs of the routes after i-th loop of the insertion phase

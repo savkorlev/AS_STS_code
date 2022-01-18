@@ -52,7 +52,7 @@ are punished much harder by squaring the overload_factor.
 
 
 
-2. Adaptive Weights -> Construction.py
+2. Adaptive Weights -> instance
 
 Adaptive weights decide how often an operation is picked. Operations are the rules used to destroy customers,
 insert customer and optimize a solution. These weights need to be chosen in a smart way, because they dictate how fast

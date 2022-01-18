@@ -38,8 +38,8 @@ class Instance:
         self.coordinates = coordinates
 
         # algorithm will run until first of these conditions is met. Either iterations or time.
-        self.max_iterations = 300
-        self.max_time = 15.0  # seconds
+        self.max_iterations = 15000
+        self.max_time = 900.0  # seconds
 
         """ the idea here is to fall back to our best known solution after getting away from it with SimAnnealing. 
         We need to allow enough iterations for the accepted solution to be optimized enough to compete with the bestSolution
@@ -48,7 +48,8 @@ class Instance:
         self.max_iterations_no_improvement = max(50, self.max_iterations * 0.05)
 
         self.init_temp = 0.9  # factor with which the solution of the 0. iteration is turned into first temperature -> ourAlgorithm()
-        self.cooling = 0.99  # factor with which temperature is reduced after every instance  -> simulated_annealing()
+        self.cooling = 0.97  # factor with which temperature is reduced after every instance  -> simulated_annealing()
+        # todo: cooling factor should probably depend on max iterations.
 
         # set the initial weights for each operator
         self.init_weight_destroy_random = 50
@@ -57,6 +58,13 @@ class Instance:
         self.init_weight_insert_cheapest = 50
         self.init_weight_insert_regret = 25
 
+        # set upper and lower bounds for the number of destroyed nodes in destroy operations
+        self.destroy_random_lb = 0.05  # of all customers. So if 112 customers & lb = 0.05: minimum 6
+        self.destroy_random_ub = 0.15  # of all customers. So if 112 customers & ub = 0.15: maximum 17
+        self.destroy_expensive_lb = 0.05
+        self.destroy_expensive_ub = 0.1
+        self.destroy_route_lb = 0.25  # of the chosen route
+        self.destroy_route_ub = 1  # of the chosen route
 
         self.init_penalty = 5  # starting penalty costs in the 0. iteration -> penalty_cost()
         self.step_penalty = 1  # step by which penalty grows in every iteration -> penalty_cost()
@@ -94,7 +102,7 @@ def compute_distances_objects(solution: Solution, instance: Instance) -> float:
     return sum_distances
 
 
-def compute_distance(route: Route, instance: Instance) -> float:
+def compute_distance(route: Route, instance: Instance) -> float:  # todo: this is currently the most time consuming part of our algorithm. Find ways to make it happen less often or make it faster. Maybe we can use numpy.sum() over a list of the distances? https://medium.com/dev-today/the-fastest-way-to-loop-using-python-the-simple-truth-7a1f151aa81b
     sum_distances = 0.0
 
     # route: [0,1,2,3,4,0]
@@ -207,6 +215,7 @@ def penalty_cost(customer_list: list(), vehicle: Vehicle, instance: Instance, it
     # combine
     penalty = cost_kg  # + all other penalized constraints
 
+    # todo: feasibility check is currently turned off, because penalty_cost() does not have a routeObject as an argument. Check if we need to turn it back on again.
     # if penalty > 0:  # set the feasibility of the route by checking if penality > 0.
     #     routeObject.currently_feasible = False
     # else: routeObject.currently_feasible = True
@@ -243,7 +252,6 @@ to do depending on the arguments that got passed, but I'm not smart enough for t
 
 
 # def penalty_cost(routeObject: RouteObject, instance: Instance, iteration: int) -> float:
-#     # TODO: Choose suitable penalty-factor.
 #     iteration_penalty = 5 + iteration * 1  # penalty in each iteration.
 #
 #     # payload_kg
@@ -255,7 +263,7 @@ to do depending on the arguments that got passed, but I'm not smart enough for t
 #     # combine
 #     penalty = cost_kg  # + all other penalized constraints
 #
-#     if penalty > 0:  # set the feasibility of the route by checking if penality > 0. TODO: Be careful if this is used for temp_costs (like for comparison in insertion)
+#     if penalty > 0:  # set the feasibility of the route by checking if penality > 0.
 #         routeObject.currently_feasible = False
 #     else: routeObject.currently_feasible = True
 #

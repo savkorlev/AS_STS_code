@@ -4,11 +4,12 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) put a list of parameters into instance&#10;2) added a counter to check how many iterations we were without improvement">
+    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) using the max_iterations_no_improvement parameter to fall back to our bestSolution after not improving for a while.&#10;2) put simulated_annealing() into utils">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instances/Construction.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Construction.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instances/InsertionOps.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/InsertionOps.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instances/Utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -229,27 +230,7 @@
       <workItem from="1642141110972" duration="3097000" />
       <workItem from="1642146357261" duration="10430000" />
       <workItem from="1642334314354" duration="9790000" />
-    </task>
-    <task id="LOCAL-00013" summary="Added hints">
-      <created>1638200484683</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1638200484683</updated>
-    </task>
-    <task id="LOCAL-00014" summary="Completely removed all .csv files since we don't actually need them, we can load the data in the same format directly from .nodes and .routes files">
-      <created>1638795258281</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1638795258281</updated>
-    </task>
-    <task id="LOCAL-00015" summary="Completely removed all .csv files since we don't actually need them, we can load the data in the same format directly from .nodes and .routes files">
-      <created>1638795391731</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1638795391731</updated>
+      <workItem from="1642486361307" duration="6488000" />
     </task>
     <task id="LOCAL-00016" summary="1) implemented distruction">
       <created>1639064372517</created>
@@ -573,7 +554,28 @@
       <option name="project" value="LOCAL" />
       <updated>1642442760697</updated>
     </task>
-    <option name="localTasksCounter" value="62" />
+    <task id="LOCAL-00062" summary="1) using the max_iterations_no_improvement parameter to fall back to our bestSolution after not improving for a while.">
+      <created>1642448099356</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1642448099356</updated>
+    </task>
+    <task id="LOCAL-00063" summary="1) using the max_iterations_no_improvement parameter to fall back to our bestSolution after not improving for a while.">
+      <created>1642448209208</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1642448209208</updated>
+    </task>
+    <task id="LOCAL-00064" summary="1) using the max_iterations_no_improvement parameter to fall back to our bestSolution after not improving for a while.&#10;2) put simulated_annealing() into utils">
+      <created>1642448241317</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1642448241317</updated>
+    </task>
+    <option name="localTasksCounter" value="65" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -606,8 +608,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="1) Licence plates" />
-    <MESSAGE value="1) Licence plates (last time we had different trucks as classes)" />
     <MESSAGE value="1) switched from Sweep to 10 iterations of RandomSweep to generate better initial Solution" />
     <MESSAGE value="1) first draft of vehicle assignment phase" />
     <MESSAGE value="1) added some loops to create a fuckton of vehicles with custom numberplates" />
@@ -631,7 +631,9 @@
     <MESSAGE value="1) improved adaptiveness&#10;2) added route_removal" />
     <MESSAGE value="1) added maxTime. We can now set both maxIterations and maxTime and the loop will finish after the first one has been reached. Useful to compare against the ExcelSolver" />
     <MESSAGE value="1) put a list of parameters into instance&#10;2) added a counter to check how many iterations we were without improvement" />
-    <option name="LAST_COMMIT_MESSAGE" value="1) put a list of parameters into instance&#10;2) added a counter to check how many iterations we were without improvement" />
+    <MESSAGE value="1) using the max_iterations_no_improvement parameter to fall back to our bestSolution after not improving for a while." />
+    <MESSAGE value="1) using the max_iterations_no_improvement parameter to fall back to our bestSolution after not improving for a while.&#10;2) put simulated_annealing() into utils" />
+    <option name="LAST_COMMIT_MESSAGE" value="1) using the max_iterations_no_improvement parameter to fall back to our bestSolution after not improving for a while.&#10;2) put simulated_annealing() into utils" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -641,6 +643,11 @@
             <option name="notifyOnTerminate" value="true" />
           </properties>
         </breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/instances/Construction.py</url>
+          <line>232</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
@@ -663,6 +670,6 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/main_py$TestConstruction.coverage" NAME="TestConstruction Coverage Results" MODIFIED="1640299941018" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1642447752988" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1642492731427" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

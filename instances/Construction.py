@@ -18,7 +18,7 @@ from instances.Utils import Instance, Solution, compute_total_demand, routeCost,
     temporaryRouteCost, delete_empty_routes, vehicle_assignment, solution_cost, simulated_annealing
 
 
-#TODO: Check all copy operations
+#TODO: Check all copy operations. We need to be sure we use copy.deepcopy() at the correct points.
 def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfInitialVehicles: List[Vehicle],
                  listOfInitAvailableVehicles: List[Vehicle], coordinates_int=[]): # coordinates_int is only for matplot
     # START OF INITIALIZATION PHASE
@@ -182,7 +182,10 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
         accept_time += accept
         if accept:
             currentSolution = listOfRoutes
-        if costThisIteration < bestCost:  # only if we find a BETTER solution, does not depend on acceptance. todo: revise this
+
+
+
+        if costThisIteration < bestCost:  # todo: only if we find a BETTER solution, does not depend on acceptance. revise this
             bestCost = costThisIteration
             bestSolution = copy.deepcopy(listOfRoutes)
             bestIteration = iteration
@@ -230,6 +233,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
                 currentSolution = copy.deepcopy(bestSolution)
                 counter_iterations_no_improvement = 0
                 listFallbackIterations.append((iteration, costThisIteration, bestCost))
+                instance.destroy_random_ub = min(0.75, instance.destroy_random_ub + 0.05)
 
         print(f"Total cost of the current iteration: {costThisIteration}")
         print(f"Best known cost: {bestCost}")
@@ -263,7 +267,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
     print(f"We fell back {len(listFallbackIterations)} times, in the following iterations: {listFallbackIterations}.")
     endtime = datetime.datetime.now()
     print(f"Length of the run: {endtime - starttime}.\n")
-    print('accept: ' + str(accept_time) + ', iterations: ' + str(iteration) + ', ratio: ' + str(accept_time/iteration))  # todo: something seems not right here with accept_time. Seems way to high.
+    print('accept: ' + str(accept_time) + ', iterations: ' + str(iteration) + ', ratio: ' + str(accept_time/iteration))
     print(str(endtime))
 
 
