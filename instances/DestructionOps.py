@@ -7,16 +7,17 @@ from instances.Utils import Instance, temporaryRouteCost, routeCost
 def random_removal(instance: Instance) -> list:
     """ random removal simply samples from the customer list in instance.q
     """
-    numberOfRemoved = random.randint(round(0.05 * (len(instance.q) - 1)), round(0.15 * (len(instance.q) - 1)))  # generate number customers to be removed
+    numberOfRemoved = max(2, random.randint(round(instance.destroy_random_lb * (len(instance.q) - 1)),  # delete at least 2
+                                            round(instance.destroy_random_ub * (len(instance.q) - 1)))) # generate number customers to be removed
     listOfRemoved = random.sample(range(1, len(instance.q)),
                                   numberOfRemoved)  # generate customers to be removed, starting from 1 so depo isn't getting deleted
     return listOfRemoved
 
-def route_removal(list_of_routes: list[RouteObject]) -> list:
+def route_removal(list_of_routes: list[RouteObject], instance: Instance) -> list:
     listOfRemoved = []
     sacrifice_route = random.choice(list_of_routes)
-    numberOfRemoved = random.randint(round(0.5 * (len(sacrifice_route.customer_list) - 2)),
-                                     round(1 * (len(sacrifice_route.customer_list) - 2)))  # generate number customers to be removed
+    numberOfRemoved = max(1, random.randint(round(instance.destroy_route_lb * (len(sacrifice_route.customer_list) - 2)),  # delete at least 1
+                                            round(instance.destroy_route_ub * (len(sacrifice_route.customer_list) - 2))))  # generate number customers to be removed
 
     for i in range(numberOfRemoved):
         listOfRemoved.append(sacrifice_route.customer_list[i+1])  # add customers to the list
@@ -36,7 +37,8 @@ def expensive_removal(currentSolution: list[RouteObject], instance: Instance, it
     for r in currentSolution:
         r.current_cost = routeCost(r, instance, iteration, True) # recalculate all the routeCosts. Because we start a new iteration, penalty costs are updated.
 
-    numberOfRemoved = random.randint(round(0.1 * (len(instance.q) - 1)), round(0.1 * (len(instance.q) - 1)))  # generate number customers to be removed
+    numberOfRemoved = max(2, random.randint(round(instance.destroy_expensive_lb * (len(instance.q) - 1)),
+                                            round(instance.destroy_expensive_ub * (len(instance.q) - 1))))  # generate number customers to be removed
     tupleList = []  # we will save all customers and their cost in this list, so we can later sort by cost
     for r in currentSolution:  # iterate over all routes
         complete_route = r.customer_list.copy()  # make a copy so we dont accidentally change the route inside the routeObject
@@ -45,7 +47,8 @@ def expensive_removal(currentSolution: list[RouteObject], instance: Instance, it
                 temp_route = complete_route.copy()
                 temp_route.remove(customer)  # create a temp route without our customer
                 # compare the costs of the route vs route without customer.
-                customer_cost = r.current_cost - temporaryRouteCost(temp_route, r.vehicle, instance, iteration, True)
+                temp_cost = temporaryRouteCost(temp_route, r.vehicle, instance, iteration, True)
+                customer_cost = r.current_cost - temp_cost
                 tupleList.append((customer, customer_cost))  # add the customer and his cost to our tupleList
 
     tupleList.sort(key=lambda y: y[1], reverse=True)  # sort the tuple list by customer_cost

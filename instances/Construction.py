@@ -8,7 +8,7 @@ import time
 from typing import List
 
 from instances.DestructionOps import random_removal, expensive_removal, route_removal
-from instances.InsertionOps import cheapest_insertion_iterative, regret_insertion, regret_insertion_faster
+from instances.InsertionOps import cheapest_insertion_iterative, regret_insertion
 from instances.LocalSearch import hillclimbing, find_first_improvement_2Opt, vnd, find_first_improvement_relocate, \
     find_best_improvement_2Opt
 from instances.Plot import plotTSP
@@ -89,19 +89,17 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
         elif destroy_op_used == 'expensive_removal':
             listOfRemoved = expensive_removal(listOfRoutes, instance, iteration)
         elif destroy_op_used == 'route_removal':
-            listOfRemoved = route_removal(listOfRoutes)
+            listOfRemoved = route_removal(listOfRoutes, instance)
 
         listOfRemoved.sort()  # for better readability during debugging
+        print(f"Customers to be removed:          {listOfRemoved}")
 
         temp_listOfRemoved = listOfRemoved.copy()
         for r in listOfRoutes:
             for rc in temp_listOfRemoved:  # TODO: turn into while len(temp_listOfRemoved) > 0 loop
                 if rc in r.customer_list:
                     r.customer_list.remove(rc)
-
                     # temp_listOfRemoved.remove(rc)  # causes a bug where customers dont get deleted TODO: Fix this bug
-
-        print(f"Customers to be removed:          {listOfRemoved}")
         print(f"Routes after destruction:         {list(map(lambda x: x.customer_list, listOfRoutes))}")
 
         for r in listOfRoutes:
@@ -109,19 +107,6 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
         # END OF DESTRUCTION PHASE
         #  -------------------------------------------------------------------------------------------------------------
         # START OF INSERTION PHASE
-        # if random.uniform(0, 1) >= 0.5:  # pick a destroy operation
-        #     # cheapest insertion with new  after 1 customer is assigned
-        #     cheapest_insertion_iterative(listOfRoutes, listOfRemoved, list_of_available_vehicles, instance, iteration)
-        #     insert_op_used = "cheapest_insert"
-        # else:
-        #     # regret insertion
-        #     regret_insertion(listOfRoutes, listOfRemoved, list_of_available_vehicles, instance, iteration)
-        #     insert_op_used = "regret_insert"
-
-        #  testing new ops
-        # regret_insertion_faster(listOfRoutes, listOfRemoved, list_of_available_vehicles, instance,
-        #                              iteration)
-
 
         insert_ops = ['cheapest_insert', 'regret_insert']
         insert_weights = [weight_insert_cheapest, weight_insert_regret]

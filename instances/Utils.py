@@ -38,8 +38,8 @@ class Instance:
         self.coordinates = coordinates
 
         # algorithm will run until first of these conditions is met. Either iterations or time.
-        self.max_iterations = 550
-        self.max_time = 30.0  # seconds
+        self.max_iterations = 1200
+        self.max_time = 60.0  # seconds
 
         """ the idea here is to fall back to our best known solution after getting away from it with SimAnnealing. 
         We need to allow enough iterations for the accepted solution to be optimized enough to compete with the bestSolution
@@ -303,8 +303,9 @@ def vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: Li
             if tempCost < best_cost:
                 best_vehicle = v
                 best_cost = tempCost
+
         r.vehicle = best_vehicle  # assign the bestVehicle to the route
-        list_of_available_vehicles.remove(best_vehicle)  # remove the bestVehicle from available.
+        list_of_available_vehicles.remove(best_vehicle)  # remove the bestVehicle from available.  # todo: I had a single run where a bug was caused here. Could not replicate
         r.current_cost = routeCost(r, instance, iteration, penalty_active)  # update the route cost
         print(f"Route cost after Vehicle Assignment: route {counter} , vehicle {r.vehicle.type} {r.vehicle.plateNr}, cost: {r.current_cost:.2f}, demand {compute_total_demand(r.customer_list, instance)}, customerCount: {len(r.customer_list)-2}, feasible: {r.currently_feasible}")
     return list_of_available_vehicles

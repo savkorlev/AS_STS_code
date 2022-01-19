@@ -4,12 +4,10 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) tested some parameters&#10;2) organized our todos">
+    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) completely rewrote both insert_operations. Code should be a bit faster now.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instances/Construction.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Construction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instances/InsertionOps.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/InsertionOps.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instances/LocalSearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/LocalSearch.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instances/Trucks.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Trucks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instances/DestructionOps.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/DestructionOps.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instances/Utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
@@ -233,21 +231,8 @@
       <workItem from="1642146357261" duration="10430000" />
       <workItem from="1642334314354" duration="9790000" />
       <workItem from="1642486361307" duration="7027000" />
-      <workItem from="1642508401069" duration="8082000" />
-    </task>
-    <task id="LOCAL-00017" summary="1) small renaming">
-      <created>1639065017058</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1639065017058</updated>
-    </task>
-    <task id="LOCAL-00018" summary="1) started insertion phase">
-      <created>1639066121047</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1639066121047</updated>
+      <workItem from="1642508401069" duration="8287000" />
+      <workItem from="1642569757734" duration="13819000" />
     </task>
     <task id="LOCAL-00019" summary="1) updated destruction algorithm so that it works with any input data (not only the test one)">
       <created>1639067466577</created>
@@ -578,7 +563,21 @@
       <option name="project" value="LOCAL" />
       <updated>1642494253928</updated>
     </task>
-    <option name="localTasksCounter" value="66" />
+    <task id="LOCAL-00066" summary="1) currently creating a faster insertion operation.">
+      <created>1642533105225</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1642533105225</updated>
+    </task>
+    <task id="LOCAL-00067" summary="1) completely rewrote both insert_operations. Code should be a bit faster now.">
+      <created>1642579401405</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1642579401405</updated>
+    </task>
+    <option name="localTasksCounter" value="68" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -611,8 +610,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="1) first draft of vehicle assignment phase" />
-    <MESSAGE value="1) added some loops to create a fuckton of vehicles with custom numberplates" />
     <MESSAGE value="1) I believe our loop doesnt really loop and I will try to fix it. This commit is to have a fallback point in case i fuck up." />
     <MESSAGE value="1) THE ALGORITHM ACTUALLY USES THE BEST SOLUTION FOR NEXT ITERATION :)" />
     <MESSAGE value="1) semi-working matplot" />
@@ -636,7 +633,9 @@
     <MESSAGE value="1) using the max_iterations_no_improvement parameter to fall back to our bestSolution after not improving for a while." />
     <MESSAGE value="1) using the max_iterations_no_improvement parameter to fall back to our bestSolution after not improving for a while.&#10;2) put simulated_annealing() into utils" />
     <MESSAGE value="1) tested some parameters&#10;2) organized our todos" />
-    <option name="LAST_COMMIT_MESSAGE" value="1) tested some parameters&#10;2) organized our todos" />
+    <MESSAGE value="1) currently creating a faster insertion operation." />
+    <MESSAGE value="1) completely rewrote both insert_operations. Code should be a bit faster now." />
+    <option name="LAST_COMMIT_MESSAGE" value="1) completely rewrote both insert_operations. Code should be a bit faster now." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -646,11 +645,6 @@
             <option name="notifyOnTerminate" value="true" />
           </properties>
         </breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/instances/InsertionOps.py</url>
-          <line>159</line>
-          <option name="timeStamp" value="8" />
-        </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
@@ -669,6 +663,6 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/main_py$TestConstruction.coverage" NAME="TestConstruction Coverage Results" MODIFIED="1640299941018" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1642532691371" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1642586500015" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
