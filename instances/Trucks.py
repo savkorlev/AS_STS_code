@@ -4,6 +4,7 @@ class Vehicle:
         self.plateNr = plateNr
         self.type = type
         self.city = city
+        self.max_duration = 600.0  # todo: get correct max durations for every city
 
         if type == "MercedesBenzAtego":
             self.payload_kg = 2800

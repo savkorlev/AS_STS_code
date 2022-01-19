@@ -60,8 +60,9 @@ class Instance:
         self.coordinates = coordinates
 
         # algorithm will run until first of these conditions is met. Either iterations or time.
-        self.max_iterations = 1200
-        self.max_time = 60.0  # seconds
+        self.max_iterations = 12000 * 5
+        self.max_time = 900.0 * 2
+        # seconds
 
         """ the idea here is to fall back to our best known solution after getting away from it with SimAnnealing. 
         We need to allow enough iterations for the accepted solution to be optimized enough to compete with the bestSolution
@@ -70,7 +71,7 @@ class Instance:
         self.max_iterations_no_improvement = max(50, self.max_iterations * 0.05)
 
         self.init_temp = 0.9  # factor with which the solution of the 0. iteration is turned into first temperature -> ourAlgorithm()
-        self.cooling = 0.97  # factor with which temperature is reduced after every instance  -> simulated_annealing()
+        self.cooling = 0.99  # factor with which temperature is reduced after every instance  -> simulated_annealing()
         # todo: cooling factor should probably depend on max iterations.
 
         # set the initial weights for each operator
@@ -82,9 +83,9 @@ class Instance:
 
         # set upper and lower bounds for the number of destroyed nodes in destroy operations
         self.destroy_random_lb = 0.05  # of all customers. So if 112 customers & lb = 0.05: minimum 6
-        self.destroy_random_ub = 0.15  # of all customers. So if 112 customers & ub = 0.15: maximum 17
+        self.destroy_random_ub = 0.25  # of all customers. So if 112 customers & ub = 0.15: maximum 17
         self.destroy_expensive_lb = 0.05
-        self.destroy_expensive_ub = 0.1
+        self.destroy_expensive_ub = 0.15
         self.destroy_route_lb = 0.25  # of the chosen route
         self.destroy_route_ub = 1  # of the chosen route
 
@@ -143,6 +144,18 @@ def compute_total_demand(route: List[int], instance: Instance) -> int:
 
     return sum_demands
 
+def compute_duration(route: List[int], instance: Instance) -> float:
+    sum_duration = 0.0
+
+    # route: [0,1,2,3,4,0]
+    #   (i-1)-^ ^-i
+    for i in range(1, len(route)):
+        key = (route[i - 1], route[i])
+        sum_duration += instance.arcDurations[key]
+        sum_duration += instance.customerDurations[route[i]]
+
+    return sum_duration
+
 
 # def is_feasible(solution: Solution, instance: Instance) -> bool:
 #     """
@@ -194,20 +207,7 @@ def solution_cost(listOfRoutes: List[Route], instance: Instance, iteration: int,
         solutionCost = solutionCost + routeCost(r, instance, iteration, penalty_active)
     return solutionCost
 
-""" I rewrote temporaryRouteCost to not create a RouteObject every time, but it did not improve calculation speed"""
 
-def temporaryRouteCost(customer_list: Route, vehicle: Vehicle, instance: Instance, iteration: int, penalty_active=True) -> float:
-    # distance
-    distance = compute_distance(customer_list, instance)
-    cost_km = distance * vehicle.costs_km
-
-    # penalty
-    cost_penalty = 0
-    if penalty_active:  # checks if penalty_costs were enabled when calling the cost function
-        cost_penalty = penalty_cost(customer_list, vehicle, instance, iteration, distance)
-
-    cost = cost_km + cost_penalty
-    return cost
 
 
 def routeCost(routeObject: RouteObject, instance: Instance, iteration: int, penalty_active=True) -> float:
@@ -215,32 +215,45 @@ def routeCost(routeObject: RouteObject, instance: Instance, iteration: int, pena
     distance = compute_distance(routeObject.customer_list, instance)
     cost_km = distance * routeObject.vehicle.costs_km
 
+    # duration
+    duration = compute_duration(routeObject.customer_list, instance)
+    cost_minute = duration * routeObject.vehicle.cost_m
+
     # penalty
     cost_penalty = 0
     if penalty_active:  # checks if penalty_costs were enabled when calling the cost function
-        cost_penalty = penalty_cost(routeObject.customer_list, routeObject.vehicle, instance, iteration, distance)
+        cost_penalty = penalty_cost(routeObject, routeObject.vehicle, instance, iteration, distance, duration)
 
-    cost = cost_km + cost_penalty
+    cost = cost_km + + cost_minute + cost_penalty
     return cost
 
-def penalty_cost(customer_list: list(), vehicle: Vehicle, instance: Instance, iteration: int, distance: float) -> float:
+def penalty_cost(route: RouteObject, vehicle: Vehicle, instance: Instance, iteration: int, distance: float, duration: float) -> float:  # todo: add duration overload.
     iteration_penalty = instance.init_penalty + iteration * instance.step_penalty  # penalty in each iteration.
+    customer_list = route.customer_list
 
     # payload_kg
     constraint_kg = vehicle.payload_kg
     load_kg = compute_total_demand(customer_list, instance)
     overload_kg = compute_overload(constraint_kg, load_kg)
-    cost_kg = overload_kg * iteration_penalty
+    penalty_kg = overload_kg * iteration_penalty
 
     # range
+    constraint_range = vehicle.range_km
+    overload_range = compute_overload(constraint_range, distance)
+    penalty_range = overload_range * iteration_penalty
+
+    #duration
+    constraint_duration = vehicle.max_duration
+    overload_duration = compute_overload(constraint_duration, duration)
+    penalty_duration = overload_duration * iteration_penalty
+
 
     # combine
-    penalty = cost_kg  # + all other penalized constraints
+    penalty = penalty_kg + penalty_range + penalty_duration # + all other penalized constraints
 
-    # todo: feasibility check is currently turned off, because penalty_cost() does not have a routeObject as an argument. Check if we need to turn it back on again.
-    # if penalty > 0:  # set the feasibility of the route by checking if penality > 0.
-    #     routeObject.currently_feasible = False
-    # else: routeObject.currently_feasible = True
+    if penalty > 0:  # set the feasibility of the route by checking if penality > 0.
+        route.currently_feasible = False
+    else: route.currently_feasible = True
 
     return penalty
 
@@ -254,9 +267,24 @@ to do depending on the arguments that got passed, but I'm not smart enough for t
 - Christopher 2022-01-10
 """
 
+def temporaryRouteCost(customer_list: Route, vehicle: Vehicle, instance: Instance, iteration: int, penalty_active=True) -> float:
+    tempRoute = RouteObject(customer_list, vehicle)
+    cost = routeCost(tempRoute, instance, iteration, penalty_active)
+    return cost
+
+
+# """ I rewrote temporaryRouteCost to not create a RouteObject every time, but it did not improve calculation speed"""
 # def temporaryRouteCost(customer_list: Route, vehicle: Vehicle, instance: Instance, iteration: int, penalty_active=True) -> float:
-#     tempRoute = RouteObject(customer_list, vehicle)
-#     cost = routeCost(tempRoute, instance, iteration, penalty_active)
+#     # distance
+#     distance = compute_distance(customer_list, instance)
+#     cost_km = distance * vehicle.costs_km
+#
+#     # penalty
+#     cost_penalty = 0
+#     if penalty_active:  # checks if penalty_costs were enabled when calling the cost function
+#         cost_penalty = penalty_cost(customer_list, vehicle, instance, iteration, distance)
+#
+#     cost = cost_km + cost_penalty
 #     return cost
 
 
@@ -344,3 +372,14 @@ def simulated_annealing(instance: Instance, currentSolution: List[RouteObject], 
         accept = True
     temperature = instance.cooling * temp  # update temperature
     return accept, newcost, temperature
+
+
+import sys, os
+
+# Disable printing
+def blockPrint():
+    sys.stdout = open(os.devnull, 'w')
+
+# Restore printing
+def enablePrint():
+    sys.stdout = sys.__stdout__

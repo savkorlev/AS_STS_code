@@ -163,7 +163,7 @@ def find_first_improvement_exchange(solution: Solution, instance: Instance) -> b
                         return True
     return False
 
-def find_best_improvement_2Opt(solution: Solution, instance: Instance) -> bool:
+def find_best_improvement_2Opt(solution: Solution, instance: Instance) -> bool:  # todo: should probably either optimize for cost or time
     """
     search for the best improving 2-opt move.
 

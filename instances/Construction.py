@@ -15,7 +15,8 @@ from instances.Plot import plotTSP
 from instances.Route import RouteObject
 from instances.Trucks import Vehicle
 from instances.Utils import Instance, Solution, compute_total_demand, routeCost, \
-    temporaryRouteCost, delete_empty_routes, vehicle_assignment, solution_cost, simulated_annealing
+    temporaryRouteCost, delete_empty_routes, vehicle_assignment, solution_cost, simulated_annealing, blockPrint, \
+    enablePrint
 
 
 #TODO: Check all copy operations. We need to be sure we use copy.deepcopy() at the correct points.
@@ -62,6 +63,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
     print(f"Route costs:    {list(map(lambda x: x.current_cost, bestSolution))}")  # printing out costs of the routes after sweep after costs are assigned
     # END OF INITIALIZATION PHASE
     # -------------------------------------------------------------------------------------------------------------
+
     # START OF THE LOOP
     iteration = 0  # iterations are counted up at the start of the loop, so we start with 0 to have the first iteration = 1
     perf_starttime = time.perf_counter()  # starts the timer for our maxTime. Does not include the initialization. This is ok since the sweep is very short.
@@ -69,6 +71,10 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
 
     while time_so_far < instance.max_time and iteration < instance.max_iterations:  # run until either maxIterations or maxTime is reached. Will do 1 last loop after maxTime.
         iteration += 1  # count up the iterations
+
+        blockPrint()
+        if iteration % 100 == 0 or iteration == 1:
+            enablePrint()
 
         print(f"New iteration__________{iteration}")
         print(f"Routes at start of iteration:     {list(map(lambda x: x.customer_list, bestSolution))}")
@@ -220,11 +226,12 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
                 weight_insert_regret = max(10, weight_insert_regret - 1)
                 counter_insert_regret_rej += 1
 
-            if counter_iterations_no_improvement >= instance.max_iterations_no_improvement:  # if we cant find an improvement for very long, go back to the best known solution
-                currentSolution = copy.deepcopy(bestSolution)
-                counter_iterations_no_improvement = 0
-                listFallbackIterations.append((iteration, costThisIteration, bestCost))
-                instance.destroy_random_ub = min(0.75, instance.destroy_random_ub + 0.05)
+            # if counter_iterations_no_improvement >= instance.max_iterations_no_improvement:  # if we cant find an improvement for very long, go back to the best known solution
+            #     currentSolution = copy.deepcopy(bestSolution)
+            #     counter_iterations_no_improvement = 0
+            #     listFallbackIterations.append((iteration, costThisIteration, bestCost))
+            #     instance.destroy_random_ub = min(0.75, instance.destroy_random_ub + 0.05)
+            #     instance.max_iterations_no_improvement = min(0.25, instance.max_iterations_no_improvement + 0.01)
 
         print(f"Total cost of the current iteration: {costThisIteration}")
         print(f"Best known cost: {bestCost}")
@@ -235,6 +242,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
         # END OF ACCEPTANCE PHASE
     # -------------------------------------------------------------------------------------------------------------
     # END OF LOOP
+    enablePrint()
     print(f"random_removal stats: improvements: {counter_destroy_random_imp}, rejected: {counter_destroy_random_rej}")
     print(
         f"expensive_removal stats: improvements: {counter_destroy_expensive_imp}, rejected: {counter_destroy_expensive_rej}")
