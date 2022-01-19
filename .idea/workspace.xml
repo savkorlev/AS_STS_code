@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) completely rewrote both insert_operations. Code should be a bit faster now.">
+    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instances/Construction.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Construction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instances/DestructionOps.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/DestructionOps.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instances/Utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
@@ -49,12 +48,13 @@
     </file-type-list>
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/src/main.py" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/instances/Utils.py" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/instances/LocalSearch.py" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/tests/TestConstruction.py" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/instances/Trucks.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/tests/TestConstruction.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/instances/LocalSearch.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/main.py" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/instances/Construction.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../../../Python310/Lib/site-packages/pandas/io/common.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/instances/Utils.py" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProjectId" id="21PNUh1l9QXN6taUlC8LXgOvLDj" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -67,12 +67,12 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="com.intellij.openapi.externalSystem.service.settings.ExternalSystemGroupConfigurable" value="ALL" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../live_coding" />
+    <property name="last_opened_file_path" value="$USER_HOME$/Documents/Python Projects/Data camp, Python Programmer/7. Working with Dates and Times in Python/Working with Dates and Times in Python.py" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="settings.editor.selected.configurable" value="preferences.editor.code.editing" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunManager" selected="Python.main">
     <configuration name="TestConstruction" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
@@ -98,14 +98,13 @@
       <method v="2" />
     </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <output_file path="$USER_HOME$/Documents/01_Uni/02_WS21-22/03-Di_AS_SustainableTransportSystems/outputs/2022-01-14_Outputs.txt" />
       <module name="AS_STS_code" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="C:\Users\Christopher\AppData\Local\Programs\Python\Python39\python.exe" />
+      <option name="SDK_HOME" value="C:\Python310\python.exe" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
@@ -220,19 +219,137 @@
       <workItem from="1641299691022" duration="10438000" />
       <workItem from="1641391510370" duration="1654000" />
       <workItem from="1641639752595" duration="7662000" />
-      <workItem from="1641648048470" duration="13836000" />
-      <workItem from="1641791837027" duration="36977000" />
-      <workItem from="1641881216445" duration="32275000" />
-      <workItem from="1641965231231" duration="9280000" />
-      <workItem from="1641979199262" duration="8647000" />
-      <workItem from="1642085904633" duration="6492000" />
-      <workItem from="1642139319807" duration="1195000" />
-      <workItem from="1642141110972" duration="3097000" />
-      <workItem from="1642146357261" duration="10430000" />
-      <workItem from="1642334314354" duration="9790000" />
-      <workItem from="1642486361307" duration="7027000" />
-      <workItem from="1642508401069" duration="8287000" />
-      <workItem from="1642569757734" duration="13819000" />
+      <workItem from="1641648048470" duration="14878000" />
+      <workItem from="1641736887573" duration="2725000" />
+      <workItem from="1641829356767" duration="2087000" />
+      <workItem from="1642339197009" duration="1432000" />
+      <workItem from="1642594322271" duration="5488000" />
+    </task>
+    <task id="LOCAL-00001" summary="Let's see">
+      <created>1637839022626</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1637839022626</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Let's see">
+      <created>1637839248196</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1637839248196</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Commit via InteliJ">
+      <created>1637839586612</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1637839586612</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Commit via InteliJ">
+      <created>1637839692213</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1637839692213</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Commit via PyCharm">
+      <created>1637839764432</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1637839764432</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Commit via PyCharm">
+      <created>1637839854080</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1637839854080</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Commit via PyCharm">
+      <created>1637844692536</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1637844692537</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Commit via PyCharm">
+      <created>1637844733464</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1637844733464</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Adding data files as .csv">
+      <created>1638054865117</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1638054865117</updated>
+    </task>
+    <task id="LOCAL-00010" summary="1) reading data in main&#10;2) small corrections in files' names">
+      <created>1638056253893</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1638056253893</updated>
+    </task>
+    <task id="LOCAL-00011" summary="1) loading all files as .csv in main with &quot; &quot; as a separator&#10;2) lines 19 and 20 - check if data frame's access works (list columns and address them)">
+      <created>1638057457407</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1638057457407</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Added hints">
+      <created>1638200044845</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1638200044845</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Added hints">
+      <created>1638200484683</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1638200484683</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Completely removed all .csv files since we don't actually need them, we can load the data in the same format directly from .nodes and .routes files">
+      <created>1638795258281</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1638795258281</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Completely removed all .csv files since we don't actually need them, we can load the data in the same format directly from .nodes and .routes files">
+      <created>1638795391731</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1638795391731</updated>
+    </task>
+    <task id="LOCAL-00016" summary="1) implemented distruction">
+      <created>1639064372517</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1639064372517</updated>
+    </task>
+    <task id="LOCAL-00017" summary="1) small renaming">
+      <created>1639065017058</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1639065017058</updated>
+    </task>
+    <task id="LOCAL-00018" summary="1) started insertion phase">
+      <created>1639066121047</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1639066121047</updated>
     </task>
     <task id="LOCAL-00019" summary="1) updated destruction algorithm so that it works with any input data (not only the test one)">
       <created>1639067466577</created>
@@ -367,217 +484,14 @@
       <option name="project" value="LOCAL" />
       <updated>1641646958299</updated>
     </task>
-    <task id="LOCAL-00038" summary="1) switched from Sweep to 10 iterations of RandomSweep to generate better initial Solution">
-      <created>1641717966372</created>
+    <task id="LOCAL-00038" summary="1) Switched to cost in insertion phase&#10;2) Using Vehicles instead of Trucks&#10;3) Added Routes class&#10;4) Completely (almost) rewrote the insertion phase">
+      <created>1641662594586</created>
       <option name="number" value="00038" />
       <option name="presentableId" value="LOCAL-00038" />
       <option name="project" value="LOCAL" />
-      <updated>1641717966372</updated>
+      <updated>1641662594586</updated>
     </task>
-    <task id="LOCAL-00039" summary="1) first draft of vehicle assignment phase">
-      <created>1641720778541</created>
-      <option name="number" value="00039" />
-      <option name="presentableId" value="LOCAL-00039" />
-      <option name="project" value="LOCAL" />
-      <updated>1641720778541</updated>
-    </task>
-    <task id="LOCAL-00040" summary="1) added some loops to create a fuckton of vehicles with custom numberplates">
-      <created>1641721984433</created>
-      <option name="number" value="00040" />
-      <option name="presentableId" value="LOCAL-00040" />
-      <option name="project" value="LOCAL" />
-      <updated>1641721984433</updated>
-    </task>
-    <task id="LOCAL-00041" summary="1) I believe our loop doesnt really loop and I will try to fix it. This commit is to have a fallback point in case i fuck up.">
-      <created>1641724538353</created>
-      <option name="number" value="00041" />
-      <option name="presentableId" value="LOCAL-00041" />
-      <option name="project" value="LOCAL" />
-      <updated>1641724538353</updated>
-    </task>
-    <task id="LOCAL-00042" summary="1) THE ALGORITHM ACTUALLY USES THE BEST SOLUTION FOR NEXT ITERATION :)">
-      <created>1641726008008</created>
-      <option name="number" value="00042" />
-      <option name="presentableId" value="LOCAL-00042" />
-      <option name="project" value="LOCAL" />
-      <updated>1641726008008</updated>
-    </task>
-    <task id="LOCAL-00043" summary="1) semi-working matplot">
-      <created>1641735074246</created>
-      <option name="number" value="00043" />
-      <option name="presentableId" value="LOCAL-00043" />
-      <option name="project" value="LOCAL" />
-      <updated>1641735074246</updated>
-    </task>
-    <task id="LOCAL-00044" summary="1) colored routes work now&#10;2) acceptance check switched to costs&#10;3) less ListsOfCustomerLists used, more List[Route]&#10;4) stuck at a bug in destruction phase, more routes after destruction">
-      <created>1641746430789</created>
-      <option name="number" value="00044" />
-      <option name="presentableId" value="LOCAL-00044" />
-      <option name="project" value="LOCAL" />
-      <updated>1641746430789</updated>
-    </task>
-    <task id="LOCAL-00045" summary="1) penalty_cost: started implementing functions for penalty costs. This is the last commit before I start removing hard feasibility checks.&#10;2) &quot;extra routes after destruction&quot; bug in destroy operation still happens">
-      <created>1641797281418</created>
-      <option name="number" value="00045" />
-      <option name="presentableId" value="LOCAL-00045" />
-      <option name="project" value="LOCAL" />
-      <updated>1641797281418</updated>
-    </task>
-    <task id="LOCAL-00046" summary="1) penalty_cost: switched everything to penalty cost&#10;2) allow opening of new route in insertion phase if cheaper than existing route&#10;2) &quot;extra routes after destruction&quot; bug in destroy operation still happens. This commit is mostly for seeing this bug happen.">
-      <created>1641819654866</created>
-      <option name="number" value="00046" />
-      <option name="presentableId" value="LOCAL-00046" />
-      <option name="project" value="LOCAL" />
-      <updated>1641819654866</updated>
-    </task>
-    <task id="LOCAL-00047" summary="1) destruction bug seems fixed&#10;2) Unidentified bug: sometimes seem to loose customers.">
-      <created>1641829493335</created>
-      <option name="number" value="00047" />
-      <option name="presentableId" value="LOCAL-00047" />
-      <option name="project" value="LOCAL" />
-      <updated>1641829493335</updated>
-    </task>
-    <task id="LOCAL-00048" summary="1) ~lost customers~ bug seems to be fixed&#10;2) stable version, ready to add more constraints &amp; more operators">
-      <created>1641835513972</created>
-      <option name="number" value="00048" />
-      <option name="presentableId" value="LOCAL-00048" />
-      <option name="project" value="LOCAL" />
-      <updated>1641835513972</updated>
-    </task>
-    <task id="LOCAL-00049" summary="1) cleaned up main&#10;1.1 put vehicle creation into a function in trucks&#10;1.2 put coordinates -&gt; int_coordinates into a function in Plot&#10;1.3 reordered some stuff and deleted some old comments">
-      <created>1641884491696</created>
-      <option name="number" value="00049" />
-      <option name="presentableId" value="LOCAL-00049" />
-      <option name="project" value="LOCAL" />
-      <updated>1641884491696</updated>
-    </task>
-    <task id="LOCAL-00050" summary="1) added comments that summarize the run after it finishes">
-      <created>1641887263807</created>
-      <option name="number" value="00050" />
-      <option name="presentableId" value="LOCAL-00050" />
-      <option name="project" value="LOCAL" />
-      <updated>1641887263807</updated>
-    </task>
-    <task id="LOCAL-00051" summary="1) added expensive_removal. Currently, set to happen 33% of the time with random_removal happening 67%.">
-      <created>1641895862994</created>
-      <option name="number" value="00051" />
-      <option name="presentableId" value="LOCAL-00051" />
-      <option name="project" value="LOCAL" />
-      <updated>1641895862995</updated>
-    </task>
-    <task id="LOCAL-00052" summary="1) put the insertion phase code into a function in InsertionOps.py&#10;2) changed some parameters and wrote documentation on how to change parameters.">
-      <created>1641921749959</created>
-      <option name="number" value="00052" />
-      <option name="presentableId" value="LOCAL-00052" />
-      <option name="project" value="LOCAL" />
-      <updated>1641921749959</updated>
-    </task>
-    <task id="LOCAL-00053" summary="1) added regret_insertion">
-      <created>1641928266802</created>
-      <option name="number" value="00053" />
-      <option name="presentableId" value="LOCAL-00053" />
-      <option name="project" value="LOCAL" />
-      <updated>1641928266802</updated>
-    </task>
-    <task id="LOCAL-00054" summary="1) changed the initial heuristic to allow starting with infeasible routes.">
-      <created>1641973827825</created>
-      <option name="number" value="00054" />
-      <option name="presentableId" value="LOCAL-00054" />
-      <option name="project" value="LOCAL" />
-      <updated>1641973827825</updated>
-    </task>
-    <task id="LOCAL-00055" summary="1) added a plot-option without depots. Drawing without depots sometimes gives a clearer picture. To use it, set show_depot argument to False when calling plotTSP">
-      <created>1641974803948</created>
-      <option name="number" value="00055" />
-      <option name="presentableId" value="LOCAL-00055" />
-      <option name="project" value="LOCAL" />
-      <updated>1641974803948</updated>
-    </task>
-    <task id="LOCAL-00056" summary="1) added a very simple form of adaptiveness. Weights get improved by +10 if improvement, decreased by -1 if rejected.">
-      <created>1641991953132</created>
-      <option name="number" value="00056" />
-      <option name="presentableId" value="LOCAL-00056" />
-      <option name="project" value="LOCAL" />
-      <updated>1641991953132</updated>
-    </task>
-    <task id="LOCAL-00057" summary="1) added a very simple form of adaptiveness. Weights get improved by +10 if improvement, decreased by -1 if rejected.">
-      <created>1641992096233</created>
-      <option name="number" value="00057" />
-      <option name="presentableId" value="LOCAL-00057" />
-      <option name="project" value="LOCAL" />
-      <updated>1641992096233</updated>
-    </task>
-    <task id="LOCAL-00058" summary="1) added a very simple form of adaptiveness. Weights get improved by +10 if improvement, decreased by -1 if rejected. This does not seem to improve the algorithm yet.">
-      <created>1641992410982</created>
-      <option name="number" value="00058" />
-      <option name="presentableId" value="LOCAL-00058" />
-      <option name="project" value="LOCAL" />
-      <updated>1641992410982</updated>
-    </task>
-    <task id="LOCAL-00059" summary="1) improved adaptiveness&#10;2) added route_removal">
-      <created>1642092207814</created>
-      <option name="number" value="00059" />
-      <option name="presentableId" value="LOCAL-00059" />
-      <option name="project" value="LOCAL" />
-      <updated>1642092207814</updated>
-    </task>
-    <task id="LOCAL-00060" summary="1) added maxTime. We can now set both maxIterations and maxTime and the loop will finish after the first one has been reached. Useful to compare against the ExcelSolver">
-      <created>1642144111932</created>
-      <option name="number" value="00060" />
-      <option name="presentableId" value="LOCAL-00060" />
-      <option name="project" value="LOCAL" />
-      <updated>1642144111933</updated>
-    </task>
-    <task id="LOCAL-00061" summary="1) put a list of parameters into instance&#10;2) added a counter to check how many iterations we were without improvement">
-      <created>1642442760697</created>
-      <option name="number" value="00061" />
-      <option name="presentableId" value="LOCAL-00061" />
-      <option name="project" value="LOCAL" />
-      <updated>1642442760697</updated>
-    </task>
-    <task id="LOCAL-00062" summary="1) using the max_iterations_no_improvement parameter to fall back to our bestSolution after not improving for a while.">
-      <created>1642448099356</created>
-      <option name="number" value="00062" />
-      <option name="presentableId" value="LOCAL-00062" />
-      <option name="project" value="LOCAL" />
-      <updated>1642448099356</updated>
-    </task>
-    <task id="LOCAL-00063" summary="1) using the max_iterations_no_improvement parameter to fall back to our bestSolution after not improving for a while.">
-      <created>1642448209208</created>
-      <option name="number" value="00063" />
-      <option name="presentableId" value="LOCAL-00063" />
-      <option name="project" value="LOCAL" />
-      <updated>1642448209208</updated>
-    </task>
-    <task id="LOCAL-00064" summary="1) using the max_iterations_no_improvement parameter to fall back to our bestSolution after not improving for a while.&#10;2) put simulated_annealing() into utils">
-      <created>1642448241317</created>
-      <option name="number" value="00064" />
-      <option name="presentableId" value="LOCAL-00064" />
-      <option name="project" value="LOCAL" />
-      <updated>1642448241317</updated>
-    </task>
-    <task id="LOCAL-00065" summary="1) tested some parameters&#10;2) organized our todos">
-      <created>1642494253928</created>
-      <option name="number" value="00065" />
-      <option name="presentableId" value="LOCAL-00065" />
-      <option name="project" value="LOCAL" />
-      <updated>1642494253928</updated>
-    </task>
-    <task id="LOCAL-00066" summary="1) currently creating a faster insertion operation.">
-      <created>1642533105225</created>
-      <option name="number" value="00066" />
-      <option name="presentableId" value="LOCAL-00066" />
-      <option name="project" value="LOCAL" />
-      <updated>1642533105225</updated>
-    </task>
-    <task id="LOCAL-00067" summary="1) completely rewrote both insert_operations. Code should be a bit faster now.">
-      <created>1642579401405</created>
-      <option name="number" value="00067" />
-      <option name="presentableId" value="LOCAL-00067" />
-      <option name="project" value="LOCAL" />
-      <updated>1642579401405</updated>
-    </task>
-    <option name="localTasksCounter" value="68" />
+    <option name="localTasksCounter" value="39" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -610,59 +524,35 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="1) I believe our loop doesnt really loop and I will try to fix it. This commit is to have a fallback point in case i fuck up." />
-    <MESSAGE value="1) THE ALGORITHM ACTUALLY USES THE BEST SOLUTION FOR NEXT ITERATION :)" />
-    <MESSAGE value="1) semi-working matplot" />
-    <MESSAGE value="1) colored routes work now&#10;2) acceptance check switched to costs&#10;3) less ListsOfCustomerLists used, more List[Route]&#10;4) stuck at a bug in destruction phase, more routes after destruction" />
-    <MESSAGE value="1) penalty_cost: started implementing functions for penalty costs. This is the last commit before I start removing hard feasibility checks.&#10;2) &quot;extra routes after destruction&quot; bug in destroy operation still happens" />
-    <MESSAGE value="1) penalty_cost: switched everything to penalty cost&#10;2) allow opening of new route in insertion phase if cheaper than existing route&#10;2) &quot;extra routes after destruction&quot; bug in destroy operation still happens. This commit is mostly for seeing this bug happen." />
-    <MESSAGE value="1) destruction bug seems fixed&#10;2) Unidentified bug: sometimes seem to loose customers." />
-    <MESSAGE value="1) ~lost customers~ bug seems to be fixed&#10;2) stable version, ready to add more constraints &amp; more operators" />
-    <MESSAGE value="1) cleaned up main&#10;1.1 put vehicle creation into a function in trucks&#10;1.2 put coordinates -&gt; int_coordinates into a function in Plot&#10;1.3 reordered some stuff and deleted some old comments" />
-    <MESSAGE value="1) added comments that summarize the run after it finishes" />
-    <MESSAGE value="1) added expensive_removal. Currently, set to happen 33% of the time with random_removal happening 67%." />
-    <MESSAGE value="1) put the insertion phase code into a function in InsertionOps.py&#10;2) changed some parameters and wrote documentation on how to change parameters." />
-    <MESSAGE value="1) added regret_insertion" />
-    <MESSAGE value="1) changed the initial heuristic to allow starting with infeasible routes." />
-    <MESSAGE value="1) added a plot-option without depots. Drawing without depots sometimes gives a clearer picture. To use it, set show_depot argument to False when calling plotTSP" />
-    <MESSAGE value="1) added a very simple form of adaptiveness. Weights get improved by +10 if improvement, decreased by -1 if rejected." />
-    <MESSAGE value="1) added a very simple form of adaptiveness. Weights get improved by +10 if improvement, decreased by -1 if rejected. This does not seem to improve the algorithm yet." />
-    <MESSAGE value="1) improved adaptiveness&#10;2) added route_removal" />
-    <MESSAGE value="1) added maxTime. We can now set both maxIterations and maxTime and the loop will finish after the first one has been reached. Useful to compare against the ExcelSolver" />
-    <MESSAGE value="1) put a list of parameters into instance&#10;2) added a counter to check how many iterations we were without improvement" />
-    <MESSAGE value="1) using the max_iterations_no_improvement parameter to fall back to our bestSolution after not improving for a while." />
-    <MESSAGE value="1) using the max_iterations_no_improvement parameter to fall back to our bestSolution after not improving for a while.&#10;2) put simulated_annealing() into utils" />
-    <MESSAGE value="1) tested some parameters&#10;2) organized our todos" />
-    <MESSAGE value="1) currently creating a faster insertion operation." />
-    <MESSAGE value="1) completely rewrote both insert_operations. Code should be a bit faster now." />
-    <option name="LAST_COMMIT_MESSAGE" value="1) completely rewrote both insert_operations. Code should be a bit faster now." />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <breakpoint type="python-exception">
-          <properties notifyOnTerminate="true" exception="BaseException">
-            <option name="notifyOnTerminate" value="true" />
-          </properties>
-        </breakpoint>
-      </breakpoints>
-      <default-breakpoints>
-        <breakpoint type="python-exception">
-          <properties notifyOnTerminate="true" exception="BaseException">
-            <option name="notifyOnTerminate" value="true" />
-          </properties>
-        </breakpoint>
-      </default-breakpoints>
-    </breakpoint-manager>
-    <watches-manager>
-      <configuration name="PythonConfigurationType">
-        <watch expression="list_of_customers_to_insert" />
-        <watch expression="list_of_insert_positions" />
-      </configuration>
-    </watches-manager>
+    <MESSAGE value="Added hints" />
+    <MESSAGE value="Completely removed all .csv files since we don't actually need them, we can load the data in the same format directly from .nodes and .routes files" />
+    <MESSAGE value="1) implemented distruction" />
+    <MESSAGE value="1) small renaming" />
+    <MESSAGE value="1) started insertion phase" />
+    <MESSAGE value="1) updated destruction algorithm so that it works with any input data (not only the test one)" />
+    <MESSAGE value="1) fixed a small error" />
+    <MESSAGE value="1) insertion part without checking for feasibility" />
+    <MESSAGE value="1) got insertion algorithm working (check in-line comments!)" />
+    <MESSAGE value="Add optimization to ourAlgorithm and add a class of local search" />
+    <MESSAGE value="added Christophers local directory" />
+    <MESSAGE value="1) Updated print statements to get a good-looking output for the presentation" />
+    <MESSAGE value="1) Added multiple algorythm's runs (for loop)&#10;2) Added the test class&#10;3) Figured out the error (to be discussed)" />
+    <MESSAGE value="1) Fixed the bug (open route)&#10;2) Made iterative acceptance check&#10;3) Changed the project's working repository" />
+    <MESSAGE value="1) Added the return keyword to acceptance check that returns bestSolution after acceptance check&#10;2) Fixed the grammar" />
+    <MESSAGE value="1) Changed the Trucks classes to represent the actual Trucks we have&#10;2) Now we're passing a list of Trucks to create an instance&#10;3) Added the truckAssigning function that assigns appropriate trucks to the respective routes&#10;4) Tried to add the feasibility check function (to Utils), but it doesn't work now for some reason, so I reverted the changes" />
+    <MESSAGE value="1) Switched to original data from the test data&#10;2) Made the algorithm run 100 times&#10;3) Inserted acceptance check within ouralgorithm&#10;4) Assigning properties' values inside class declarations" />
+    <MESSAGE value="1) Utils 900 is a made-up number for now (in sweep)&#10;2) Added costs (currently per km in Paris) to Trucks" />
+    <MESSAGE value="1) Small comment in Construction class" />
+    <MESSAGE value="1) Reverting changes (the version before the similated annealing)&#10;2) Small improvements in comments" />
+    <MESSAGE value="1) Reverting changes" />
+    <MESSAGE value="1) Small cosmetic improvements" />
+    <MESSAGE value="1) Licence plates" />
+    <MESSAGE value="1) Licence plates (last time we had different trucks as classes)" />
+    <MESSAGE value="1) Switched to cost in insertion phase&#10;2) Using Vehicles instead of Trucks&#10;3) Added Routes class&#10;4) Completely (almost) rewrote the insertion phase" />
+    <option name="LAST_COMMIT_MESSAGE" value="1) Switched to cost in insertion phase&#10;2) Using Vehicles instead of Trucks&#10;3) Added Routes class&#10;4) Completely (almost) rewrote the insertion phase" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/main_py$TestConstruction.coverage" NAME="TestConstruction Coverage Results" MODIFIED="1640299941018" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1642586500015" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1642599840074" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

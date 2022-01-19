@@ -25,9 +25,12 @@ from instances.Plot import plotTSP, create_list_int_coordinates
 # df_NewYork_2_nodes = pd.read_csv("data/NewYork.2.nodes", sep=' ')
 # df_NewYork_routes = pd.read_csv("data/NewYork.routes", sep=' ')
 df_Paris_nodes = pd.read_csv("data/Paris.nodes", sep=' ')
+df_Paris_nodes["Duration"] = pd.to_timedelta(df_Paris_nodes["Duration"]).dt.total_seconds() / 60  # converting duration column to floats instead of strings
 df_Paris_routes = pd.read_csv("data/Paris.routes", sep=' ')
+df_Paris_routes["Duration[s]"] = pd.to_timedelta(df_Paris_routes["Duration[s]"]).dt.total_seconds() / 60  # converting duration column to floats instead of strings
 # df_Shanghai_nodes = pd.read_csv("data/Shanghai.nodes", sep=' ')
 # df_Shanghai_routes = pd.read_csv("data/Shanghai.routes", sep=' ')
+
 
 # # .loc[] - access the data by the name
 # print(df_NewYork_1_nodes.loc[:, "Duration"])  #select all rows and the "Duration" column
@@ -59,19 +62,42 @@ if testDimension == 113:
 # print(test_df_Paris_nodes)
 # print(test_df_Paris_routes)
 
-testDemandParis = list(test_df_Paris_nodes.loc[:, "Demand[kg]"])    # select demand column and convert it to a list
+testDemandParis = list(test_df_Paris_nodes.loc[:, "Demand[kg]"])    # select demand column (in kg) and convert it to a list
 # print(testDemandParis)
+testDemandParisVolume = list(test_df_Paris_nodes.loc[:, "Demand[m^3*10^-3]"])    # select demand column (in volume) and convert it to a list
+# print(testDemandParisVolume)
+testParisCustomerDuration = list(test_df_Paris_nodes.loc[:, "Duration"])  # select duration column (in volume) and convert it to a list
+# print(testParisCustomerDuration)
+
 testParisDistances = {}                                             # the purpose of the following up loop is
 for row, content in test_df_Paris_routes.iterrows():                # to create tuples with distances from one Id
     key = (int(content[0][1:]), int(content[1][1:]))                # to another
     testParisDistances[key] = content[2]
 # print(testParisDistances)
 
+testParisDistancesInside = {}                                       # the purpose of the following up loop is
+for row, content in test_df_Paris_routes.iterrows():                # to create tuples with distances from one Id
+    key = (int(content[0][1:]), int(content[1][1:]))                # to another inside the city
+    testParisDistancesInside[key] = content[3]
+# print(testParisDistancesInside)
+
+testParisDistancesOutside = {}                                      # the purpose of the following up loop is
+for row, content in test_df_Paris_routes.iterrows():                # to create tuples with distances from one Id
+    key = (int(content[0][1:]), int(content[1][1:]))                # to another outside the city
+    testParisDistancesOutside[key] = content[4]
+# print(testParisDistancesOutside)
+
+testParisArcDuration = {}                                           # the purpose of the following up loop is
+for row, content in test_df_Paris_routes.iterrows():                # to create tuples with durations from one Id
+    key = (int(content[0][1:]), int(content[1][1:]))                # to another inside the city
+    testParisArcDuration[key] = content[5]
+# print(testParisArcDuration)
+
 coordinates = []
 for row, content in test_df_Paris_nodes.iterrows():
     coordinate = (content[1], content[2])
     coordinates.append(coordinate)
-print(coordinates)
+# print(coordinates)
 
 # coordinates for matplot
 coordinates_int = create_list_int_coordinates(test_df_Paris_nodes)
@@ -82,7 +108,6 @@ city = "Paris"
 num_Atego = 19
 num_VWTrans = 0
 num_eCargoBike = 0
-
 
 # create vehicles via function in Trucks.py-file
 listOfInitialVehicles = create_vehicles(city, num_Atego, num_VWTrans, 0, 0, 0, 0, num_eCargoBike)
@@ -102,7 +127,8 @@ if sumOfCapacity < sumOfDemand:
 # ITERATION PARAMETERS ARE NOW SET IN THE INSTANCE
 
 # 5. CREATING INSTANCE
-ourInstance = Instance(testDimension, listOfInitialVehicles, testDemandParis, testParisDistances, coordinates)
+ourInstance = Instance(testDimension, listOfInitialVehicles, testDemandParis, testDemandParisVolume, testParisCustomerDuration,
+                       testParisDistances, testParisDistancesInside, testParisDistancesOutside, testParisArcDuration, coordinates)
 
 # # SET PARAMETERS of SIMULATED ANNEALING
 # init_temp = 0.9

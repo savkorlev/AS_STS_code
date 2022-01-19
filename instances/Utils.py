@@ -16,9 +16,19 @@ class Instance:
     Q : List
         list of trucks
     q : List[int]
-        list of customer demands
+        list of customer demands in kgs
+    volumes : List[int]
+        list of customer demands in volume
+    customerDurations: List[float]
+        list of customer durations (.nodes file)
     d : Dict[Tuple[int, int], float]
-        list of distances
+        list of total distances
+    dInside : Dict[Tuple[int, int], float]
+        list of distances inside
+    dOutside : Dict[Tuple[int, int], float]
+        list of distances outside
+    arcDurations : Dict[Tuple[int, int], float]
+        list of arc durations (.routes file)
     coordinates : List[Tuple[int, int]]
         list of customer coordinates
     """
@@ -26,15 +36,27 @@ class Instance:
     n: int
     Q: List
     q: List[int]
+    volumes: List[int]
+    customerDurations: List[float]
     d: Dict[Tuple, float]
+    dInside: Dict[Tuple[int, int], float]
+    dOutside: Dict[Tuple[int, int], float]
+    arcDurations: Dict[Tuple[int, int], float]
     coordinates: List[Tuple[int, int]]
 
-    def __init__(self, n: int, Q: List, q: List[int], d: Dict[Tuple[int, int], float],
+    def __init__(self, n: int, Q: List, q: List[int], volumes: List[int], customerDurations: List[float],
+                 d: Dict[Tuple[int, int], float], dInside: Dict[Tuple[int, int], float],
+                 dOutside: Dict[Tuple[int, int], float], arcDurations: Dict[Tuple[int, int], float],
                  coordinates: List[Tuple[int, int]]):
         self.n = n
         self.Q = Q
         self.q = q
+        self.volumes = volumes
+        self.customerDurations = customerDurations
         self.d = d
+        self.dInside = dInside
+        self.dOutside = dOutside
+        self.arcDurations = arcDurations
         self.coordinates = coordinates
 
         # algorithm will run until first of these conditions is met. Either iterations or time.
