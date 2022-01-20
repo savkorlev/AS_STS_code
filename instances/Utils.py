@@ -61,7 +61,7 @@ class Instance:
         self.coordinates = coordinates
 
         # algorithm will run until first of these conditions is met. Either iterations or time.
-        self.max_iterations = 1000
+        self.max_iterations = 2000
         self.max_time = 900.0
         # seconds
 
@@ -77,9 +77,10 @@ class Instance:
         # todo: tune cooling_target parameters
 
         # set the initial weights for each operator
-        self.init_weight_destroy_random = 50
-        self.init_weight_destroy_expensive = 50
+        self.init_weight_destroy_random = 25
+        self.init_weight_destroy_expensive = 100
         self.init_weight_destroy_route = 50
+        self.init_weight_destroy_related = 50
         self.init_weight_insert_cheapest = 50
         self.init_weight_insert_regret = 25
 
@@ -87,12 +88,15 @@ class Instance:
         self.destroy_random_lb = 0.05  # of all customers. So if 112 customers & lb = 0.05: minimum 6
         self.destroy_random_ub = 0.15  # of all customers. So if 112 customers & ub = 0.15: maximum 17
         self.destroy_expensive_lb = 0.05
-        self.destroy_expensive_ub = 0.15
+        self.destroy_expensive_ub = 0.1
         self.destroy_route_lb = 0.25  # of the chosen route
         self.destroy_route_ub = 1  # of the chosen route
+        self.destroy_related_lb = 0.05
+        self.destroy_related_ub = 0.15
+
 
         self.init_penalty = 5  # starting penalty costs in the 0. iteration -> penalty_cost()
-        self.step_penalty = 0.1  # step by which penalty grows in every iteration -> penalty_cost()
+        self.step_penalty = 1  # step by which penalty grows in every iteration -> penalty_cost()
         # TODO: Choose suitable penalty-factor. Maybe depending on max_iterations?
 
         self.penalty_cost_iteration_for_initialization = 0.75 * self.max_iterations   # setting this parameter correctly is very important for the initial solution.
@@ -389,13 +393,15 @@ def vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: Li
         # costBefore = r.current_cost
         best_vehicle = dummyAtego
         best_cost = 10e10
+        previousVehicleType = "noVehicle"
         for v in list_of_available_vehicles:  # check all available vehicles. This list should get shorter while we progress, because the best vehicles will be removed from it
-            # if compute_total_demand(r.customer_list, instance) < v.payload_kg:  # feasibility check over payload. can be removed once we have penalty costs
-            r.vehicle = v
-            tempCost = routeCost(r, instance, iteration, penalty_active)  # cost with the checked vehicle
-            if tempCost < best_cost:
-                best_vehicle = v
-                best_cost = tempCost
+            if v.type != previousVehicleType:  # only try each vehicle type once
+                r.vehicle = v
+                tempCost = routeCost(r, instance, iteration, penalty_active)  # cost with the checked vehicle
+                if tempCost < best_cost:
+                    best_vehicle = v
+                    best_cost = tempCost
+                previousVehicleType = v.type
 
         r.vehicle = best_vehicle  # assign the bestVehicle to the route
         list_of_available_vehicles.remove(best_vehicle)  # remove the bestVehicle from available.  # todo: I had a single run where a bug was caused here. Could not replicate

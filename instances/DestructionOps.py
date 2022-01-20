@@ -57,3 +57,26 @@ def expensive_removal(currentSolution: list[RouteObject], instance: Instance, it
         listOfRemoved.append(tupleList[i][0])  # add them to our return-list
 
     return listOfRemoved
+
+
+def related_removal(instance: Instance) -> list:
+    """ related removal picks a random customer and deletes him and others near him
+    """
+    listOfRemoved = []
+    numberOfRemoved = max(2, random.randint(round(instance.destroy_related_lb * (len(instance.q) - 1)),  # delete at least 2
+                                            round(instance.destroy_related_ub * (len(instance.q) - 1)))) # generate number customers to be removed
+    # todo: instead of removing a random number of customers, we could remove all within a certain radius
+
+    seed_customer = random.choice(range(1, len(instance.q) - 1))  # get 1 random sample customer
+
+    duration_from_seed = []
+    for i in range(1, len(instance.q)):  # starting from 1 so we dont get the depot
+        key = (seed_customer, i)
+        duration_from_seed.append((i, instance.arcDurations[key]))  # get the duration from seed to all other customers
+
+    duration_from_seed.sort(key=lambda y: y[1], reverse=False)
+
+    for i in range(0, numberOfRemoved):
+        listOfRemoved.append(duration_from_seed[i][0])
+
+    return listOfRemoved

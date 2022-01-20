@@ -105,17 +105,21 @@ coordinates_int = create_list_int_coordinates(test_df_Paris_nodes)
 # 3. CREATING OUR VEHICLES
 # set the # of vehicles available to Sweep and Algorithm
 city = "Paris"
-num_Atego = 18
-num_VWTrans = 5
-num_eCargoBike = 0
+numI_Atego = 19
+numI_VWTrans = 0
+numI_VWCaddy = 0
+numI_DeFuso = 0
+numI_ScooterL = 0
+numI_ScooterS = 0
+numI_eCargoBike = 0
 
 # create vehicles via function in Trucks.py-file
-listOfInitialVehicles = create_vehicles(city, num_Atego, num_VWTrans, 0, 0, 0, 0, num_eCargoBike)
+listOfInitialVehicles = create_vehicles(city, numI_Atego, numI_VWTrans, numI_VWCaddy, numI_DeFuso, numI_ScooterL, numI_ScooterS, numI_eCargoBike)
 print(f"List of initial Vehicle payloads_kg: {list(map(lambda x: x.payload_kg, listOfInitialVehicles))}")
 
 # test feasibility of our vehicle assignment. Need enough capacity to carry all demand.
 sumOfDemand = sum(testDemandParis)
-sumOfCapacity = num_Atego * 2800 + num_VWTrans * 883 + num_eCargoBike * 100
+sumOfCapacity = numI_Atego * 2800 + numI_VWTrans * 883 + numI_VWCaddy * 670 + numI_DeFuso * 2800 + numI_ScooterL * 905 + numI_ScooterS * 720 + numI_eCargoBike * 100
 if sumOfCapacity < sumOfDemand:
     print(f"Not enough Capacity ({sumOfCapacity}) for Demand ({sumOfDemand})")
     sys.exit()
