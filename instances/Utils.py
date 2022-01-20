@@ -1,6 +1,7 @@
 import copy
 import math
 import random
+
 import numpy as np
 from typing import List, Dict, Tuple
 
@@ -60,19 +61,20 @@ class Instance:
         self.coordinates = coordinates
 
         # algorithm will run until first of these conditions is met. Either iterations or time.
-        self.max_iterations = 12000 * 5
-        self.max_time = 900.0 * 2
+        self.max_iterations = 1000
+        self.max_time = 900.0
         # seconds
 
         """ the idea here is to fall back to our best known solution after getting away from it with SimAnnealing. 
         We need to allow enough iterations for the accepted solution to be optimized enough to compete with the bestSolution
         """
-        # todo: currently set up to check improvements over best solution. If we are still finding better local solutins, we should probably not fall back.
+        # todo: fall back is turned off
         self.max_iterations_no_improvement = max(50, self.max_iterations * 0.05)
 
         self.init_temp = 0.9  # factor with which the solution of the 0. iteration is turned into first temperature -> ourAlgorithm()
-        self.cooling = 0.99  # factor with which temperature is reduced after every instance  -> simulated_annealing()
-        # todo: cooling factor should probably depend on max iterations.
+        cooling_target = np.power(0.05, (2/self.max_iterations))  # this function sets our cooling factor dependent on the max_iterations. Example: (0.05, (2/self.max_iterations)) forces the temperature to 5% of the starting temp after 50% of iterations.
+        self.cooling = cooling_target  # factor with which temperature is reduced after every instance  -> simulated_annealing()
+        # todo: tune cooling_target parameters
 
         # set the initial weights for each operator
         self.init_weight_destroy_random = 50
@@ -83,14 +85,14 @@ class Instance:
 
         # set upper and lower bounds for the number of destroyed nodes in destroy operations
         self.destroy_random_lb = 0.05  # of all customers. So if 112 customers & lb = 0.05: minimum 6
-        self.destroy_random_ub = 0.25  # of all customers. So if 112 customers & ub = 0.15: maximum 17
+        self.destroy_random_ub = 0.15  # of all customers. So if 112 customers & ub = 0.15: maximum 17
         self.destroy_expensive_lb = 0.05
         self.destroy_expensive_ub = 0.15
         self.destroy_route_lb = 0.25  # of the chosen route
         self.destroy_route_ub = 1  # of the chosen route
 
         self.init_penalty = 5  # starting penalty costs in the 0. iteration -> penalty_cost()
-        self.step_penalty = 1  # step by which penalty grows in every iteration -> penalty_cost()
+        self.step_penalty = 0.1  # step by which penalty grows in every iteration -> penalty_cost()
         # TODO: Choose suitable penalty-factor. Maybe depending on max_iterations?
 
         self.penalty_cost_iteration_for_initialization = 0.75 * self.max_iterations   # setting this parameter correctly is very important for the initial solution.
@@ -125,7 +127,7 @@ def compute_distances_objects(solution: Solution, instance: Instance) -> float:
     return sum_distances
 
 
-def compute_distance(route: Route, instance: Instance) -> float:  # todo: this is currently the most time consuming part of our algorithm. Find ways to make it happen less often or make it faster. Maybe we can use numpy.sum() over a list of the distances? https://medium.com/dev-today/the-fastest-way-to-loop-using-python-the-simple-truth-7a1f151aa81b
+def compute_distance(route: Route, instance: Instance) -> float:   # make faster with: https://medium.com/dev-today/the-fastest-way-to-loop-using-python-the-simple-truth-7a1f151aa81b
     sum_distances = 0.0
 
     # route: [0,1,2,3,4,0]
@@ -137,12 +139,41 @@ def compute_distance(route: Route, instance: Instance) -> float:  # todo: this i
     return sum_distances
 
 
+def compute_distance_inside(route: Route, instance: Instance) -> float:
+    sum_distances_ins = 0.0
+    # route: [0,1,2,3,4,0]
+    #   (i-1)-^ ^-i
+    for i in range(1, len(route)):
+        key = (route[i - 1], route[i])
+        sum_distances_ins += instance.dInside[key]
+    return sum_distances_ins
+
+
+def compute_distance_outside(route: Route, instance: Instance) -> float:
+    sum_distances_out = 0.0
+    # route: [0,1,2,3,4,0]
+    #   (i-1)-^ ^-i
+    for i in range(1, len(route)):
+        key = (route[i - 1], route[i])
+        sum_distances_out += instance.dOutside[key]
+    return sum_distances_out
+
+
 def compute_total_demand(route: List[int], instance: Instance) -> int:
     sum_demands = 0
     for n in route:
         sum_demands += instance.q[n]
 
     return sum_demands
+
+
+def compute_total_volume(route: List[int], instance: Instance) -> int:
+    sum_volume = 0
+    for n in route:
+        sum_volume += instance.volumes[n]
+
+    return sum_volume
+
 
 def compute_duration(route: List[int], instance: Instance) -> float:
     sum_duration = 0.0
@@ -212,8 +243,15 @@ def solution_cost(listOfRoutes: List[Route], instance: Instance, iteration: int,
 
 def routeCost(routeObject: RouteObject, instance: Instance, iteration: int, penalty_active=True) -> float:
     # distance
-    distance = compute_distance(routeObject.customer_list, instance)
-    cost_km = distance * routeObject.vehicle.costs_km
+    # distance = compute_distance(routeObject.customer_list, instance)
+    # cost_km = distance * routeObject.vehicle.cost_km
+    distance_ins = compute_distance_inside(routeObject.customer_list, instance)
+    cost_ins = distance_ins * routeObject.vehicle.cost_km_in
+    distance_out = compute_distance_outside(routeObject.customer_list, instance)
+    cost_out = distance_out * routeObject.vehicle.cost_km
+    cost_km = cost_ins + cost_out
+    distance = distance_ins + distance_out
+
 
     # duration
     duration = compute_duration(routeObject.customer_list, instance)
@@ -224,10 +262,10 @@ def routeCost(routeObject: RouteObject, instance: Instance, iteration: int, pena
     if penalty_active:  # checks if penalty_costs were enabled when calling the cost function
         cost_penalty = penalty_cost(routeObject, routeObject.vehicle, instance, iteration, distance, duration)
 
-    cost = cost_km + + cost_minute + cost_penalty
+    cost = cost_km + cost_minute + cost_penalty
     return cost
 
-def penalty_cost(route: RouteObject, vehicle: Vehicle, instance: Instance, iteration: int, distance: float, duration: float) -> float:  # todo: add duration overload.
+def penalty_cost(route: RouteObject, vehicle: Vehicle, instance: Instance, iteration: int, distance: float, duration: float) -> float:
     iteration_penalty = instance.init_penalty + iteration * instance.step_penalty  # penalty in each iteration.
     customer_list = route.customer_list
 
@@ -237,19 +275,24 @@ def penalty_cost(route: RouteObject, vehicle: Vehicle, instance: Instance, itera
     overload_kg = compute_overload(constraint_kg, load_kg)
     penalty_kg = overload_kg * iteration_penalty
 
+    # payload_vol
+    constraint_vol = vehicle.payload_vol
+    load_vol = compute_total_volume(customer_list, instance)
+    overload_vol = compute_overload(constraint_vol, load_vol)
+    penalty_vol = overload_vol * iteration_penalty
+
     # range
     constraint_range = vehicle.range_km
     overload_range = compute_overload(constraint_range, distance)
     penalty_range = overload_range * iteration_penalty
 
-    #duration
+    # duration
     constraint_duration = vehicle.max_duration
     overload_duration = compute_overload(constraint_duration, duration)
     penalty_duration = overload_duration * iteration_penalty
 
-
     # combine
-    penalty = penalty_kg + penalty_range + penalty_duration # + all other penalized constraints
+    penalty = penalty_kg + penalty_vol + penalty_range + penalty_duration # + all other penalized constraints
 
     if penalty > 0:  # set the feasibility of the route by checking if penality > 0.
         route.currently_feasible = False
@@ -277,7 +320,7 @@ def temporaryRouteCost(customer_list: Route, vehicle: Vehicle, instance: Instanc
 # def temporaryRouteCost(customer_list: Route, vehicle: Vehicle, instance: Instance, iteration: int, penalty_active=True) -> float:
 #     # distance
 #     distance = compute_distance(customer_list, instance)
-#     cost_km = distance * vehicle.costs_km
+#     cost_km = distance * vehicle.cost_km
 #
 #     # penalty
 #     cost_penalty = 0
@@ -290,7 +333,7 @@ def temporaryRouteCost(customer_list: Route, vehicle: Vehicle, instance: Instanc
 
 # def routeCost(routeObject: RouteObject, instance: Instance, iteration: int, penalty_active=True) -> float:
 #     # distance
-#     cost_km = compute_distance(routeObject.customer_list, instance) * routeObject.vehicle.costs_km
+#     cost_km = compute_distance(routeObject.customer_list, instance) * routeObject.vehicle.cost_km
 #
 #     # penalty
 #     cost_penalty = 0

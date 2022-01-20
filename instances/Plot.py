@@ -31,7 +31,7 @@ def create_list_int_coordinates(df_nodes) -> list():  # didnt work with floats s
 # coordinates for matplot END
 
 
-def plotTSP(routes, points, color, show_depot=True):
+def plotTSP(routes, points, color, show_depot=True, title='ArcPlot'):
     """
     routes: List of lists with the different orders in which the nodes are visited
     points: coordinates for the different nodes
@@ -39,6 +39,9 @@ def plotTSP(routes, points, color, show_depot=True):
     show_depot: deletes depot from all paths if false
 
     """
+    plt.figure(1, figsize=(10, 9))
+    plt.title(title)
+
     path = copy.deepcopy(routes)  # need to deepcopy so we dont destroy the real route by drawing them without depot
 
     if not show_depot:  # allows us to draw routes without depot, which gives a clearer picture
@@ -46,7 +49,7 @@ def plotTSP(routes, points, color, show_depot=True):
             while 0 in r:
                 r.remove(0)
 
-    a_scale = 35000  # size of the arrowhead
+    a_scale = 30000  # size of the arrowhead
 
     for r in range(len(path)):
         x = []
@@ -58,9 +61,52 @@ def plotTSP(routes, points, color, show_depot=True):
             for i in range(0, len(x) - 1): # draw the route
                 plt.arrow(x[i], y[i], (x[i + 1] - x[i]), (y[i + 1] - y[i]), head_width=a_scale,
                           color=color, length_includes_head=True)
-            plt.plot(x, y, "co") # draw the nodes. If I change the color, everything breaks...
+            plt.plot(x, y, "co", markersize=3) # draw the nodes. If I change the color, everything breaks...
     plt.show()
 
+def plotGraph(points, title: str, color='g'):
+
+    x = []
+    y = []
+
+    for i in range(len(points)):
+        x.append(points[i][0])
+        y.append(points[i][1])
+
+    plt.plot(x, y, "co", markersize=3) # draw the nodes. If I change the color, everything breaks...
+    plt.title(title)
+
+
+    plt.show()
+
+def plotSubplots(points, points2, title='SubPlots'):
+
+    x = []
+    y = []
+
+    for i in range(len(points)):
+        x.append(points[i][0])
+        y.append(points[i][1])
+
+    x2 = []
+    y2 = []
+
+    for i in range(len(points2)):
+        x2.append(points2[i][0])
+        y2.append(points2[i][1])
+
+    fig = plt.figure(1, figsize=(10, 9))
+    ax1 = fig.add_subplot(211)
+    plt.plot(x, y, "co", markersize=2) # draw the nodes. If I change the color, everything breaks...
+
+    ax2 = fig.add_subplot(212, sharex=ax1)
+    plt.plot(x2, y2, color='red', markersize=3)
+
+    # plt.setp(ax1.get_xticklabels(), visible=False)  # hide labels
+    plt.title(title)
+    fig.subplots_adjust(hspace=0)  # remove vertical space between subplots
+
+    plt.show()
 
 
 

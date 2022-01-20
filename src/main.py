@@ -105,8 +105,8 @@ coordinates_int = create_list_int_coordinates(test_df_Paris_nodes)
 # 3. CREATING OUR VEHICLES
 # set the # of vehicles available to Sweep and Algorithm
 city = "Paris"
-num_Atego = 19
-num_VWTrans = 0
+num_Atego = 18
+num_VWTrans = 5
 num_eCargoBike = 0
 
 # create vehicles via function in Trucks.py-file
@@ -118,7 +118,7 @@ sumOfDemand = sum(testDemandParis)
 sumOfCapacity = num_Atego * 2800 + num_VWTrans * 883 + num_eCargoBike * 100
 if sumOfCapacity < sumOfDemand:
     print(f"Not enough Capacity ({sumOfCapacity}) for Demand ({sumOfDemand})")
-#     # sys.exit()
+    sys.exit()
 
 # # 5. SET MAX ITERATIONS
 # """ logically, this should not be here. But this way we have all the parameters we need to set for a run nearby"""
@@ -161,5 +161,6 @@ solutionOur = ouralgorithm(ourInstance, bestSolutionRandomSweep, listOfInitialVe
 # for i in range(lenOfSolutionOur):
 #     print(f"Sum of demands of a {i} route: " + str(compute_total_demand(solutionOur[i], ourInstance)))
 # print(compute_distances(solutionOur, ourInstance))
-plotTSP(solutionOur, coordinates_int, 'g')
-plotTSP(solutionOur, coordinates_int, 'g', False)
+plotTSP(solutionOur, coordinates_int, 'g', False, 'No Depot Plot')
+plotTSP(solutionOur, coordinates_int, 'g', True, 'Route Plot')
+

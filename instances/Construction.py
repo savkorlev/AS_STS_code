@@ -11,7 +11,7 @@ from instances.DestructionOps import random_removal, expensive_removal, route_re
 from instances.InsertionOps import cheapest_insertion_iterative, regret_insertion
 from instances.LocalSearch import hillclimbing, find_first_improvement_2Opt, vnd, find_first_improvement_relocate, \
     find_best_improvement_2Opt
-from instances.Plot import plotTSP
+from instances.Plot import plotTSP, plotGraph, plotSubplots
 from instances.Route import RouteObject
 from instances.Trucks import Vehicle
 from instances.Utils import Instance, Solution, compute_total_demand, routeCost, \
@@ -58,6 +58,8 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
     currentCost = solution_cost(initialSolution, instance, iteration=0, penalty_active=True)
     temperature = instance.init_temp * currentCost #  current cost is used to calculate initial temperature
     accept_time = 0
+    simAnnPlot = []  # to store our results for a plot
+    simAnnTemp = []
 
     print(f"Sweep solution: {list(map(lambda x: x.customer_list, bestSolution))}") # printing out customer lists after sweep
     print(f"Route costs:    {list(map(lambda x: x.current_cost, bestSolution))}")  # printing out costs of the routes after sweep after costs are assigned
@@ -72,9 +74,9 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
     while time_so_far < instance.max_time and iteration < instance.max_iterations:  # run until either maxIterations or maxTime is reached. Will do 1 last loop after maxTime.
         iteration += 1  # count up the iterations
 
-        blockPrint()
-        if iteration % 100 == 0 or iteration == 1:
-            enablePrint()
+        # blockPrint()
+        # if iteration % 100 == 0 or iteration == 1:
+        #     enablePrint()
 
         print(f"New iteration__________{iteration}")
         print(f"Routes at start of iteration:     {list(map(lambda x: x.customer_list, bestSolution))}")
@@ -179,8 +181,8 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
         accept_time += accept
         if accept:
             currentSolution = listOfRoutes
-
-
+            simAnnPlot.append((iteration, costThisIteration))
+            simAnnTemp.append((iteration, temperature))
 
         if costThisIteration < bestCost:  # todo: only if we find a BETTER solution, does not depend on acceptance. revise this
             bestCost = costThisIteration
@@ -269,7 +271,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
     print('accept: ' + str(accept_time) + ', iterations: ' + str(iteration) + ', ratio: ' + str(accept_time/iteration))
     print(str(endtime))
 
-
+    plotSubplots(simAnnPlot, simAnnTemp, 'SimAnn Accepted + Temp')
 
 
     return list(map(lambda x: x.customer_list, bestSolution))

@@ -1,62 +1,68 @@
 
 class Vehicle:
-    def __init__(self, type: str, city: str, plateNr: str, city_tax=0):
+    def __init__(self, type: str, city: str, plateNr: str):
         self.plateNr = plateNr
         self.type = type
         self.city = city
         self.max_duration = 600.0  # todo: get correct max durations for every city
 
+        if city == "Paris":
+            city_tax = 0.25
+        elif city == "NewYork":
+            city_tax = 0.25
+        elif city == "Shanghai":
+            city_tax = 0.125
+
         if type == "MercedesBenzAtego":
             self.payload_kg = 2800
-            self.payload_vol = 34.80
+            self.payload_vol = 34.80 * 1000  # needs to be * 1000 because the volumes in nodes is given with unit m^3 * 10^-3
             self.range_km = 99999
-            self.speed_factor = 1
             if city == "Paris":
-                self.costs_km = 0.28
-                self.cost_km_in = 0.28 + city_tax
+                self.cost_km = 0.28
+                self.cost_km_in = 0.28 + city_tax  # only add city tax if vehicle is combustion
                 self.cost_m = 0.38
             elif city == "NewYork":
-                self.costs_km = 0.16
+                self.cost_km = 0.16
                 self.cost_km_in = 0.16 + city_tax
                 self.cost_m = 0.43
             elif city == "Shanghai":
-                self.costs_km = 0.18
+                self.cost_km = 0.18
                 self.cost_km_in = 0.18 + city_tax
                 self.cost_m = 0.13
 
         elif type == "VWTransporter":
             self.payload_kg = 883
-            self.payload_vol = 5.8
+            self.payload_vol = 5.8 * 1000  # needs to be * 1000 because the volumes in nodes is given with unit m^3 * 10^-3
             self.range_km = 99999
-            self.speed_factor = 1
             if city == "Paris":
-                self.costs_km = 0.16
+                self.cost_km = 0.16
                 self.cost_km_in = 0.16 + city_tax
                 self.cost_m = 0.37
             elif city == "NewYork":
-                self.costs_km = 0.10
+                self.cost_km = 0.10
                 self.cost_km_in = 0.10 + city_tax
                 self.cost_m = 0.46
             elif city == "Shanghai":
-                self.costs_km = 0.11
+                self.cost_km = 0.11
                 self.cost_km_in = 0.11 + city_tax
                 self.cost_m = 0.11
 
         elif type == "DouzeV2ECargoBike":
             self.payload_kg = 100
-            self.payload_vol = 0.2
+            self.payload_vol = 0.2 * 1000  # needs to be * 1000 because the volumes in nodes is given with unit m^3 * 10^-3
             self.range_km = 128
-            self.speed_factor = 0.5  # todo: we have to think about the speed of the bike compared to the other vehicles. Also maybe the unloading speed.
+            # self.speed_factor = 0.5  # todo: we have to think about the speed of the bike compared to the other vehicles. Also maybe the unloading speed.
+                                     # since driving time and unloading time have a similar power (eg 12 minutes to drive, 10 minutes to unload), we could pretend that the slower speed gets offset by faster unloading
             if city == "Paris":
-                self.costs_km = 0.05
+                self.cost_km = 0.05
                 self.cost_km_in = 0.05
                 self.cost_m = 0.37
             elif city == "NewYork":
-                self.costs_km = 0.05
+                self.cost_km = 0.05
                 self.cost_km_in = 0.15
                 self.cost_m = 0.46
             elif city == "Shanghai":
-                self.costs_km = 0.05
+                self.cost_km = 0.05
                 self.cost_km_in = 0.05
                 self.cost_m = 0.11
 
