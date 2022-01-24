@@ -7,7 +7,7 @@ from typing import List
 from instances.DestructionOps import random_removal, expensive_removal, route_removal, related_removal
 from instances.InsertionOps import cheapest_insertion_iterative, regret_insertion
 from instances.LocalSearch import hillclimbing, find_first_improvement_2Opt, vnd, find_first_improvement_relocate, \
-    find_best_improvement_2Opt
+    find_best_improvement_2Opt, combine_routes
 from instances.Plot import plotTSP, plotSubplots
 from instances.Route import RouteObject
 from instances.Trucks import Vehicle
@@ -133,7 +133,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
         # -------------------------------------------------------------------------------------------------------------
         # START OF OPTIMIZATION PHASE.
         # DELETING EMPTY ROUTES
-        listOfRoutes = delete_empty_routes(listOfRoutes)
+        listOfRoutes = delete_empty_routes(listOfRoutes)  # todo: when deleting empty routes, give vehicles back to list_of_available vehicles
         print(f"Route objects no empty routes:    {list(map(lambda x: x.customer_list, listOfRoutes))}")
 
         # START OF LOCAL OPTIMIZATION 2-opt
@@ -148,9 +148,14 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
         listAfterOptimization = hillclimbing(list(map(lambda x: x.customer_list, listOfRoutes)), instance,
                                              local_search_function)
         for i in range(len(listAfterOptimization)):
-            listOfRoutes[i].customer_list = listAfterOptimization[
-                i].copy()  # put the optimized customer lists back into our RouteObjects
+            listOfRoutes[i].customer_list = listAfterOptimization[i].copy()  # put the optimized customer lists back into our RouteObjects
         print(f"Route objects after optimization: {list(map(lambda x: x.customer_list, listOfRoutes))}")
+       
+        # print(f"Currently availiable vehicles:")
+        # for v in list_of_available_vehicles:
+        #     print(f"{v.type}, nr: {v.plateNr}")    
+       
+        listOfRoutes, list_of_available_vehicles = combine_routes(listOfRoutes, list_of_available_vehicles, instance, iteration)
         # END OF LOCAL OPTIMIZATION 2-opt
 
         # START OF VEHICLE SWAP PHASE

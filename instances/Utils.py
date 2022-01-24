@@ -61,8 +61,8 @@ class Instance:
         self.coordinates = coordinates
 
         # algorithm will run until first of these conditions is met. Either iterations or time.
-        self.max_iterations = 600 * 16
-        self.max_time = 9999.0
+        self.max_iterations = 1500 * 9
+        self.max_time = 60.0 * 9
         # seconds
 
         """ the idea here is to fall back to our best known solution after getting away from it with SimAnnealing. 
@@ -95,7 +95,7 @@ class Instance:
         self.destroy_related_ub = 0.15
 
 
-        self.init_penalty = 5  # starting penalty costs in the 0. iteration -> penalty_cost()
+        self.init_penalty = 10  # starting penalty costs in the 0. iteration -> penalty_cost()
         self.step_penalty = 0.1  # step by which penalty grows in every iteration -> penalty_cost()
         # TODO: Choose suitable penalty-factor. Maybe depending on max_iterations?
 
@@ -492,5 +492,5 @@ def vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: Li
         list_of_available_vehicles.remove(best_vehicle)  # remove the bestVehicle from available.
         r.vehicle = best_vehicle
         r.current_cost = routeCost(r, instance, iteration, penalty_active)  # update the route cost
-        print(f"Route cost after Vehicle Assignment: route {counter} , vehicle {r.vehicle.type} {r.vehicle.plateNr}, cost: {r.current_cost:.2f}, demand {compute_total_demand(r.customer_list, instance)}, customerCount: {len(r.customer_list)-2}, feasible: {r.currently_feasible}")
+        print(f"Route cost after Vehicle Assignment: route {counter} , vehicle {r.vehicle.type} {r.vehicle.plateNr}, cost: {r.current_cost:.2f}, demand {compute_total_demand(r.customer_list, instance)}, customerCount: {len(r.customer_list)-2}, feasible: {r.currently_feasible}, customers: {r.customer_list}")
     return list_of_available_vehicles

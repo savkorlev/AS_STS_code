@@ -10,7 +10,6 @@ from instances.Trucks import create_vehicles
 from instances.Utils import Instance, vehicle_assignment, solution_cost, find_cheapest_vehicle
 from instances.Plot import plotTSP, create_list_int_coordinates
 
-
 # import os
 # os.chdir('C:/Users/Евгений/Desktop/TUM/WS 2021-2022/Advanced Seminar Sustainable Transportation Systems/AS_STS_code')
 # os.chdir('C:/Users/Maximilian Sammer/PycharmProjects/AS_STS_code/')
@@ -47,7 +46,7 @@ df_Paris_routes["Duration[s]"] = pd.to_timedelta(df_Paris_routes["Duration[s]"])
 
 # 2. CREATING TEST DATASET AND ATTRIBUTES OF FUTURE INSTANCE
 #set testDimension to 1 more than customers
-testDimension = 1 + 19  # change this to use more or less customers of the data set. Max for Paris is 112. Also need to change the iloc for the nodes file
+testDimension = 1 + 112  # change this to use more or less customers of the data set. Max for Paris is 112. Also need to change the iloc for the nodes file
 # 1 + either 19, 39 or 112
 
 # DON'T FORGET TO SET MORE VEHICLES IF YOU HAVE MORE CUSTOMERS
@@ -107,12 +106,12 @@ coordinates_int = create_list_int_coordinates(test_df_Paris_nodes)
 # 3. CREATING OUR VEHICLES
 # set the # of vehicles available to Sweep and Algorithm
 city = "Paris"
-numI_Atego = 1
-numI_VWTrans = 3
-numI_VWCaddy = 3
-numI_DeFuso = 2
-numI_ScooterL = 2
-numI_ScooterS = 0
+numI_Atego = 20
+numI_VWTrans = 50
+numI_VWCaddy = 50
+numI_DeFuso = 20
+numI_ScooterL = 50
+numI_ScooterS = 50
 numI_eCargoBike = 0
 
 # create vehicles via function in Trucks.py-file

@@ -2,7 +2,8 @@
 # Procedures to improve complete solutions
 from instances.Route import RouteObject
 from instances.Trucks import Vehicle
-from instances.Utils import compute_distance, Solution, Instance, compute_total_demand, find_cheapest_vehicle
+from instances.Utils import compute_distance, Solution, Instance, compute_total_demand, find_cheapest_vehicle, \
+    delete_empty_routes
 
 
 def hillclimbing(solution: Solution, instance: Instance, function) -> Solution:
@@ -252,28 +253,59 @@ def find_best_improvement_2Opt(solution: Solution, instance: Instance) -> bool: 
 #                         return True
 #     return False
 
-# def combine_routes(list_of_routes: list[RouteObject], list_of_avb_vehicles: list[Vehicle], instance: Instance, iteration: int) ->  list(RouteObject):
-#     new_list_of_routes = []
+def combine_routes(list_of_routes: list[RouteObject], list_of_avb_vehicles: list[Vehicle], instance: Instance, iteration: int) -> list[RouteObject]:
+
+    for position_a, route_a in enumerate(list_of_routes):
+        if route_a.customer_list != [0, 0] and route_a.vehicle.type != "MercedesBenzAtego":  # dont try to combine with Atego-Routes
+
+            for position_b, route_b in enumerate(list_of_routes):
+                if route_b != route_a and route_b.vehicle.type != "MercedesBenzAtego":  # dont try to combine with Atego-Routes
+                    if list_of_routes[position_a].customer_list != [0, 0] and list_of_routes[position_b].customer_list != [0, 0]:  # we dont try to combine empty lists
+                        
+                        temp_list_of_avb_vehicles = list_of_avb_vehicles.copy()
+                        temp_list_of_avb_vehicles.append(route_a.vehicle)  # add the vehicles of the two routes into the pool temporarely
+                        temp_list_of_avb_vehicles.append(route_b.vehicle)
+                        
+                        customer_list_a = []
+                        for i in range(len(route_a.customer_list) - 2):  # turns [0, 1, 2, 3, 0] into [1, 2, 3]
+                            customer_list_a.append(route_a.customer_list[i+1])
+                        customer_list_b = []
+                        for j in range(len(route_b.customer_list) - 2):  # turns [0, 1, 2, 3, 0] into [1, 2, 3]
+                            customer_list_b.append(route_b.customer_list[j + 1])
+    
+                        temp_customer_list_ab = [0] + customer_list_a + customer_list_b + [0]  # combining the two lists into one
+                        # temp_customer_list_ba = [0] + customer_list_b + customer_list_a + [0]
+                        cost_temp_ab, vehicle_temp_ab = find_cheapest_vehicle(temp_customer_list_ab, instance, iteration, temp_list_of_avb_vehicles)  # finding the cheapest vehicle for the new route
+                        # cost_temp_ba, vehicle_temp_ba = find_cheapest_vehicle(temp_customer_list_ba, instance, iteration,
+                        #                                                       list_of_avb_vehicles)
+    
+                        cost_2routes = route_a.current_cost + route_b.current_cost
+                        if cost_temp_ab < cost_2routes:  # we operate with first improvement. As soon as we find a combined route cheaper than the two small routes we combine
+                            new_route = RouteObject(temp_customer_list_ab, vehicle_temp_ab)
+                            new_route.current_cost = cost_temp_ab
+                            list_of_routes.append(new_route)
+                            list_of_routes[position_a].customer_list = [0, 0]  # we set the old routes to empty. This way they will not be chosen in the next iterations of the for loop
+                            list_of_routes[position_b].customer_list = [0, 0]
+
+                            list_of_avb_vehicles.append(route_a.vehicle)  # adding the vehicles of the closed routes back into the pool
+                            list_of_avb_vehicles.append(route_b.vehicle)
+                            list_of_avb_vehicles.remove(vehicle_temp_ab)  # removing the chosen vehicle for the combined route from the pool
+                            print(f"We combined route {position_a + 1} and route {position_b + 1} into {new_route.customer_list}. Chosen Vehicle was {new_route.vehicle.type}")
+    
+    new_list_of_routes = delete_empty_routes(list_of_routes)
+    return new_list_of_routes, list_of_avb_vehicles
+
+
+""" testing stuff"""
+
+# a = [1,2,3,4,5,6]
 # 
-#     for route_a in list_of_routes:
-#         if route_a.vehicle.type != "MercedesBenzAtego":  # dont try to combine with Atego-Routes
-#             
-#             for route_b in list_of_routes:
-#                 if route_b != route_a and route_b.vehicle.type != "MercedesBenzAtego":  # dont try to combine with Atego-Routes
-#                     customer_list_a = []
-#                     for i in range(len(route_a.customer_list) - 2):
-#                         customer_list_a.append(route_a.customer_list[i+1])
-#                     customer_list_b = []
-#                     for j in range(len(route_b.customer_list) - 2):
-#                         customer_list_b.append(route_b.customer_list[j + 1])
-#                         
-#                     temp_customer_list_ab = [0] + customer_list_a + customer_list_b + [0]
-#                     # temp_customer_list_ba = [0] + customer_list_b + customer_list_a + [0]
-#                     cost_temp_ab, vehicle_temp_ab = find_cheapest_vehicle(temp_customer_list_ab, instance, iteration, list_of_avb_vehicles)
-#                     # cost_temp_ba, vehicle_temp_ba = find_cheapest_vehicle(temp_customer_list_ba, instance, iteration,
-#                     #                                                       list_of_avb_vehicles)
-#                     
-#                     cost_2routes = route_a.current_cost + route_b.current_cost
-#                     if cost_temp_ab < cost_2routes:
-#                         
-#     return new_list_of_routes
+# for pi, i in enumerate(a):
+#     if i != 0:
+#         for pj, j in enumerate(a):
+#             if j != 0 and a[pi] != 0 and pj != pi:
+#                 x = a[pi] + a[pj]
+#                 if x > 3:
+#                     a[pi] = 0
+#                     a[pj] = 0
+#                     a.append(x)
