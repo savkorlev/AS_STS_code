@@ -4,7 +4,7 @@ from instances.Utils import Instance, temporaryRouteCost, routeCost
 
 
 def cheapest_insertion_iterative(listOfRoutes: list[RouteObject], listOfRemoved: list[int],
-                     list_of_available_vehicles: list[Vehicle], instance: Instance, iteration: int):
+                     list_of_available_vehicles: list[Vehicle], instance: Instance, iteration: int) -> list[Vehicle]:
 
     # first iteration. create a list_of_customers_to_insert, which will include every removed customer + their regret + their best position + A LIST OF ALL POSITIONS AND ASSOCIATED COST!
     list_of_customers_to_insert = []
@@ -110,10 +110,12 @@ def cheapest_insertion_iterative(listOfRoutes: list[RouteObject], listOfRemoved:
         listOfRemoved.remove(best_customer)  # delete current bestCustomer from a list of removed customers
         list_of_customers_to_insert.pop(0)
         # next iterations
+    
+    return list_of_available_vehicles
 
 
 def regret_insertion(listOfRoutes: list[RouteObject], listOfRemoved: list[int],
-                     list_of_available_vehicles: list[Vehicle], instance: Instance, iteration: int):
+                     list_of_available_vehicles: list[Vehicle], instance: Instance, iteration: int) -> list[Vehicle]:
 
     # first iteration. create a list_of_customers_to_insert, which will include every removed customer + their regret + their best position + A LIST OF ALL POSITIONS AND ASSOCIATED COST!
     list_of_customers_to_insert = []
@@ -219,7 +221,8 @@ def regret_insertion(listOfRoutes: list[RouteObject], listOfRemoved: list[int],
         listOfRemoved.remove(best_customer)  # delete current bestCustomer from a list of removed customers
         list_of_customers_to_insert.pop(0)
         # next iterations
-
+        
+    return list_of_available_vehicles
 
 # def cheapest_insertion_slow(listOfRoutes: list[RouteObject], listOfRemoved: list[int],
 #                                  list_of_available_vehicles: list[Vehicle], instance: Instance, iteration: int):

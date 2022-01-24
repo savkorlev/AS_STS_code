@@ -1,9 +1,6 @@
 import datetime
-import math
-import os
 import random
 import copy
-import sys
 import time
 from typing import List
 
@@ -11,11 +8,10 @@ from instances.DestructionOps import random_removal, expensive_removal, route_re
 from instances.InsertionOps import cheapest_insertion_iterative, regret_insertion
 from instances.LocalSearch import hillclimbing, find_first_improvement_2Opt, vnd, find_first_improvement_relocate, \
     find_best_improvement_2Opt
-from instances.Plot import plotTSP, plotGraph, plotSubplots
+from instances.Plot import plotTSP, plotSubplots
 from instances.Route import RouteObject
 from instances.Trucks import Vehicle
-from instances.Utils import Instance, Solution, compute_total_demand, routeCost, \
-    temporaryRouteCost, delete_empty_routes, vehicle_assignment, solution_cost, simulated_annealing, blockPrint, \
+from instances.Utils import Instance, routeCost, delete_empty_routes, vehicle_assignment, solution_cost, simulated_annealing, blockPrint, \
     enablePrint, compute_distances_objects
 
 
@@ -123,15 +119,14 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
 
         insert_ops = ['cheapest_insert', 'regret_insert']
         insert_weights = [weight_insert_cheapest, weight_insert_regret]
-        insert_op_used_list = random.choices(insert_ops,
-                                             weights=insert_weights)  # chooses an option from a weighed list
+        insert_op_used_list = random.choices(insert_ops, weights=insert_weights)  # chooses an option from a weighed list
         insert_op_used = insert_op_used_list[0]  # because the choices-operator returns a list
 
         if insert_op_used == 'cheapest_insert':  # pick a destroy operation
-            cheapest_insertion_iterative(listOfRoutes, listOfRemoved, list_of_available_vehicles, instance,
+            list_of_available_vehicles = cheapest_insertion_iterative(listOfRoutes, listOfRemoved, list_of_available_vehicles, instance,
                                          iteration)
         elif insert_op_used == 'regret_insert':
-            regret_insertion(listOfRoutes, listOfRemoved, list_of_available_vehicles, instance, iteration)
+            list_of_available_vehicles = regret_insertion(listOfRoutes, listOfRemoved, list_of_available_vehicles, instance, iteration)
 
         print(f"Route objects after insertion:    {list(map(lambda x: x.customer_list, listOfRoutes))}")
         # END OF INSERTION PHASE
@@ -174,9 +169,6 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
         #     print(f"Error! Customer Count is: {customer_count}")
         #     os._exit()
         print(f"customer count check: {customer_count}")
-
-        print(f"Destroy Operation used: {destroy_op_used}.")
-
         bestCost = solution_cost(bestSolution, instance, iteration, True)
         print(f"Best known cost before this iteration: {bestCost}")
         print(f"Best iteration before this one: {bestIteration}")
@@ -257,8 +249,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
     # END OF LOOP
     enablePrint()
     print(f"random_removal stats: improvements: {counter_destroy_random_imp}, rejected: {counter_destroy_random_rej}")
-    print(
-        f"expensive_removal stats: improvements: {counter_destroy_expensive_imp}, rejected: {counter_destroy_expensive_rej}")
+    print(f"expensive_removal stats: improvements: {counter_destroy_expensive_imp}, rejected: {counter_destroy_expensive_rej}")
     print(f"route_removal stats: improvements: {counter_destroy_route_imp}, rejected: {counter_destroy_route_rej}")
     print(f"related_removal stats: improvements: {counter_destroy_related_imp}, rejected: {counter_destroy_related_rej}")
     print(

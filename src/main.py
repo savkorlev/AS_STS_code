@@ -1,11 +1,13 @@
 import sys
 import copy
+import time
+
 import pandas as pd
 
 from instances.Construction import ouralgorithm
 from instances.Intialization import random_sweep
 from instances.Trucks import create_vehicles
-from instances.Utils import Instance, vehicle_assignment, solution_cost
+from instances.Utils import Instance, vehicle_assignment, solution_cost, find_cheapest_vehicle
 from instances.Plot import plotTSP, create_list_int_coordinates
 
 
@@ -45,7 +47,7 @@ df_Paris_routes["Duration[s]"] = pd.to_timedelta(df_Paris_routes["Duration[s]"])
 
 # 2. CREATING TEST DATASET AND ATTRIBUTES OF FUTURE INSTANCE
 #set testDimension to 1 more than customers
-testDimension = 1 + 112  # change this to use more or less customers of the data set. Max for Paris is 112. Also need to change the iloc for the nodes file
+testDimension = 1 + 19  # change this to use more or less customers of the data set. Max for Paris is 112. Also need to change the iloc for the nodes file
 # 1 + either 19, 39 or 112
 
 # DON'T FORGET TO SET MORE VEHICLES IF YOU HAVE MORE CUSTOMERS
@@ -105,11 +107,11 @@ coordinates_int = create_list_int_coordinates(test_df_Paris_nodes)
 # 3. CREATING OUR VEHICLES
 # set the # of vehicles available to Sweep and Algorithm
 city = "Paris"
-numI_Atego = 19
-numI_VWTrans = 0
-numI_VWCaddy = 0
-numI_DeFuso = 0
-numI_ScooterL = 0
+numI_Atego = 1
+numI_VWTrans = 3
+numI_VWCaddy = 3
+numI_DeFuso = 2
+numI_ScooterL = 2
 numI_ScooterS = 0
 numI_eCargoBike = 0
 
@@ -155,8 +157,18 @@ print(f"Rand Sweep Heuristic, #Vehicles: {len(bestSolutionRandomSweep)}, cost: {
 # plotTSP(list(map(lambda x: x.customer_list, bestSolutionRandomSweep)), coordinates_int, 'r')  # matplot of sweep solution
 
 # 6.1 VehicleSwap for the SweepSolution
+# list_avb = copy.deepcopy(listOfInitialVehicles)
+# for r in bestSolutionRandomSweep:
+#     cost_dummy, vehicle_dummy = find_cheapest_vehicle(r.customer_list, ourInstance, 100, list_avb)
+#     list_avb.remove(vehicle_dummy)
+# start1 = time.perf_counter()
 listOfInitAvailableVehicles = vehicle_assignment(bestSolutionRandomSweep, listOfInitialVehicles, ourInstance, 0, True)  # vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: List[Vehicle], instance: Instance):
-
+# time1 = time.perf_counter() - start1
+# print(time1)
+# start2 = time.perf_counter()
+# listOfInitAvailableVehicles = vehicle_assignment(bestSolutionRandomSweep, listOfInitialVehicles, ourInstance, 100, True)
+# time2 = time.perf_counter() - start2
+# print(time2)
 
 # 7. OUR ALGORITHM (DESTRUCTION + INSERTION + OPTIMIZATION + ACCEPTANCE)
 solutionOur = ouralgorithm(ourInstance, bestSolutionRandomSweep, listOfInitialVehicles, listOfInitAvailableVehicles,
