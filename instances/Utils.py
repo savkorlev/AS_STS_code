@@ -61,14 +61,14 @@ class Instance:
         self.coordinates = coordinates
 
         # algorithm will run until first of these conditions is met. Either iterations or time.
-        self.max_iterations = 1500 * 9
-        self.max_time = 60.0 * 9
+        self.max_iterations = 60 * 8 
+        self.max_time = 15.0 * 8
         # seconds
 
         """ the idea here is to fall back to our best known solution after getting away from it with SimAnnealing. 
         We need to allow enough iterations for the accepted solution to be optimized enough to compete with the bestSolution
         """
-        # todo: fall back is turned off
+        # todo: Make decision to turn fall back on [] / leave off []. Tune fall back parameter.
         self.max_iterations_no_improvement = max(50, self.max_iterations * 0.05)
 
         self.init_temp = 0.1  # factor with which the solution of the 0. iteration is turned into first temperature -> ourAlgorithm()
@@ -269,6 +269,7 @@ def routeCost(routeObject: RouteObject, instance: Instance, iteration: int, pena
     cost = cost_km + cost_minute + cost_penalty
     return cost
 
+
 def penalty_cost(route: RouteObject, vehicle: Vehicle, instance: Instance, iteration: int, distance: float, duration: float) -> float:
     iteration_penalty = instance.init_penalty + iteration * instance.step_penalty  # penalty in each iteration.
     customer_list = route.customer_list
@@ -276,31 +277,44 @@ def penalty_cost(route: RouteObject, vehicle: Vehicle, instance: Instance, itera
     # payload_kg
     constraint_kg = vehicle.payload_kg
     load_kg = compute_total_demand(customer_list, instance)
-    overload_kg = compute_overload(constraint_kg, load_kg)
-    penalty_kg = overload_kg * iteration_penalty
+    if load_kg <= constraint_kg:
+        penalty_kg = 0
+    else:
+        overload_kg = compute_overload(constraint_kg, load_kg)
+        penalty_kg = overload_kg * iteration_penalty
 
     # payload_vol
     constraint_vol = vehicle.payload_vol
     load_vol = compute_total_volume(customer_list, instance)
-    overload_vol = compute_overload(constraint_vol, load_vol)
-    penalty_vol = overload_vol * iteration_penalty
+    if load_vol <= constraint_vol:
+        penalty_vol = 0
+    else:
+        overload_vol = compute_overload(constraint_vol, load_vol)
+        penalty_vol = overload_vol * iteration_penalty
 
     # range
     constraint_range = vehicle.range_km
-    overload_range = compute_overload(constraint_range, distance)
-    penalty_range = overload_range * iteration_penalty
+    if distance <= constraint_range:
+        penalty_range = 0
+    else:
+        overload_range = compute_overload(constraint_range, distance)
+        penalty_range = overload_range * iteration_penalty
 
     # duration
     constraint_duration = vehicle.max_duration
-    overload_duration = compute_overload(constraint_duration, duration)
-    penalty_duration = overload_duration * iteration_penalty
+    if duration <= constraint_duration:
+        penalty_duration = 0
+    else:
+        overload_duration = compute_overload(constraint_duration, duration)
+        penalty_duration = overload_duration * iteration_penalty
 
     # combine
     penalty = penalty_kg + penalty_vol + penalty_range + penalty_duration # + all other penalized constraints
 
     if penalty > 0:  # set the feasibility of the route by checking if penality > 0.
         route.currently_feasible = False
-    else: route.currently_feasible = True
+    else:
+        route.currently_feasible = True
 
     return penalty
 
@@ -382,7 +396,7 @@ def delete_empty_routes(list_of_routes: list[Route]) -> list[Route]:
 
 
 # def vehicle_assignment_old(list_of_routes: list[Route], initial_list_of_vehicles: List[Vehicle], instance: Instance, iteration=0, penalty_active=True) -> List[Vehicle]:
-#     list_of_routes.sort(key=lambda x: x.current_cost, reverse=True)  # orders routes by cost descending # TODO: We can quickly become adaptive by not always starting with the most expensive route
+#     list_of_routes.sort(key=lambda x: x.current_cost, reverse=True)  # orders routes by cost descending 
 #     # print(f"Routes costs descending: {list(map(lambda x: x.current_cost, listOfRoutes))}")
 #     list_of_available_vehicles = initial_list_of_vehicles.copy()
 #     dummyAtego = Vehicle("MercedesBenzAtego", "Paris", "999999")
@@ -404,7 +418,7 @@ def delete_empty_routes(list_of_routes: list[Route]) -> list[Route]:
 #                 previousVehicleType = v.type
 # 
 #         r.vehicle = best_vehicle  # assign the bestVehicle to the route
-#         list_of_available_vehicles.remove(best_vehicle)  # remove the bestVehicle from available.  # todo: I had a single run where a bug was caused here. Could not replicate
+#         list_of_available_vehicles.remove(best_vehicle)  # remove the bestVehicle from available. 
 #         r.current_cost = routeCost(r, instance, iteration, penalty_active)  # update the route cost
 #         print(f"Route cost after Vehicle Assignment: route {counter} , vehicle {r.vehicle.type} {r.vehicle.plateNr}, cost: {r.current_cost:.2f}, demand {compute_total_demand(r.customer_list, instance)}, customerCount: {len(r.customer_list)-2}, feasible: {r.currently_feasible}")
 #     return list_of_available_vehicles
@@ -417,7 +431,7 @@ def simulated_annealing(instance: Instance, currentSolution: List[RouteObject], 
     newcost = solution_cost(newSoluion, instance, iteration, True)
     accept = False
     rand = random.random()
-    if newcost < curcost or (rand < math.exp((curcost - newcost) / temp)):
+    if newcost < curcost or (rand < math.exp((curcost - newcost) / temp)):  # todo: we get a math error if cooling is too low. Cory will fix this.
         accept = True
         print(f"We accept the latest solution. We had a {100 * math.exp((curcost - newcost) / temp):.2f}% chance to accept.")
     else:
