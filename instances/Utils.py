@@ -61,21 +61,28 @@ class Instance:
         self.coordinates = coordinates
 
         # algorithm will run until first of these conditions is met. Either iterations or time.
-        self.max_iterations = 60 * 8 
-        self.max_time = 15.0 * 8
+        self.max_iterations = 2000 * 15
+        self.max_time = 60.0 * 100
         # seconds
 
         """ the idea here is to fall back to our best known solution after getting away from it with SimAnnealing. 
         We need to allow enough iterations for the accepted solution to be optimized enough to compete with the bestSolution
         """
         # todo: Make decision to turn fall back on [] / leave off []. Tune fall back parameter.
-        self.max_iterations_no_improvement = max(50, self.max_iterations * 0.05)
+        self.max_iterations_no_improvement = max(50.0, self.max_iterations * 0.05)
 
-        self.init_temp = 0.1  # factor with which the solution of the 0. iteration is turned into first temperature -> ourAlgorithm()
-        cooling_target = np.power(0.025, (2/self.max_iterations))  # this function sets our cooling factor dependent on the max_iterations. Example: (0.05, (2/self.max_iterations)) forces the temperature to 5% of the starting temp after 50% of iterations.
+        self.init_temp = 0.5  # factor with which the solution of the 0. iteration is turned into first temperature -> ourAlgorithm()
+        temp_target_percentage = 0.025  # this parameter decides which % of the initial temperature should be achieved in the target iteration
+        temp_target_iteration = 1.2  # this parameter decides in which iteration the target percentage should be used. iteration = 1/x77: 4 -> 25% of max iterations. 2 -> 50% of max iterations. 1.333 -> 75% of max iterations. 1 -> 100% of max iterations.
+        # example: with a temp_target_percentage of 0.01 and a temp_target_iteration of 2 we reach 1% of the initial temperature after 50% of the max iterations
+        cooling_target = np.power(temp_target_percentage, (temp_target_iteration/self.max_iterations))  # this function sets our cooling factor dependent on the max_iterations. Example: (0.05, (2/self.max_iterations)) forces the temperature to 5% of the starting temp after 50% of iterations.
         self.cooling = cooling_target  # factor with which temperature is reduced after every instance  -> simulated_annealing()
-        # todo: tune cooling_target parameters
-
+        # todo: tune cooling_target parameters [init_temp], [temp_target_percentage], [temp_target_iteration]
+        self.freeze_period_length = 0.01  # currently set up to freeze for x * iterations. Not max_iterations, but iterations-so-far. So a freeze will be longer if the algorithm runs long.
+        # todo: tune freeze period length
+        
+        self.final_effort = 0.02  # this parameter determines when we start our final effort. For the last x% of max_iterations, we will jump back to the best known solution and turn off simulated annealing. We then try to optimize this solution locally.
+        
         # set the initial weights for each operator
         self.init_weight_destroy_random = 25
         self.init_weight_destroy_expensive = 100
@@ -424,21 +431,48 @@ def delete_empty_routes(list_of_routes: list[Route]) -> list[Route]:
 #     return list_of_available_vehicles
 
 
+# def simulated_annealing(instance: Instance, currentSolution: List[RouteObject], newSoluion: List[RouteObject], temp: float,
+#                         iteration: int) -> bool:
+#     # https://github.com/perrygeo/simanneal
+#     curcost = solution_cost(currentSolution, instance, iteration, True)
+#     newcost = solution_cost(newSoluion, instance, iteration, True)
+#     accept = False
+#     rand = random.random()
+#     if newcost < curcost or (rand < math.exp((curcost - newcost) / temp)):  # todo: we get a math error if cooling is too low. Cory will fix this.
+#         accept = True
+#         print(f"We accept the latest solution. We had a {100 * math.exp((curcost - newcost) / temp):.2f}% chance to accept.")
+#     else:
+#         print(f"We reject the latest solution. We had a {100 * math.exp((curcost - newcost) / temp):.2f}% chance to accept.")
+#     temperature = instance.cooling * temp  # update temperature
+#     return accept, newcost, temperature
+
+
 def simulated_annealing(instance: Instance, currentSolution: List[RouteObject], newSoluion: List[RouteObject], temp: float,
-                        iteration: int) -> bool:
+                        iteration: int, freeze_period: int) -> bool:
     # https://github.com/perrygeo/simanneal
     curcost = solution_cost(currentSolution, instance, iteration, True)
     newcost = solution_cost(newSoluion, instance, iteration, True)
     accept = False
     rand = random.random()
-    if newcost < curcost or (rand < math.exp((curcost - newcost) / temp)):  # todo: we get a math error if cooling is too low. Cory will fix this.
+    
+    if newcost < curcost:
         accept = True
-        print(f"We accept the latest solution. We had a {100 * math.exp((curcost - newcost) / temp):.2f}% chance to accept.")
+        print(f"We accepted a strictly better solution.")
     else:
-        print(f"We reject the latest solution. We had a {100 * math.exp((curcost - newcost) / temp):.2f}% chance to accept.")
-    temperature = instance.cooling * temp  # update temperature
-    return accept, newcost, temperature
+        if freeze_period > 0:
+            print(f"We reject the latest solution. We are in a freeze period for {freeze_period} iterations.")
+        elif temp < 0.1:
+            print(f"We reject the latest solution. Temperature {temp:.2f} was to cold for SimAnn.")
+        else:
+            if (rand < math.exp((curcost - newcost) / temp)):  # todo: we get a math error if cooling is too low. Cory will fix this.
+                accept = True
+                print(f"We accept the latest solution. We had a {100 * math.exp((curcost - newcost) / temp):.2f}% chance to accept.")
+            else:
+                print(f"We reject the latest solution. We had a {100 * math.exp((curcost - newcost) / temp):.2f}% chance to accept.")
 
+    temperature = instance.cooling * temp  # update temperature
+    freeze_period += -1
+    return accept, newcost, temperature, freeze_period
 
 import sys, os
 

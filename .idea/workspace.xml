@@ -4,9 +4,12 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) added a function to calculate the best vehicle for a route in 50% of the time compared to before&#10;2) added a local search operation that allows us to combine 2 routes into one. The operation is first_improvement and only checks two routes at a time. If two routes get combined, they can be combined with more routes within the same run.&#10;In theory we could improve by going for best improvement or 3-route-combinations, but this would increase runtime a lot.">
+    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) added a check to see if we are infeasible before we start calculating overload... I'm dumb :)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instances/Construction.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Construction.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instances/Plot.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Plot.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instances/Utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -226,7 +229,8 @@
       <workItem from="1642703648428" duration="27000" />
       <workItem from="1642761707496" duration="142000" />
       <workItem from="1643030937668" duration="20488000" />
-      <workItem from="1643116517973" duration="7806000" />
+      <workItem from="1643116517973" duration="8079000" />
+      <workItem from="1643183997989" duration="18399000" />
     </task>
     <task id="LOCAL-00001" summary="Let's see">
       <created>1637839022626</created>
@@ -557,7 +561,14 @@
       <option name="project" value="LOCAL" />
       <updated>1643060107311</updated>
     </task>
-    <option name="localTasksCounter" value="48" />
+    <task id="LOCAL-00048" summary="1) added a check to see if we are infeasible before we start calculating overload... I'm dumb :)">
+      <created>1643133769968</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1643133769968</updated>
+    </task>
+    <option name="localTasksCounter" value="49" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -590,7 +601,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="1) got insertion algorithm working (check in-line comments!)" />
     <MESSAGE value="Add optimization to ourAlgorithm and add a class of local search" />
     <MESSAGE value="added Christophers local directory" />
     <MESSAGE value="1) Updated print statements to get a good-looking output for the presentation" />
@@ -615,10 +625,11 @@
     <MESSAGE value="1) added related_removal with durations as qualifier" />
     <MESSAGE value="1) started work on combining routes. Pushing for cory." />
     <MESSAGE value="1) added a function to calculate the best vehicle for a route in 50% of the time compared to before&#10;2) added a local search operation that allows us to combine 2 routes into one. The operation is first_improvement and only checks two routes at a time. If two routes get combined, they can be combined with more routes within the same run.&#10;In theory we could improve by going for best improvement or 3-route-combinations, but this would increase runtime a lot." />
-    <option name="LAST_COMMIT_MESSAGE" value="1) added a function to calculate the best vehicle for a route in 50% of the time compared to before&#10;2) added a local search operation that allows us to combine 2 routes into one. The operation is first_improvement and only checks two routes at a time. If two routes get combined, they can be combined with more routes within the same run.&#10;In theory we could improve by going for best improvement or 3-route-combinations, but this would increase runtime a lot." />
+    <MESSAGE value="1) added a check to see if we are infeasible before we start calculating overload... I'm dumb :)" />
+    <option name="LAST_COMMIT_MESSAGE" value="1) added a check to see if we are infeasible before we start calculating overload... I'm dumb :)" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/main_py$TestConstruction.coverage" NAME="TestConstruction Coverage Results" MODIFIED="1640299941018" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1643133209095" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1643226669303" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

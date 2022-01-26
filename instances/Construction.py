@@ -8,11 +8,12 @@ from instances.DestructionOps import random_removal, expensive_removal, route_re
 from instances.InsertionOps import cheapest_insertion_iterative, regret_insertion
 from instances.LocalSearch import hillclimbing, find_first_improvement_2Opt, vnd, find_first_improvement_relocate, \
     find_best_improvement_2Opt, combine_routes
-from instances.Plot import plotTSP, plotSubplots
+from instances.Plot import plotTSP, plotSubplots, plot3Subplots
 from instances.Route import RouteObject
 from instances.Trucks import Vehicle
-from instances.Utils import Instance, routeCost, delete_empty_routes, vehicle_assignment, solution_cost, simulated_annealing, blockPrint, \
-    enablePrint, compute_distances_objects
+from instances.Utils import Instance, routeCost, delete_empty_routes, vehicle_assignment, solution_cost, \
+    simulated_annealing, blockPrint, \
+    enablePrint, compute_distances_objects, compute_total_demand, compute_duration
 
 
 #TODO: Check all copy operations. We need to be sure we use copy.deepcopy() at the correct points.
@@ -51,14 +52,16 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
     # setting up counter to check how long we had no improvement
     counter_iterations_no_improvement = 0
     listFallbackIterations = []
+    freeze_iterations = 0
 
     # set up parameters of simulated annealing
     currentSolution = copy.deepcopy(initialSolution)
     currentCost = solution_cost(initialSolution, instance, iteration=0, penalty_active=True)
     temperature = instance.init_temp * currentCost #  current cost is used to calculate initial temperature
-    accept_time = 0
+    accept_counter = 0
     simAnnPlot = []  # to store our results for a plot
     simAnnTemp = []
+    bestSolutionPlot = []
 
     print(f"Sweep solution: {list(map(lambda x: x.customer_list, bestSolution))}") # printing out customer lists after sweep
     print(f"Route costs:    {list(map(lambda x: x.current_cost, bestSolution))}")  # printing out costs of the routes after sweep after costs are assigned
@@ -174,23 +177,34 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
         #     print(f"Error! Customer Count is: {customer_count}")
         #     os._exit()
         print(f"customer count check: {customer_count}")
-        bestCost = solution_cost(bestSolution, instance, iteration, True)
+        bestCost = solution_cost(bestSolution, instance, iteration, True)  # we have to recalculate best cost after every iteration because we need to update infeasibility costs
         print(f"Best known cost before this iteration: {bestCost}")
         print(f"Best iteration before this one: {bestIteration}")
-        ## costThisIteration = solution_cost(listOfRoutes, instance, iteration, True)
-        accept, costThisIteration, temperature = simulated_annealing(instance, currentSolution, listOfRoutes, temperature,
-                                                                     iteration)
-        accept_time += accept
+        ## costThisIteration = solution_cost(listOfRoutes, instance, iteration, True) # todo: maybe we should implement something that forces the algorithm to go to the bestSolution and try to improve it for the last 1% iterations?
+        accept, costThisIteration, temperature, freeze_iterations = simulated_annealing(instance, currentSolution, listOfRoutes, temperature,
+                                                                     iteration, freeze_iterations)
+        
+        accept_counter += accept
         if accept:
             currentSolution = listOfRoutes
             simAnnPlot.append((iteration, costThisIteration))
+            freeze_iterations = max(1, round(instance.freeze_period_length * iteration))  # we freeze the simulated annealing after we accept a solution to allow local optimization of our new solution
+        
+        if freeze_iterations > 0:
+            simAnnTemp.append((iteration, 0))
+        else:
             simAnnTemp.append((iteration, temperature))
+            
+        if iteration == (1 - instance.final_effort) * instance.max_iterations:  # this statement forces our algorithm back to the best known solution at 99% of iterations. This helps us optimize the bestSolution for a little bit longer in the end.
+            currentSolution = copy.deepcopy(bestSolution)
+            freeze_iterations = instance.max_iterations  # we freeze the SimAnnealing at the end so we only accept better solutions
 
-        if costThisIteration < bestCost:  # todo: only if we find a BETTER solution, does not depend on acceptance. revise this
+        if costThisIteration < bestCost:
             bestCost = costThisIteration
             bestSolution = copy.deepcopy(listOfRoutes)
             bestIteration = iteration
             listImprovingIterations.append((iteration, destroy_op_used, insert_op_used))
+            bestSolutionPlot.append((iteration, costThisIteration))
             counter_iterations_no_improvement = 0  # reset the counter
 
             if destroy_op_used == 'random_removal':
@@ -253,6 +267,13 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
     # -------------------------------------------------------------------------------------------------------------
     # END OF LOOP
     enablePrint()
+    print(f"Routes of the best Solution:")
+    counter = 0
+    for r in bestSolution:
+        counter += 1
+        print(f"Route cost after Vehicle Assignment: route {counter} , vehicle {r.vehicle.type} {r.vehicle.plateNr}, cost: {r.current_cost:.2f}, demand {compute_total_demand(r.customer_list, instance)}, customerCount: {len(r.customer_list) - 2}, feasible: {r.currently_feasible}, customers: {r.customer_list}")
+    print()
+    
     print(f"random_removal stats: improvements: {counter_destroy_random_imp}, rejected: {counter_destroy_random_rej}")
     print(f"expensive_removal stats: improvements: {counter_destroy_expensive_imp}, rejected: {counter_destroy_expensive_rej}")
     print(f"route_removal stats: improvements: {counter_destroy_route_imp}, rejected: {counter_destroy_route_rej}")
@@ -271,17 +292,24 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
     imp_per_it = improvement / (iteration + 1)
     print(f"Finished after iteration {iteration}")
     print(f"Initialization cost: {initialCost:.2f}, ourAlgorithm cost: {bestCost:.2f}.")
+    
     final_distance = compute_distances_objects(bestSolution, instance)
-    print(f"Final distance for comparison: {final_distance}")
+    final_duration = 0.0
+    for r in bestSolution:
+        final_duration += compute_duration(r.customer_list, instance)
+    print(f"Final cumulative distance for comparison: {final_distance}")
+    print(f"Final cumulative duration for comparison: {final_duration}")
+    
     print(f"We improved by {improvement:.2f}%. Average improvement per iteration: {imp_per_it:.2f}%.")
     print(f"We improved {len(listImprovingIterations)} times, in the following iterations: {listImprovingIterations}.")
     print(f"We fell back {len(listFallbackIterations)} times, in the following iterations: {listFallbackIterations}.")
-    print('accept: ' + str(accept_time) + ', iterations: ' + str(iteration) + ', ratio: ' + str(accept_time/iteration))
+    print('accept: ' + str(accept_counter) + ', iterations: ' + str(iteration) + ', ratio: ' + str(accept_counter / iteration))
     endtime = datetime.datetime.now()
     print(f"Length of the run: {endtime - starttime}.\n")
     print(str(endtime))
 
-    plotSubplots(simAnnPlot, simAnnTemp, 'SimAnn Accepted + Temp')
+    #plotSubplots(simAnnPlot, simAnnTemp, 'SimAnn Accepted + Temp')
+    plot3Subplots(simAnnPlot, bestSolutionPlot, simAnnTemp, 'SimAnn Accepted + Temp')
 
 
     return list(map(lambda x: x.customer_list, bestSolution))

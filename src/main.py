@@ -106,12 +106,12 @@ coordinates_int = create_list_int_coordinates(test_df_Paris_nodes)
 # 3. CREATING OUR VEHICLES
 # set the # of vehicles available to Sweep and Algorithm
 city = "Paris"
-numI_Atego = 20
-numI_VWTrans = 50
-numI_VWCaddy = 50
-numI_DeFuso = 20
-numI_ScooterL = 50
-numI_ScooterS = 50
+numI_Atego = 19
+numI_VWTrans = 0
+numI_VWCaddy = 0
+numI_DeFuso = 0
+numI_ScooterL = 0
+numI_ScooterS = 0
 numI_eCargoBike = 0
 
 # create vehicles via function in Trucks.py-file
@@ -176,6 +176,7 @@ solutionOur = ouralgorithm(ourInstance, bestSolutionRandomSweep, listOfInitialVe
 # for i in range(lenOfSolutionOur):
 #     print(f"Sum of demands of a {i} route: " + str(compute_total_demand(solutionOur[i], ourInstance)))
 # print(compute_distances(solutionOur, ourInstance))
+print(f"numI_Atego: {numI_Atego,}, numI_VWTrans: {numI_VWTrans}, numI_VWCaddy: {numI_VWCaddy}, numI_DeFuso: {numI_DeFuso}, numI_ScooterL: {numI_ScooterL}, numI_ScooterS: {numI_ScooterS}, numI_eCargoBike: {numI_eCargoBike}")
 plotTSP(solutionOur, coordinates_int, 'g', False, 'No Depot Plot')
 plotTSP(solutionOur, coordinates_int, 'g', True, 'Route Plot')
 

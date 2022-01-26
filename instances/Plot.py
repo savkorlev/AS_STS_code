@@ -2,9 +2,10 @@
 # Note: PyPy might have problems with this lib
 import copy
 import random
-
 import matplotlib.pyplot as plt
-
+from matplotlib.pyplot import cm
+import numpy as np
+import seaborn as sns
 
 # coordinates for matplot START
 def create_list_int_coordinates(df_nodes) -> list():  # didnt work with floats so I turned the coordinates into int
@@ -50,18 +51,32 @@ def plotTSP(routes, points, color, show_depot=True, title='ArcPlot'):
                 r.remove(0)
 
     a_scale = 30000  # size of the arrowhead
-
+    
+    n = len(path)
+    colorlist = sns.color_palette("husl", n)
+    
+    counter_route = 0
     for r in range(len(path)):
+        counter_route += 1
         x = []
         y = []
-        color = (random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 1)) # sets a random color, this could be smarter
+        #color = (random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 1)) # sets a random color, this could be smarter
+        color = colorlist[counter_route -1]
         for i in path[r]:
             x.append(points[i][0])
             y.append(points[i][1])
-            for i in range(0, len(x) - 1): # draw the route
+        for i in range(0, len(x) - 1): # draw the route
+            if i == 0:
+                plt.arrow(x[i], y[i], (x[i + 1] - x[i]), (y[i + 1] - y[i]), head_width=a_scale,
+                          color=color, length_includes_head=True, label="route "+str(counter_route))
+            else:
                 plt.arrow(x[i], y[i], (x[i + 1] - x[i]), (y[i + 1] - y[i]), head_width=a_scale,
                           color=color, length_includes_head=True)
-            plt.plot(x, y, "co", markersize=3) # draw the nodes. If I change the color, everything breaks...
+                
+                
+        plt.plot(x, y, "co", markersize=4) # draw the nodes. If I change the color, everything breaks...
+
+    plt.legend(loc="upper left")
     plt.show()
 
 def plotGraph(points, title: str, color='g'):
@@ -80,7 +95,8 @@ def plotGraph(points, title: str, color='g'):
     plt.show()
 
 def plotSubplots(points, points2, title='SubPlots'):
-
+    plt.style.use('seaborn-whitegrid')
+    
     x = []
     y = []
 
@@ -97,7 +113,7 @@ def plotSubplots(points, points2, title='SubPlots'):
 
     fig = plt.figure(1, figsize=(10, 9))
     ax1 = fig.add_subplot(211)
-    plt.plot(x, y, "co", markersize=2) # draw the nodes. If I change the color, everything breaks...
+    plt.plot(x, y, "co", markersize=2) # draw the nodes.
 
     ax2 = fig.add_subplot(212, sharex=ax1)
     plt.plot(x2, y2, color='red', markersize=3)
@@ -109,6 +125,43 @@ def plotSubplots(points, points2, title='SubPlots'):
     plt.show()
 
 
+def plot3Subplots(points, points2, points3, title='SubPlots'):
+    plt.style.use('seaborn-whitegrid')
+
+    x = []
+    y = []
+
+    for i in range(len(points)):
+        x.append(points[i][0])
+        y.append(points[i][1])
+
+    x2 = []
+    y2 = []
+
+    for i in range(len(points2)):
+        x2.append(points2[i][0])
+        y2.append(points2[i][1])
+
+    x3 = []
+    y3 = []
+
+    for i in range(len(points3)):
+        x3.append(points3[i][0])
+        y3.append(points3[i][1])
+
+    fig = plt.figure(1, figsize=(10, 9))
+    ax1 = fig.add_subplot(211)
+    plt.plot(x, y, "co", markersize=2)  # draw the nodes.
+    plt.plot(x2, y2, "d", color='red', markersize=3)
+    
+    ax2 = fig.add_subplot(212, sharex=ax1)
+    plt.plot(x3, y3, color='red', markersize=3)
+
+    # plt.setp(ax1.get_xticklabels(), visible=False)  # hide labels
+    plt.title(title)
+    fig.subplots_adjust(hspace=0)  # remove vertical space between subplots
+
+    plt.show()
 
 
 
