@@ -180,7 +180,6 @@ solutionOur = ouralgorithm(ourInstance, bestSolutionRandomSweep, listOfInitialVe
 print(f"numI_Atego: {numI_Atego,}, numI_VWTrans: {numI_VWTrans}, numI_VWCaddy: {numI_VWCaddy}, numI_DeFuso: {numI_DeFuso}, numI_ScooterL: {numI_ScooterL}, numI_ScooterS: {numI_ScooterS}, numI_eCargoBike: {numI_eCargoBike}")
 plotTSP(solutionOur, coordinates_int, 'g', False, 'No Depot Plot')
 plotTSP(solutionOur, coordinates_int, 'g', True, 'Route Plot')
-''''''
 
 # 8. Sensitive Analysis
 perform_dict = {}
