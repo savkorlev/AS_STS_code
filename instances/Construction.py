@@ -312,4 +312,4 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
     plot3Subplots(simAnnPlot, bestSolutionPlot, simAnnTemp, 'SimAnn Accepted + Temp')
 
 
-    return list(map(lambda x: x.customer_list, bestSolution))
+    return list(map(lambda x: x.customer_list, bestSolution)), final_distance

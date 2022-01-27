@@ -1,3 +1,4 @@
+import argparse
 import sys
 import copy
 import time
@@ -7,7 +8,7 @@ import pandas as pd
 from instances.Construction import ouralgorithm
 from instances.Intialization import random_sweep
 from instances.Trucks import create_vehicles
-from instances.Utils import Instance, vehicle_assignment, solution_cost, find_cheapest_vehicle
+from instances.Utils import Instance, vehicle_assignment, solution_cost, find_cheapest_vehicle, Instance_tune
 from instances.Plot import plotTSP, create_list_int_coordinates
 
 # import os
@@ -179,4 +180,63 @@ solutionOur = ouralgorithm(ourInstance, bestSolutionRandomSweep, listOfInitialVe
 print(f"numI_Atego: {numI_Atego,}, numI_VWTrans: {numI_VWTrans}, numI_VWCaddy: {numI_VWCaddy}, numI_DeFuso: {numI_DeFuso}, numI_ScooterL: {numI_ScooterL}, numI_ScooterS: {numI_ScooterS}, numI_eCargoBike: {numI_eCargoBike}")
 plotTSP(solutionOur, coordinates_int, 'g', False, 'No Depot Plot')
 plotTSP(solutionOur, coordinates_int, 'g', True, 'Route Plot')
+''''''
 
+# 8. Sensitive Analysis
+perform_dict = {}
+params_dict = {
+    'max_iterations' :  [2000],
+    'max_time' : [900],
+    'init_temp' : [0.9, 0.95],
+    'init_weight_destroy_random' : [25],
+    'init_weight_destroy_expensive' : [100],
+    'init_weight_destroy_route' : [50],
+    'init_weight_destroy_related' : [50],
+    'init_weight_insert_cheapest' : [50],
+    'init_weight_insert_regret' : [25],
+}
+n = 0
+for a in params_dict['max_iterations']:
+    for b in params_dict['max_time']:
+        for c in params_dict['init_temp']:
+            for d in params_dict['init_weight_destroy_random']:
+                for e in params_dict['init_weight_destroy_expensive']:
+                    for f in params_dict['init_weight_destroy_route']:
+                        for g in params_dict['init_weight_destroy_related']:
+                            for h in params_dict['init_weight_insert_cheapest']:
+                                for i in params_dict['init_weight_insert_regret']:
+                                    parser = argparse.ArgumentParser()
+                                    parser.add_argument('--' + str('max_iterations'), default=a)
+                                    parser.add_argument('--' + str('max_time'), default=b)
+                                    parser.add_argument('--' + str('init_temp'), default=c)
+                                    parser.add_argument('--' + str('init_weight_destroy_random'), default=d)
+                                    parser.add_argument('--' + str('init_weight_destroy_expensive'), default=e)
+                                    parser.add_argument('--' + str('init_weight_destroy_route'), default=f)
+                                    parser.add_argument('--' + str('init_weight_destroy_related'), default=g)
+                                    parser.add_argument('--' + str('init_weight_insert_cheapest'), default=h)
+                                    parser.add_argument('--' + str('init_weight_insert_regret'), default=i)
+                                    args = parser.parse_args()
+                                    ourInstance = Instance_tune(testDimension, listOfInitialVehicles, testDemandParis,
+                                                           testDemandParisVolume, testParisCustomerDuration,
+                                                           testParisDistances, testParisDistancesInside,
+                                                           testParisDistancesOutside, testParisArcDuration, coordinates,
+                                                           args)
+                                    bestCostRandomSweep = 10e10
+                                    for i in range(
+                                            10):  # we run the sweep heuristic multiple times with different starting angles to get a good starting solution
+                                        tempSolutionRandomSweep = random_sweep(ourInstance, listOfInitialVehicles)
+                                        tempCost = solution_cost(tempSolutionRandomSweep, ourInstance, 0, True)
+                                        # print(f"Rand Sweep Heuristic, temp distance: {compute_distances(tempSolutionRandomSweep, ourInstance)}")
+                                        if tempCost < bestCostRandomSweep:
+                                            bestSolutionRandomSweep = copy.deepcopy(tempSolutionRandomSweep)
+                                            bestCostRandomSweep = tempCost
+                                    listOfInitAvailableVehicles = vehicle_assignment(bestSolutionRandomSweep,
+                                                                                     listOfInitialVehicles, ourInstance,
+                                                                                     0, True)
+                                    sol, final_cost = ouralgorithm(ourInstance, bestSolutionRandomSweep, listOfInitialVehicles,
+                                                                   listOfInitAvailableVehicles, coordinates_int)
+                                    perform_dict[n] = [a, b, c, d, e, f, g, h, i, final_cost]
+                                    n += 1
+summary_performance = pd.DataFrame.from_dict(perform_dict, orient='index', columns=list(params_dict.keys()) + ['cost'])
+print(summary_performance)
+summary_performance.to_csv('sensitive_analysis.csv')

@@ -542,3 +542,99 @@ def vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: Li
         r.current_cost = routeCost(r, instance, iteration, penalty_active)  # update the route cost
         print(f"Route cost after Vehicle Assignment: route {counter} , vehicle {r.vehicle.type} {r.vehicle.plateNr}, cost: {r.current_cost:.2f}, demand {compute_total_demand(r.customer_list, instance)}, customerCount: {len(r.customer_list)-2}, feasible: {r.currently_feasible}, customers: {r.customer_list}")
     return list_of_available_vehicles
+
+
+class Instance_tune:
+    """
+    n : int
+        number of nodes in total
+    Q : List
+        list of trucks
+    q : List[int]
+        list of customer demands in kgs
+    volumes : List[int]
+        list of customer demands in volume
+    customerDurations: List[float]
+        list of customer durations (.nodes file)
+    d : Dict[Tuple[int, int], float]
+        list of total distances
+    dInside : Dict[Tuple[int, int], float]
+        list of distances inside
+    dOutside : Dict[Tuple[int, int], float]
+        list of distances outside
+    arcDurations : Dict[Tuple[int, int], float]
+        list of arc durations (.routes file)
+    coordinates : List[Tuple[int, int]]
+        list of customer coordinates
+    """
+
+    n: int
+    Q: List
+    q: List[int]
+    volumes: List[int]
+    customerDurations: List[float]
+    d: Dict[Tuple, float]
+    dInside: Dict[Tuple[int, int], float]
+    dOutside: Dict[Tuple[int, int], float]
+    arcDurations: Dict[Tuple[int, int], float]
+    coordinates: List[Tuple[int, int]]
+
+    def __init__(self, n: int, Q: List, q: List[int], volumes: List[int], customerDurations: List[float],
+                 d: Dict[Tuple[int, int], float], dInside: Dict[Tuple[int, int], float],
+                 dOutside: Dict[Tuple[int, int], float], arcDurations: Dict[Tuple[int, int], float],
+                 coordinates: List[Tuple[int, int]], args):
+        self.n = n
+        self.Q = Q
+        self.q = q
+        self.volumes = volumes
+        self.customerDurations = customerDurations
+        self.d = d
+        self.dInside = dInside
+        self.dOutside = dOutside
+        self.arcDurations = arcDurations
+        self.coordinates = coordinates
+
+        # algorithm will run until first of these conditions is met. Either iterations or time.
+        self.max_iterations = args.max_iterations
+        self.max_time = args.max_time
+        # seconds
+
+        """ the idea here is to fall back to our best known solution after getting away from it with SimAnnealing. 
+        We need to allow enough iterations for the accepted solution to be optimized enough to compete with the bestSolution
+        """
+        # todo: fall back is turned off
+        self.max_iterations_no_improvement = max(50, self.max_iterations * 0.05)
+
+        self.init_temp = args.init_temp  # factor with which the solution of the 0. iteration is turned into first temperature -> ourAlgorithm()
+        cooling_target = np.power(0.025, (2/self.max_iterations))  # this function sets our cooling factor dependent on the max_iterations. Example: (0.05, (2/self.max_iterations)) forces the temperature to 5% of the starting temp after 50% of iterations.
+        self.cooling = cooling_target  # factor with which temperature is reduced after every instance  -> simulated_annealing()
+        # todo: tune cooling_target parameters [init_temp], [temp_target_percentage], [temp_target_iteration]
+        self.freeze_period_length = 0.01  # currently set up to freeze for x * iterations. Not max_iterations, but iterations-so-far. So a freeze will be longer if the algorithm runs long.
+        # todo: tune freeze period length
+
+        self.final_effort = 0.02  # this parameter determines when we start our final effort. For the last x% of max_iterations, we will jump back to the best known solution and turn off simulated annealing. We then try to optimize this solution locally.
+
+        # set the initial weights for each operator
+        self.init_weight_destroy_random = args.init_weight_destroy_random
+        self.init_weight_destroy_expensive = args.init_weight_destroy_expensive
+        self.init_weight_destroy_route = args.init_weight_destroy_route
+        self.init_weight_destroy_related = args.init_weight_destroy_related
+        self.init_weight_insert_cheapest = args.init_weight_insert_cheapest
+        self.init_weight_insert_regret = args.init_weight_insert_regret
+
+        # set upper and lower bounds for the number of destroyed nodes in destroy operations
+        self.destroy_random_lb = 0.05  # of all customers. So if 112 customers & lb = 0.05: minimum 6
+        self.destroy_random_ub = 0.15  # of all customers. So if 112 customers & ub = 0.15: maximum 17
+        self.destroy_expensive_lb = 0.05
+        self.destroy_expensive_ub = 0.1
+        self.destroy_route_lb = 0.25  # of the chosen route
+        self.destroy_route_ub = 1  # of the chosen route
+        self.destroy_related_lb = 0.05
+        self.destroy_related_ub = 0.15
+
+
+        self.init_penalty = 5  # starting penalty costs in the 0. iteration -> penalty_cost()
+        self.step_penalty = 0.1  # step by which penalty grows in every iteration -> penalty_cost()
+        # TODO: Choose suitable penalty-factor. Maybe depending on max_iterations?
+
+        self.penalty_cost_iteration_for_initialization = 0.75 * self.max_iterations   # setting this parameter correctly is very important for the initial solution.
