@@ -1,13 +1,15 @@
 
 class Vehicle:
-    def __init__(self, type: str, city: str, plateNr: str):
+    def __init__(self, type: str, city: str, plateNr: str, fixed_cost_bool: bool):
         self.plateNr = plateNr
         self.type = type
         self.city = city
         self.max_duration = 600.0  # todo: get correct max durations for every city
 
         if city == "Paris":
+            # city_tax = 0.10  # low end
             city_tax = 0.25  # I took the average from the expected toll range
+            # city_tax = 0.40  # top end
         elif city == "NewYork":
             city_tax = 0.25
         elif city == "Shanghai":
@@ -17,6 +19,7 @@ class Vehicle:
             self.payload_kg = 2800
             self.payload_vol = 34.80 * 1000  # needs to be * 1000 because the volumes in nodes is given with unit m^3 * 10^-3
             self.range_km = 99999  # range for ICEVs is unlimited
+            self.fixed_cost = 47.71 * fixed_cost_bool
             if city == "Paris":
                 self.cost_km = 0.281
                 self.cost_km_in = self.cost_km + city_tax  # only add city tax if vehicle is combustion
@@ -34,6 +37,7 @@ class Vehicle:
             self.payload_kg = 883
             self.payload_vol = 5.8 * 1000  # needs to be * 1000 because the volumes in nodes is given with unit m^3 * 10^-3
             self.range_km = 99999  # range for ICEVs is unlimited
+            self.fixed_cost = 27.82 * fixed_cost_bool
             if city == "Paris":
                 self.cost_km = 0.160
                 self.cost_km_in = self.cost_km + city_tax
@@ -51,6 +55,7 @@ class Vehicle:
             self.payload_kg = 670
             self.payload_vol = 3.2 * 1000  # needs to be * 1000 because the volumes in nodes is given with unit m^3 * 10^-3
             self.range_km = 99999  # range for ICEVs is unlimited
+            self.fixed_cost = 19.68 * fixed_cost_bool
             if city == "Paris":
                 self.cost_km = 0.134
                 self.cost_km_in = self.cost_km + city_tax
@@ -68,6 +73,7 @@ class Vehicle:
             self.payload_kg = 2800
             self.payload_vol = 21.56 * 1000  # needs to be * 1000 because the volumes in nodes is given with unit m^3 * 10^-3
             self.range_km = 80  # range for BEV is limited
+            self.fixed_cost = 48.21 * fixed_cost_bool
             if city == "Paris":
                 self.cost_km = 0.102
                 self.cost_km_in = self.cost_km  # no city tax for BEV
@@ -85,6 +91,7 @@ class Vehicle:
             self.payload_kg = 905
             self.payload_vol = 7.67 * 1000  # needs to be * 1000 because the volumes in nodes is given with unit m^3 * 10^-3
             self.range_km = 205  # range for BEV is limited
+            self.fixed_cost = 47.71 * fixed_cost_bool
             if city == "Paris":
                 self.cost_km = 0.073
                 self.cost_km_in = self.cost_km  # no city tax for BEV
@@ -102,6 +109,7 @@ class Vehicle:
             self.payload_kg = 720
             self.payload_vol = 4.27 * 1000  # needs to be * 1000 because the volumes in nodes is given with unit m^3 * 10^-3
             self.range_km = 119  # range for BEV is limited
+            self.fixed_cost = 37.74 * fixed_cost_bool
             if city == "Paris":
                 self.cost_km = 0.070
                 self.cost_km_in = self.cost_km  # no city tax for BEV
@@ -119,6 +127,7 @@ class Vehicle:
             self.payload_kg = 100
             self.payload_vol = 0.2 * 1000  # needs to be * 1000 because the volumes in nodes is given with unit m^3 * 10^-3
             self.range_km = 128
+            self.fixed_cost = 3.5 * fixed_cost_bool
             # self.speed_factor = 0.5  # todo: we have to think about the speed of the bike compared to the other vehicles. Also maybe the unloading speed.
                                      # since driving time and unloading time have a similar power (eg 12 minutes to drive, 10 minutes to unload), we could pretend that the slower speed gets offset by faster unloading
             if city == "Paris":
@@ -151,37 +160,37 @@ class Vehicle:
 
 
 def create_vehicles(city: str, num_Atego: int, num_VWTrans: int, num_VWCaddy: int, num_eFUSO: int,
-                    num_eScooterWL: int, num_eScooterWS: int, num_eCargoBike: int) -> list[Vehicle]:
+                    num_eScooterWL: int, num_eScooterWS: int, num_eCargoBike: int, fixed_cost_b: bool) -> list[Vehicle]:
     listOfInitialVehicles = []
 
     for i in range(num_Atego):
         vehicleType = "MercedesBenzAtego"
         numberplate = "1MBA" + str(i + 1).zfill(3)
-        listOfInitialVehicles.append(Vehicle(vehicleType, city, numberplate))
+        listOfInitialVehicles.append(Vehicle(vehicleType, city, numberplate, fixed_cost_b))
     for i in range(num_VWTrans):
         vehicleType = "VWTransporter"
         numberplate = "2VWT" + str(i + 1).zfill(3)
-        listOfInitialVehicles.append(Vehicle(vehicleType, city, numberplate))
+        listOfInitialVehicles.append(Vehicle(vehicleType, city, numberplate, fixed_cost_b))
     for i in range(num_VWCaddy):
         vehicleType = "VWCaddy"
         numberplate = "3VWC" + str(i + 1).zfill(3)
-        listOfInitialVehicles.append(Vehicle(vehicleType, city, numberplate))
+        listOfInitialVehicles.append(Vehicle(vehicleType, city, numberplate, fixed_cost_b))
     for i in range(num_eFUSO):
         vehicleType = "DeFuso"
         numberplate = "4DeF" + str(i + 1).zfill(3)
-        listOfInitialVehicles.append(Vehicle(vehicleType, city, numberplate))
+        listOfInitialVehicles.append(Vehicle(vehicleType, city, numberplate, fixed_cost_b))
     for i in range(num_eScooterWL):
         vehicleType = "ScooterL"
         numberplate = "5SSL" + str(i + 1).zfill(3)
-        listOfInitialVehicles.append(Vehicle(vehicleType, city, numberplate))
+        listOfInitialVehicles.append(Vehicle(vehicleType, city, numberplate, fixed_cost_b))
     for i in range(num_eScooterWS):
         vehicleType = "ScooterS"
         numberplate = "6SSS" + str(i + 1).zfill(3)
-        listOfInitialVehicles.append(Vehicle(vehicleType, city, numberplate))
+        listOfInitialVehicles.append(Vehicle(vehicleType, city, numberplate, fixed_cost_b))
     for i in range(num_eCargoBike):
         vehicleType = "DouzeV2ECargoBike"
         numberplate = "7ECB" + str(i + 1).zfill(3)
-        listOfInitialVehicles.append(Vehicle(vehicleType, city, numberplate))
+        listOfInitialVehicles.append(Vehicle(vehicleType, city, numberplate, fixed_cost_b))
 
     return listOfInitialVehicles
 

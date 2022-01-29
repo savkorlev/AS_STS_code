@@ -13,7 +13,8 @@ from instances.Route import RouteObject
 from instances.Trucks import Vehicle
 from instances.Utils import Instance, routeCost, delete_empty_routes, vehicle_assignment, solution_cost, \
     simulated_annealing, blockPrint, \
-    enablePrint, compute_distances_objects, compute_total_demand, compute_duration
+    enablePrint, compute_distances_objects, compute_total_demand, compute_duration, compute_total_volume, \
+    compute_distance
 
 
 #TODO: Check all copy operations. We need to be sure we use copy.deepcopy() at the correct points.
@@ -77,7 +78,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
         iteration += 1  # count up the iterations
 
         blockPrint()
-        if iteration % 50 == 0 or iteration == 1:
+        if iteration % 100 == 0 or iteration == 1:
             enablePrint()
 
         print(f"New iteration__________{iteration}")
@@ -163,7 +164,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
 
         # START OF VEHICLE SWAP PHASE
         list_of_available_vehicles = vehicle_assignment(listOfRoutes, listOfInitialVehicles,
-                                                        instance)  # def vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: List[Vehicle], instance: Instance):
+                                                        instance, iteration)  # def vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: List[Vehicle], instance: Instance):
         # END OF VEHICLE SWAP PHASE
         # END OF OPTIMIZATION PHASE.
         # -------------------------------------------------------------------------------------------------------------
@@ -271,7 +272,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
     counter = 0
     for r in bestSolution:
         counter += 1
-        print(f"Route cost after Vehicle Assignment: route {counter} , vehicle {r.vehicle.type} {r.vehicle.plateNr}, cost: {r.current_cost:.2f}, demand {compute_total_demand(r.customer_list, instance)}, customerCount: {len(r.customer_list) - 2}, feasible: {r.currently_feasible}, customers: {r.customer_list}")
+        print(f"Best Solution - route {counter} , vehicle {r.vehicle.plateNr}, cost: {r.current_cost:.2f} €, load: {compute_total_demand(r.customer_list, instance)} kg, vol: {compute_total_volume(r.customer_list, instance) / 1000:.2f} m^3, dist: {compute_distance(r.customer_list, instance):.0f} km, customerCount: {len(r.customer_list) - 2}, feasible: {r.currently_feasible}, customers: {r.customer_list}")
     print()
     
     print(f"random_removal stats: improvements: {counter_destroy_random_imp}, rejected: {counter_destroy_random_rej}")

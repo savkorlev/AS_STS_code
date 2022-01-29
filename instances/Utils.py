@@ -267,13 +267,16 @@ def routeCost(routeObject: RouteObject, instance: Instance, iteration: int, pena
     # duration
     duration = compute_duration(routeObject.customer_list, instance)
     cost_minute = duration * routeObject.vehicle.cost_m
+    
+    # fixed cost
+    fixed_cost = routeObject.vehicle.fixed_cost
 
     # penalty
     cost_penalty = 0
     if penalty_active:  # checks if penalty_costs were enabled when calling the cost function
         cost_penalty = penalty_cost(routeObject, routeObject.vehicle, instance, iteration, distance, duration)
 
-    cost = cost_km + cost_minute + cost_penalty
+    cost = cost_km + cost_minute + cost_penalty + fixed_cost
     return cost
 
 
@@ -495,7 +498,7 @@ def find_cheapest_vehicle(customer_list: list[int], instance: Instance, iteratio
 
     iteration_penalty = instance.init_penalty + iteration * instance.step_penalty
 
-    best_vehicle = Vehicle("DummyType", "DummyCity", "999999")
+    best_vehicle = Vehicle("DummyType", "DummyCity", "999999", True)
     best_vehicle_cost = 10e10
     last_vehicle_type = "FirstRound"
     for vehicle in list_of_avb_vehicles:
@@ -519,7 +522,9 @@ def find_cheapest_vehicle(customer_list: list[int], instance: Instance, iteratio
             overload_duration = compute_overload(constraint_duration, duration)
             penalty_duration = overload_duration * iteration_penalty
             
-            this_vehicle_cost = cost_ins + cost_out + cost_minute + penalty_kg + penalty_vol + penalty_range + penalty_duration
+            fixed_cost = vehicle.fixed_cost
+            
+            this_vehicle_cost = cost_ins + cost_out + cost_minute + penalty_kg + penalty_vol + penalty_range + penalty_duration + fixed_cost
         
             if this_vehicle_cost < best_vehicle_cost:
                 best_vehicle_cost = this_vehicle_cost
@@ -528,11 +533,11 @@ def find_cheapest_vehicle(customer_list: list[int], instance: Instance, iteratio
     # print(f"{best_vehicle.type}, {best_vehicle_cost}, {customer_list}")
     return best_vehicle_cost, best_vehicle
 
-def vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: List[Vehicle], instance: Instance, iteration=0, penalty_active=True) -> List[Vehicle]:
+def vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: List[Vehicle], instance: Instance, iteration: int, penalty_active=True) -> List[Vehicle]:
     #list_of_routes.sort(key=lambda x: x.current_cost, reverse=True)  # orders routes by cost descending # TODO: We can quickly become adaptive by not always starting with the most expensive route
     # print(f"Routes costs descending: {list(map(lambda x: x.current_cost, listOfRoutes))}")
     list_of_available_vehicles = initial_list_of_vehicles.copy()
-    dummyAtego = Vehicle("MercedesBenzAtego", "Paris", "999999")
+    dummyAtego = Vehicle("MercedesBenzAtego", "Paris", "999999", True)
     counter = 0
     for r in list_of_routes:  # check all routes. Before this they should be ordered by their costs descending
         counter += 1
@@ -540,7 +545,7 @@ def vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: Li
         list_of_available_vehicles.remove(best_vehicle)  # remove the bestVehicle from available.
         r.vehicle = best_vehicle
         r.current_cost = routeCost(r, instance, iteration, penalty_active)  # update the route cost
-        print(f"Route cost after Vehicle Assignment: route {counter} , vehicle {r.vehicle.type} {r.vehicle.plateNr}, cost: {r.current_cost:.2f}, demand {compute_total_demand(r.customer_list, instance)}, customerCount: {len(r.customer_list)-2}, feasible: {r.currently_feasible}, customers: {r.customer_list}")
+        print(f"After Vehicle Assignment: route {counter} , vehicle {r.vehicle.plateNr}, cost: {r.current_cost:.2f} €, load: {compute_total_demand(r.customer_list, instance)} kg, vol: {compute_total_volume(r.customer_list, instance)/1000:.2f} m^3, dist: {compute_distance(r.customer_list, instance):.0f} km, customerCount: {len(r.customer_list)-2}, feasible: {r.currently_feasible}, customers: {r.customer_list}")
     return list_of_available_vehicles
 
 
@@ -596,7 +601,7 @@ class Instance_tune:
 
         # algorithm will run until first of these conditions is met. Either iterations or time.
         self.max_iterations = args.max_iterations
-        self.max_time = 999999
+        self.max_time = 10e10
         # seconds
 
         """ the idea here is to fall back to our best known solution after getting away from it with SimAnnealing. 
@@ -647,4 +652,5 @@ class Instance_tune:
         self.step_penalty = args.step_penalty  # step by which penalty grows in every iteration -> penalty_cost()
         # TODO: Choose suitable penalty-factor. Maybe depending on max_iterations?
 
-        self.penalty_cost_iteration_for_initialization = 0.75 * self.max_iterations   # setting this parameter correctly is very important for the initial solution.
+        self.penalty_cost_iteration_for_initialization = 1000  # setting this parameter correctly is very important for the initial solution.
+        # self.penalty_cost_iteration_for_initialization = 0.75 * self.max_iterations   # setting this parameter correctly is very important for the initial solution.

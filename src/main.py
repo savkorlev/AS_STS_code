@@ -27,12 +27,12 @@ from instances.Plot import plotTSP, create_list_int_coordinates
 # df_NewYork_1_nodes = pd.read_csv("data/NewYork.1.nodes", sep=' ')
 # df_NewYork_2_nodes = pd.read_csv("data/NewYork.2.nodes", sep=' ')
 # df_NewYork_routes = pd.read_csv("data/NewYork.routes", sep=' ')
-df_Paris_nodes = pd.read_csv("data/Paris.nodes", sep=' ')
-df_Paris_nodes["Duration"] = pd.to_timedelta(
-    df_Paris_nodes["Duration"]).dt.total_seconds() / 60  # converting duration column to floats instead of strings
-df_Paris_routes = pd.read_csv("data/Paris.routes", sep=' ')
-df_Paris_routes["Duration[s]"] = pd.to_timedelta(
-    df_Paris_routes["Duration[s]"]).dt.total_seconds() / 60  # converting duration column to floats instead of strings
+df_nodes = pd.read_csv("data/Paris.nodes", sep=' ')
+df_nodes["Duration"] = pd.to_timedelta(
+    df_nodes["Duration"]).dt.total_seconds() / 60  # converting duration column to floats instead of strings
+df_routes = pd.read_csv("data/Paris.routes", sep=' ')
+df_routes["Duration[s]"] = pd.to_timedelta(
+    df_routes["Duration[s]"]).dt.total_seconds() / 60  # converting duration column to floats instead of strings
 # df_Shanghai_nodes = pd.read_csv("data/Shanghai.nodes", sep=' ')
 # df_Shanghai_routes = pd.read_csv("data/Shanghai.routes", sep=' ')
 
@@ -56,59 +56,59 @@ testDimension = 1 + 112  # change this to use more or less customers of the data
 # DON'T FORGET TO SET MORE VEHICLES IF YOU HAVE MORE CUSTOMERS
 
 if testDimension == 20:
-    test_df_Paris_nodes = df_Paris_nodes.iloc[:20, :]  # select elements from D0 to C19 in nodes
-    test_df_Paris_routes = df_Paris_routes.iloc[:2260, :]  # select elements from D0 to C19 in routes
+    df_nodes_subset = df_nodes.iloc[:20, :]  # select elements from D0 to C19 in nodes
+    df_routes_subset = df_routes.iloc[:2260, :]  # select elements from D0 to C19 in routes
 if testDimension == 40:
-    test_df_Paris_nodes = df_Paris_nodes.iloc[:40, :]  # select elements from D0 to C40 in nodes
-    test_df_Paris_routes = df_Paris_routes.iloc[:4633, :]  # select elements from D0 to C40 in routes
+    df_nodes_subset = df_nodes.iloc[:40, :]  # select elements from D0 to C40 in nodes
+    df_routes_subset = df_routes.iloc[:4633, :]  # select elements from D0 to C40 in routes
 if testDimension == 113:
-    test_df_Paris_nodes = df_Paris_nodes  # select all elements (choose if 112 customers)
-    test_df_Paris_routes = df_Paris_routes  # select all elements (choose if 112 customers)
-# print(test_df_Paris_nodes)
-# print(test_df_Paris_routes)
+    df_nodes_subset = df_nodes  # select all elements (choose if 112 customers)
+    df_routes_subset = df_routes  # select all elements (choose if 112 customers)
+# print(df_nodes_subset)
+# print(df_routes_subset)
 
-testDemandParis = list(
-    test_df_Paris_nodes.loc[:, "Demand[kg]"])  # select demand column (in kg) and convert it to a list
-# print(testDemandParis)
-testDemandParisVolume = list(
-    test_df_Paris_nodes.loc[:, "Demand[m^3*10^-3]"])  # select demand column (in volume) and convert it to a list
-# print(testDemandParisVolume)
-testParisCustomerDuration = list(
-    test_df_Paris_nodes.loc[:, "Duration"])  # select duration column (in volume) and convert it to a list
-# print(testParisCustomerDuration)
+subsetDemand = list(
+    df_nodes_subset.loc[:, "Demand[kg]"])  # select demand column (in kg) and convert it to a list
+# print(subsetDemand)
+subsetVolume = list(
+    df_nodes_subset.loc[:, "Demand[m^3*10^-3]"])  # select demand column (in volume) and convert it to a list
+# print(subsetVolume)
+subsetDuration = list(
+    df_nodes_subset.loc[:, "Duration"])  # select duration column (in volume) and convert it to a list
+# print(subsetDuration)
 
-testParisDistances = {}  # the purpose of the following up loop is
-for row, content in test_df_Paris_routes.iterrows():  # to create tuples with distances from one Id
+subsetDistances = {}  # the purpose of the following up loop is
+for row, content in df_routes_subset.iterrows():  # to create tuples with distances from one Id
     key = (int(content[0][1:]), int(content[1][1:]))  # to another
-    testParisDistances[key] = content[2]
-# print(testParisDistances)
+    subsetDistances[key] = content[2]
+# print(subsetDistances)
 
-testParisDistancesInside = {}  # the purpose of the following up loop is
-for row, content in test_df_Paris_routes.iterrows():  # to create tuples with distances from one Id
+subsetDistanceInside = {}  # the purpose of the following up loop is
+for row, content in df_routes_subset.iterrows():  # to create tuples with distances from one Id
     key = (int(content[0][1:]), int(content[1][1:]))  # to another inside the city
-    testParisDistancesInside[key] = content[3]
-# print(testParisDistancesInside)
+    subsetDistanceInside[key] = content[3]
+# print(subsetDistanceInside)
 
-testParisDistancesOutside = {}  # the purpose of the following up loop is
-for row, content in test_df_Paris_routes.iterrows():  # to create tuples with distances from one Id
+subsetDistanceOutside = {}  # the purpose of the following up loop is
+for row, content in df_routes_subset.iterrows():  # to create tuples with distances from one Id
     key = (int(content[0][1:]), int(content[1][1:]))  # to another outside the city
-    testParisDistancesOutside[key] = content[4]
-# print(testParisDistancesOutside)
+    subsetDistanceOutside[key] = content[4]
+# print(subsetDistanceOutside)
 
-testParisArcDuration = {}  # the purpose of the following up loop is
-for row, content in test_df_Paris_routes.iterrows():  # to create tuples with durations from one Id
+subsetArcDuration = {}  # the purpose of the following up loop is
+for row, content in df_routes_subset.iterrows():  # to create tuples with durations from one Id
     key = (int(content[0][1:]), int(content[1][1:]))  # to another inside the city
-    testParisArcDuration[key] = content[5]
-# print(testParisArcDuration)
+    subsetArcDuration[key] = content[5]
+# print(subsetArcDuration)
 
 coordinates = []
-for row, content in test_df_Paris_nodes.iterrows():
+for row, content in df_nodes_subset.iterrows():
     coordinate = (content[1], content[2])
     coordinates.append(coordinate)
 # print(coordinates)
 
 # coordinates for matplot
-coordinates_int = create_list_int_coordinates(test_df_Paris_nodes)
+coordinates_int = create_list_int_coordinates(df_nodes_subset)
 
 # 3. CREATING OUR VEHICLES
 # set the # of vehicles available to Sweep and Algorithm
@@ -121,13 +121,15 @@ numI_ScooterL = 30
 numI_ScooterS = 30
 numI_eCargoBike = 30
 
+fixed_cost_active = True
+
 # create vehicles via function in Trucks.py-file
 listOfInitialVehicles = create_vehicles(city, numI_Atego, numI_VWTrans, numI_VWCaddy, numI_DeFuso, numI_ScooterL,
-                                        numI_ScooterS, numI_eCargoBike)
+                                        numI_ScooterS, numI_eCargoBike, fixed_cost_active)
 print(f"List of initial Vehicle payloads_kg: {list(map(lambda x: x.payload_kg, listOfInitialVehicles))}")
 
 # test feasibility of our vehicle assignment. Need enough capacity to carry all demand.
-sumOfDemand = sum(testDemandParis)
+sumOfDemand = sum(subsetDemand)
 sumOfCapacity = numI_Atego * 2800 + numI_VWTrans * 883 + numI_VWCaddy * 670 + numI_DeFuso * 2800 + numI_ScooterL * 905 + numI_ScooterS * 720 + numI_eCargoBike * 100
 if sumOfCapacity < sumOfDemand:
     print(f"Not enough Capacity ({sumOfCapacity}) for Demand ({sumOfDemand})")
@@ -164,7 +166,7 @@ if sumOfCapacity < sumOfDemand:
 # 8. Sensitive Analysis
 perform_dict = {}
 params_dict = {
-    'max_iterations': [10],
+    'max_iterations': [5000],
     'init_temp': [0.5],
     'temp_target_percentage': [0.025],
     'temp_target_iteration': [1.2],
@@ -176,7 +178,7 @@ params_dict = {
     'max_weight': [200],
     'min_weight': [10],
     'reduce_step': [1],
-    'step_penalty': [0.1],
+    'step_penalty': [0.25],
 }
 n = 0
 for a in params_dict['max_iterations']:
@@ -208,13 +210,13 @@ for a in params_dict['max_iterations']:
                                                     parser.add_argument('--' + str('step_penalty'), default=m)
                                                     args = parser.parse_args()
                                                     ourInstance = Instance_tune(testDimension, listOfInitialVehicles,
-                                                                                testDemandParis,
-                                                                                testDemandParisVolume,
-                                                                                testParisCustomerDuration,
-                                                                                testParisDistances,
-                                                                                testParisDistancesInside,
-                                                                                testParisDistancesOutside,
-                                                                                testParisArcDuration, coordinates,
+                                                                                subsetDemand,
+                                                                                subsetVolume,
+                                                                                subsetDuration,
+                                                                                subsetDistances,
+                                                                                subsetDistanceInside,
+                                                                                subsetDistanceOutside,
+                                                                                subsetArcDuration, coordinates,
                                                                                 args)
                                                     bestCostRandomSweep = 10e10
                                                     for i in range(10):
@@ -240,13 +242,14 @@ for a in params_dict['max_iterations']:
                                                         f"numI_Atego: {numI_Atego,}, numI_VWTrans: {numI_VWTrans}, numI_VWCaddy: {numI_VWCaddy}, numI_DeFuso: {numI_DeFuso}, numI_ScooterL: {numI_ScooterL}, numI_ScooterS: {numI_ScooterS}, numI_eCargoBike: {numI_eCargoBike}")
                                                     no_depot_title = 'No Depot Plot ' + str(n)
                                                     depot_title = 'Route Plot in Permutation ' + str(n)
-                                                    plotTSP(sol, coordinates_int, 'g', False, 'No Depot Plot')
-                                                    plotTSP(sol, coordinates_int, 'g', True, 'Route Plot')
+                                                    plotTSP(sol, coordinates_int, 'g', False, no_depot_title)
+                                                    plotTSP(sol, coordinates_int, 'g', True, depot_title)
 
                                                     perform_dict[n] = [a, b, c, d, e, f, g, h, i, j, k, l, m, final_cost]
                                                     n += 1
 
 summary_performance = pd.DataFrame.from_dict(perform_dict, orient='index', columns=list(params_dict.keys()) + ['cost'])
+print(f"/n")
 print(summary_performance)
 
 date_string = str(datetime.datetime.now())
