@@ -1,4 +1,5 @@
 import argparse
+import datetime
 import sys
 import copy
 import time
@@ -107,13 +108,13 @@ coordinates_int = create_list_int_coordinates(test_df_Paris_nodes)
 # 3. CREATING OUR VEHICLES
 # set the # of vehicles available to Sweep and Algorithm
 city = "Paris"
-numI_Atego = 19
-numI_VWTrans = 0
-numI_VWCaddy = 0
-numI_DeFuso = 0
-numI_ScooterL = 0
-numI_ScooterS = 0
-numI_eCargoBike = 0
+numI_Atego = 30
+numI_VWTrans = 30
+numI_VWCaddy = 30
+numI_DeFuso = 30
+numI_ScooterL = 30
+numI_ScooterS = 30
+numI_eCargoBike = 30
 
 # create vehicles via function in Trucks.py-file
 listOfInitialVehicles = create_vehicles(city, numI_Atego, numI_VWTrans, numI_VWCaddy, numI_DeFuso, numI_ScooterL, numI_ScooterS, numI_eCargoBike)
@@ -126,67 +127,40 @@ if sumOfCapacity < sumOfDemand:
     print(f"Not enough Capacity ({sumOfCapacity}) for Demand ({sumOfDemand})")
     sys.exit()
 
-# # 5. SET MAX ITERATIONS
-# """ logically, this should not be here. But this way we have all the parameters we need to set for a run nearby"""
-# maxIterations = 3000  # sets how many iterations we want
-# maxTime = 18.0  # in Seconds. Sets how much time the loop should maximally use
-# ITERATION PARAMETERS ARE NOW SET IN THE INSTANCE
-
-# 5. CREATING INSTANCE
-ourInstance = Instance(testDimension, listOfInitialVehicles, testDemandParis, testDemandParisVolume, testParisCustomerDuration,
-                       testParisDistances, testParisDistancesInside, testParisDistancesOutside, testParisArcDuration, coordinates)
-
-# # SET PARAMETERS of SIMULATED ANNEALING
-# init_temp = 0.9
-# cooling = 0.85
-# SIM ANNEALING PARAMETERS ARE NOW SET IN THE INSTANCE
-
-
-# 6. SWEEP HEURISTIC
-""" The Sweep Heuristic will only work if we have enough payload_kg capacity to assign all customers to feasible [kg] routes"""
-bestCostRandomSweep = 10e10
-for i in range(10): # we run the sweep heuristic multiple times with different starting angles to get a good starting solution
-    tempSolutionRandomSweep = random_sweep(ourInstance, listOfInitialVehicles)
-    tempCost = solution_cost(tempSolutionRandomSweep, ourInstance, 0, True)
-    # print(f"Rand Sweep Heuristic, temp distance: {compute_distances(tempSolutionRandomSweep, ourInstance)}")
-    if tempCost < bestCostRandomSweep:
-        bestSolutionRandomSweep = copy.deepcopy(tempSolutionRandomSweep)
-        bestCostRandomSweep = tempCost
-print(f"Rand Sweep Heuristic, #Vehicles: {len(bestSolutionRandomSweep)}, cost: {bestCostRandomSweep}")
-
-# plotTSP(list(map(lambda x: x.customer_list, bestSolutionRandomSweep)), coordinates_int, 'r')  # matplot of sweep solution
-
-# 6.1 VehicleSwap for the SweepSolution
-# list_avb = copy.deepcopy(listOfInitialVehicles)
-# for r in bestSolutionRandomSweep:
-#     cost_dummy, vehicle_dummy = find_cheapest_vehicle(r.customer_list, ourInstance, 100, list_avb)
-#     list_avb.remove(vehicle_dummy)
-# start1 = time.perf_counter()
-listOfInitAvailableVehicles = vehicle_assignment(bestSolutionRandomSweep, listOfInitialVehicles, ourInstance, 0, True)  # vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: List[Vehicle], instance: Instance):
-# time1 = time.perf_counter() - start1
-# print(time1)
-# start2 = time.perf_counter()
-# listOfInitAvailableVehicles = vehicle_assignment(bestSolutionRandomSweep, listOfInitialVehicles, ourInstance, 100, True)
-# time2 = time.perf_counter() - start2
-# print(time2)
-
-# 7. OUR ALGORITHM (DESTRUCTION + INSERTION + OPTIMIZATION + ACCEPTANCE)
-solutionOur = ouralgorithm(ourInstance, bestSolutionRandomSweep, listOfInitialVehicles, listOfInitAvailableVehicles,
-                           coordinates_int)
-# lenOfSolutionOur = len(solutionOur)
-# for i in range(lenOfSolutionOur):
-#     print(f"Sum of demands of a {i} route: " + str(compute_total_demand(solutionOur[i], ourInstance)))
-# print(compute_distances(solutionOur, ourInstance))
-print(f"numI_Atego: {numI_Atego,}, numI_VWTrans: {numI_VWTrans}, numI_VWCaddy: {numI_VWCaddy}, numI_DeFuso: {numI_DeFuso}, numI_ScooterL: {numI_ScooterL}, numI_ScooterS: {numI_ScooterS}, numI_eCargoBike: {numI_eCargoBike}")
-plotTSP(solutionOur, coordinates_int, 'g', False, 'No Depot Plot')
-plotTSP(solutionOur, coordinates_int, 'g', True, 'Route Plot')
+# # 5. CREATING INSTANCE
+# ourInstance = Instance(testDimension, listOfInitialVehicles, testDemandParis, testDemandParisVolume, testParisCustomerDuration,
+#                        testParisDistances, testParisDistancesInside, testParisDistancesOutside, testParisArcDuration, coordinates)
+# 
+# # 6. SWEEP HEURISTIC
+# """ The Sweep Heuristic will only work if we have enough payload_kg capacity to assign all customers to feasible [kg] routes"""
+# bestCostRandomSweep = 10e10
+# for i in range(10): # we run the sweep heuristic multiple times with different starting angles to get a good starting solution
+#     tempSolutionRandomSweep = random_sweep(ourInstance, listOfInitialVehicles)
+#     tempCost = solution_cost(tempSolutionRandomSweep, ourInstance, 0, True)
+#     # print(f"Rand Sweep Heuristic, temp distance: {compute_distances(tempSolutionRandomSweep, ourInstance)}")
+#     if tempCost < bestCostRandomSweep:
+#         bestSolutionRandomSweep = copy.deepcopy(tempSolutionRandomSweep)
+#         bestCostRandomSweep = tempCost
+# print(f"Rand Sweep Heuristic, #Vehicles: {len(bestSolutionRandomSweep)}, cost: {bestCostRandomSweep}")
+# 
+# # plotTSP(list(map(lambda x: x.customer_list, bestSolutionRandomSweep)), coordinates_int, 'r')  # matplot of sweep solution
+# 
+# # 6.1 VehicleSwap for the SweepSolution
+# listOfInitAvailableVehicles = vehicle_assignment(bestSolutionRandomSweep, listOfInitialVehicles, ourInstance, 0, True)  # vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: List[Vehicle], instance: Instance):
+# 
+# # 7. OUR ALGORITHM (DESTRUCTION + INSERTION + OPTIMIZATION + ACCEPTANCE)
+# solutionOur = ouralgorithm(ourInstance, bestSolutionRandomSweep, listOfInitialVehicles, listOfInitAvailableVehicles,
+#                            coordinates_int)
+# print(f"numI_Atego: {numI_Atego,}, numI_VWTrans: {numI_VWTrans}, numI_VWCaddy: {numI_VWCaddy}, numI_DeFuso: {numI_DeFuso}, numI_ScooterL: {numI_ScooterL}, numI_ScooterS: {numI_ScooterS}, numI_eCargoBike: {numI_eCargoBike}")
+# plotTSP(solutionOur[0], coordinates_int, 'g', False, 'No Depot Plot')
+# plotTSP(solutionOur[0], coordinates_int, 'g', True, 'Route Plot')
 
 # 8. Sensitive Analysis
 perform_dict = {}
 params_dict = {
-    'max_iterations' :  [2000],
-    'max_time' : [900],
-    'init_temp' : [0.9, 0.95],
+    'max_iterations' :  [30000],
+    'max_time' : [999999],
+    'init_temp' : [0.5],
     'init_weight_destroy_random' : [25],
     'init_weight_destroy_expensive' : [100],
     'init_weight_destroy_route' : [50],
@@ -234,8 +208,19 @@ for a in params_dict['max_iterations']:
                                                                                      0, True)
                                     sol, final_cost = ouralgorithm(ourInstance, bestSolutionRandomSweep, listOfInitialVehicles,
                                                                    listOfInitAvailableVehicles, coordinates_int)
+
+                                    print(
+                                        f"numI_Atego: {numI_Atego,}, numI_VWTrans: {numI_VWTrans}, numI_VWCaddy: {numI_VWCaddy}, numI_DeFuso: {numI_DeFuso}, numI_ScooterL: {numI_ScooterL}, numI_ScooterS: {numI_ScooterS}, numI_eCargoBike: {numI_eCargoBike}")
+                                    no_depot_title = 'No Depot Plot ' + str(n)
+                                    depot_title = 'Route Plot in Permutation ' + str(n)
+                                    plotTSP(sol, coordinates_int, 'g', False, 'No Depot Plot')
+                                    plotTSP(sol, coordinates_int, 'g', True, 'Route Plot')
+                                
                                     perform_dict[n] = [a, b, c, d, e, f, g, h, i, final_cost]
                                     n += 1
 summary_performance = pd.DataFrame.from_dict(perform_dict, orient='index', columns=list(params_dict.keys()) + ['cost'])
 print(summary_performance)
-summary_performance.to_csv('sensitive_analysis.csv')
+
+date_string = str(datetime.datetime.now())
+date_string = date_string.replace(":", "-")
+summary_performance.to_csv(date_string[:16]+' - sensitive_analysis.csv')

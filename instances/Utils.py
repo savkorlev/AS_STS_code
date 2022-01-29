@@ -61,8 +61,8 @@ class Instance:
         self.coordinates = coordinates
 
         # algorithm will run until first of these conditions is met. Either iterations or time.
-        self.max_iterations = 2000 * 15
-        self.max_time = 60.0 * 100
+        self.max_iterations = 100 * 1
+        self.max_time = 60.0 * 1
         # seconds
 
         """ the idea here is to fall back to our best known solution after getting away from it with SimAnnealing. 
@@ -606,7 +606,12 @@ class Instance_tune:
         self.max_iterations_no_improvement = max(50, self.max_iterations * 0.05)
 
         self.init_temp = args.init_temp  # factor with which the solution of the 0. iteration is turned into first temperature -> ourAlgorithm()
-        cooling_target = np.power(0.025, (2/self.max_iterations))  # this function sets our cooling factor dependent on the max_iterations. Example: (0.05, (2/self.max_iterations)) forces the temperature to 5% of the starting temp after 50% of iterations.
+        
+        temp_target_percentage = 0.025  # this parameter decides which % of the initial temperature should be achieved in the target iteration
+        temp_target_iteration = 1.2  # this parameter decides in which iteration the target percentage should be used. iteration = 1/x77: 4 -> 25% of max iterations. 2 -> 50% of max iterations. 1.333 -> 75% of max iterations. 1 -> 100% of max iterations.
+        # example: with a temp_target_percentage of 0.01 and a temp_target_iteration of 2 we reach 1% of the initial temperature after 50% of the max iterations
+        cooling_target = np.power(temp_target_percentage, (temp_target_iteration / self.max_iterations))  # this function sets our cooling factor dependent on the max_iterations. Example: (0.05, (2/self.max_iterations)) forces the temperature to 5% of the starting temp after 50% of iterations.
+
         self.cooling = cooling_target  # factor with which temperature is reduced after every instance  -> simulated_annealing()
         # todo: tune cooling_target parameters [init_temp], [temp_target_percentage], [temp_target_iteration]
         self.freeze_period_length = 0.01  # currently set up to freeze for x * iterations. Not max_iterations, but iterations-so-far. So a freeze will be longer if the algorithm runs long.
@@ -631,9 +636,14 @@ class Instance_tune:
         self.destroy_route_ub = 1  # of the chosen route
         self.destroy_related_lb = 0.05
         self.destroy_related_ub = 0.15
+        
+        # set max and min weights a ops can take
+        self.max_weight = 200
+        self.min_weight = 10
+        self.reduce_step = 1
+        # self.increase_step = CURRENTLY SET TO ITERATION
 
-
-        self.init_penalty = 5  # starting penalty costs in the 0. iteration -> penalty_cost()
+        self.init_penalty = 25  # starting penalty costs in the 0. iteration -> penalty_cost()
         self.step_penalty = 0.1  # step by which penalty grows in every iteration -> penalty_cost()
         # TODO: Choose suitable penalty-factor. Maybe depending on max_iterations?
 

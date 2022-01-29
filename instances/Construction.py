@@ -77,7 +77,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
         iteration += 1  # count up the iterations
 
         blockPrint()
-        if iteration % 100 == 0 or iteration == 1:
+        if iteration % 50 == 0 or iteration == 1:
             enablePrint()
 
         print(f"New iteration__________{iteration}")
@@ -208,46 +208,46 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
             counter_iterations_no_improvement = 0  # reset the counter
 
             if destroy_op_used == 'random_removal':
-                weight_destroy_random = min(200, weight_destroy_random + iteration)
+                weight_destroy_random = min(instance.max_weight, weight_destroy_random + iteration)
                 counter_destroy_random_imp += 1
             elif destroy_op_used == 'expensive_removal':
-                weight_destroy_expensive = min(200, weight_destroy_expensive + iteration)
+                weight_destroy_expensive = min(instance.max_weight, weight_destroy_expensive + iteration)
                 counter_destroy_expensive_imp += 1
             elif destroy_op_used == 'route_removal':
-                weight_destroy_route = min(200, weight_destroy_random + iteration)
+                weight_destroy_route = min(instance.max_weight, weight_destroy_random + iteration)
                 counter_destroy_route_imp += 1
             elif destroy_op_used == 'related_removal':
-                weight_destroy_related = min(200, weight_destroy_related + iteration)
+                weight_destroy_related = min(instance.max_weight, weight_destroy_related + iteration)
                 counter_destroy_related_imp += 1
 
             if insert_op_used == 'cheapest_insert':
-                weight_insert_cheapest = min(200, weight_insert_cheapest + iteration)
+                weight_insert_cheapest = min(instance.max_weight, weight_insert_cheapest + iteration)
                 counter_insert_cheapest_imp += 1
             elif insert_op_used == 'regret_insert':
-                weight_insert_regret = min(200, weight_insert_regret + iteration)
+                weight_insert_regret = min(instance.max_weight, weight_insert_regret + iteration)
                 counter_insert_regret_imp += 1
 
         else:  # if we dont find a better solution solution:
             counter_iterations_no_improvement += 1
 
             if destroy_op_used == 'random_removal':  # pick a destroy operation
-                weight_destroy_random = max(10, weight_destroy_random - 1)
+                weight_destroy_random = max(instance.min_weight, weight_destroy_random - instance.reduce_step)
                 counter_destroy_random_rej += 1
             elif destroy_op_used == 'expensive_removal':
-                weight_destroy_expensive = max(10, weight_destroy_expensive - 1)
+                weight_destroy_expensive = max(instance.min_weight, weight_destroy_expensive - instance.reduce_step)
                 counter_destroy_expensive_rej += 1
             elif destroy_op_used == 'route_removal':  # pick a destroy operation
-                weight_destroy_route = max(10, weight_destroy_route - 1)
+                weight_destroy_route = max(instance.min_weight, weight_destroy_route - instance.reduce_step)
                 counter_destroy_route_rej += 1
             elif destroy_op_used == 'related_removal':
-                weight_destroy_related = max(10, weight_destroy_related - 1)
+                weight_destroy_related = max(instance.min_weight, weight_destroy_related - instance.reduce_step)
                 counter_destroy_related_rej += 1
 
             if insert_op_used == 'cheapest_insert':  # pick a destroy operation
-                weight_insert_cheapest = max(10, weight_insert_cheapest - 1)
+                weight_insert_cheapest = max(10, weight_insert_cheapest - instance.reduce_step)
                 counter_insert_cheapest_rej += 1
             elif insert_op_used == 'regret_insert':
-                weight_insert_regret = max(10, weight_insert_regret - 1)
+                weight_insert_regret = max(10, weight_insert_regret - instance.reduce_step)
                 counter_insert_regret_rej += 1
 
             # if counter_iterations_no_improvement >= instance.max_iterations_no_improvement:  # if we cant find an improvement for very long, go back to the best known solution
@@ -312,4 +312,4 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
     plot3Subplots(simAnnPlot, bestSolutionPlot, simAnnTemp, 'SimAnn Accepted + Temp')
 
 
-    return list(map(lambda x: x.customer_list, bestSolution)), final_distance
+    return list(map(lambda x: x.customer_list, bestSolution)), bestCost
