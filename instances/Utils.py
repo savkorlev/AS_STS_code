@@ -61,8 +61,8 @@ class Instance:
         self.coordinates = coordinates
 
         # algorithm will run until first of these conditions is met. Either iterations or time.
-        self.max_iterations = 2000 * 15
-        self.max_time = 60.0 * 100
+        self.max_iterations = 100 * 1
+        self.max_time = 60.0 * 1
         # seconds
 
         """ the idea here is to fall back to our best known solution after getting away from it with SimAnnealing. 
@@ -633,7 +633,7 @@ class Instance_tune:
         self.destroy_related_ub = 0.15
 
 
-        self.init_penalty = 5  # starting penalty costs in the 0. iteration -> penalty_cost()
+        self.init_penalty = 25  # starting penalty costs in the 0. iteration -> penalty_cost()
         self.step_penalty = 0.1  # step by which penalty grows in every iteration -> penalty_cost()
         # TODO: Choose suitable penalty-factor. Maybe depending on max_iterations?
 
