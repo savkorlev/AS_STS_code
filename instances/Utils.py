@@ -596,7 +596,7 @@ class Instance_tune:
 
         # algorithm will run until first of these conditions is met. Either iterations or time.
         self.max_iterations = args.max_iterations
-        self.max_time = args.max_time
+        self.max_time = 999999
         # seconds
 
         """ the idea here is to fall back to our best known solution after getting away from it with SimAnnealing. 
@@ -607,44 +607,44 @@ class Instance_tune:
 
         self.init_temp = args.init_temp  # factor with which the solution of the 0. iteration is turned into first temperature -> ourAlgorithm()
         
-        temp_target_percentage = 0.025  # this parameter decides which % of the initial temperature should be achieved in the target iteration
-        temp_target_iteration = 1.2  # this parameter decides in which iteration the target percentage should be used. iteration = 1/x77: 4 -> 25% of max iterations. 2 -> 50% of max iterations. 1.333 -> 75% of max iterations. 1 -> 100% of max iterations.
+        temp_target_percentage = args.temp_target_percentage  # this parameter decides which % of the initial temperature should be achieved in the target iteration
+        temp_target_iteration = args.temp_target_iteration  # this parameter decides in which iteration the target percentage should be used. iteration = 1/x77: 4 -> 25% of max iterations. 2 -> 50% of max iterations. 1.333 -> 75% of max iterations. 1 -> 100% of max iterations.
         # example: with a temp_target_percentage of 0.01 and a temp_target_iteration of 2 we reach 1% of the initial temperature after 50% of the max iterations
         cooling_target = np.power(temp_target_percentage, (temp_target_iteration / self.max_iterations))  # this function sets our cooling factor dependent on the max_iterations. Example: (0.05, (2/self.max_iterations)) forces the temperature to 5% of the starting temp after 50% of iterations.
 
         self.cooling = cooling_target  # factor with which temperature is reduced after every instance  -> simulated_annealing()
         # todo: tune cooling_target parameters [init_temp], [temp_target_percentage], [temp_target_iteration]
-        self.freeze_period_length = 0.01  # currently set up to freeze for x * iterations. Not max_iterations, but iterations-so-far. So a freeze will be longer if the algorithm runs long.
+        self.freeze_period_length = args.freeze_period_length  # currently set up to freeze for x * iterations. Not max_iterations, but iterations-so-far. So a freeze will be longer if the algorithm runs long.
         # todo: tune freeze period length
 
         self.final_effort = 0.02  # this parameter determines when we start our final effort. For the last x% of max_iterations, we will jump back to the best known solution and turn off simulated annealing. We then try to optimize this solution locally.
 
         # set the initial weights for each operator
-        self.init_weight_destroy_random = args.init_weight_destroy_random
-        self.init_weight_destroy_expensive = args.init_weight_destroy_expensive
-        self.init_weight_destroy_route = args.init_weight_destroy_route
-        self.init_weight_destroy_related = args.init_weight_destroy_related
-        self.init_weight_insert_cheapest = args.init_weight_insert_cheapest
-        self.init_weight_insert_regret = args.init_weight_insert_regret
+        self.init_weight_destroy_random = 25
+        self.init_weight_destroy_expensive = 100
+        self.init_weight_destroy_route = 50
+        self.init_weight_destroy_related = 50
+        self.init_weight_insert_cheapest = 50
+        self.init_weight_insert_regret = 25
 
         # set upper and lower bounds for the number of destroyed nodes in destroy operations
         self.destroy_random_lb = 0.05  # of all customers. So if 112 customers & lb = 0.05: minimum 6
-        self.destroy_random_ub = 0.15  # of all customers. So if 112 customers & ub = 0.15: maximum 17
+        self.destroy_random_ub = args.destroy_random_ub  # of all customers. So if 112 customers & ub = 0.15: maximum 17
         self.destroy_expensive_lb = 0.05
-        self.destroy_expensive_ub = 0.1
+        self.destroy_expensive_ub = args.destroy_expensive_ub
         self.destroy_route_lb = 0.25  # of the chosen route
-        self.destroy_route_ub = 1  # of the chosen route
+        self.destroy_route_ub = args.destroy_route_ub  # of the chosen route
         self.destroy_related_lb = 0.05
-        self.destroy_related_ub = 0.15
+        self.destroy_related_ub = args.destroy_related_ub
         
         # set max and min weights a ops can take
-        self.max_weight = 200
-        self.min_weight = 10
-        self.reduce_step = 1
+        self.max_weight = args.max_weight
+        self.min_weight = args.min_weight
+        self.reduce_step = args.reduce_step
         # self.increase_step = CURRENTLY SET TO ITERATION
 
         self.init_penalty = 25  # starting penalty costs in the 0. iteration -> penalty_cost()
-        self.step_penalty = 0.1  # step by which penalty grows in every iteration -> penalty_cost()
+        self.step_penalty = args.step_penalty  # step by which penalty grows in every iteration -> penalty_cost()
         # TODO: Choose suitable penalty-factor. Maybe depending on max_iterations?
 
         self.penalty_cost_iteration_for_initialization = 0.75 * self.max_iterations   # setting this parameter correctly is very important for the initial solution.

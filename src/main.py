@@ -28,9 +28,11 @@ from instances.Plot import plotTSP, create_list_int_coordinates
 # df_NewYork_2_nodes = pd.read_csv("data/NewYork.2.nodes", sep=' ')
 # df_NewYork_routes = pd.read_csv("data/NewYork.routes", sep=' ')
 df_Paris_nodes = pd.read_csv("data/Paris.nodes", sep=' ')
-df_Paris_nodes["Duration"] = pd.to_timedelta(df_Paris_nodes["Duration"]).dt.total_seconds() / 60  # converting duration column to floats instead of strings
+df_Paris_nodes["Duration"] = pd.to_timedelta(
+    df_Paris_nodes["Duration"]).dt.total_seconds() / 60  # converting duration column to floats instead of strings
 df_Paris_routes = pd.read_csv("data/Paris.routes", sep=' ')
-df_Paris_routes["Duration[s]"] = pd.to_timedelta(df_Paris_routes["Duration[s]"]).dt.total_seconds() / 60  # converting duration column to floats instead of strings
+df_Paris_routes["Duration[s]"] = pd.to_timedelta(
+    df_Paris_routes["Duration[s]"]).dt.total_seconds() / 60  # converting duration column to floats instead of strings
 # df_Shanghai_nodes = pd.read_csv("data/Shanghai.nodes", sep=' ')
 # df_Shanghai_routes = pd.read_csv("data/Shanghai.routes", sep=' ')
 
@@ -47,52 +49,55 @@ df_Paris_routes["Duration[s]"] = pd.to_timedelta(df_Paris_routes["Duration[s]"])
 # print(df_NewYork_1_nodes.iloc[2, 2])  #select the third row and the third column
 
 # 2. CREATING TEST DATASET AND ATTRIBUTES OF FUTURE INSTANCE
-#set testDimension to 1 more than customers
+# set testDimension to 1 more than customers
 testDimension = 1 + 112  # change this to use more or less customers of the data set. Max for Paris is 112. Also need to change the iloc for the nodes file
 # 1 + either 19, 39 or 112
 
 # DON'T FORGET TO SET MORE VEHICLES IF YOU HAVE MORE CUSTOMERS
 
 if testDimension == 20:
-    test_df_Paris_nodes = df_Paris_nodes.iloc[:20, :]                   # select elements from D0 to C19 in nodes
-    test_df_Paris_routes = df_Paris_routes.iloc[:2260, :]               # select elements from D0 to C19 in routes
+    test_df_Paris_nodes = df_Paris_nodes.iloc[:20, :]  # select elements from D0 to C19 in nodes
+    test_df_Paris_routes = df_Paris_routes.iloc[:2260, :]  # select elements from D0 to C19 in routes
 if testDimension == 40:
-    test_df_Paris_nodes = df_Paris_nodes.iloc[:40, :]                   # select elements from D0 to C40 in nodes
-    test_df_Paris_routes = df_Paris_routes.iloc[:4633, :]               # select elements from D0 to C40 in routes
+    test_df_Paris_nodes = df_Paris_nodes.iloc[:40, :]  # select elements from D0 to C40 in nodes
+    test_df_Paris_routes = df_Paris_routes.iloc[:4633, :]  # select elements from D0 to C40 in routes
 if testDimension == 113:
-    test_df_Paris_nodes = df_Paris_nodes                                  # select all elements (choose if 112 customers)
-    test_df_Paris_routes = df_Paris_routes                                # select all elements (choose if 112 customers)
+    test_df_Paris_nodes = df_Paris_nodes  # select all elements (choose if 112 customers)
+    test_df_Paris_routes = df_Paris_routes  # select all elements (choose if 112 customers)
 # print(test_df_Paris_nodes)
 # print(test_df_Paris_routes)
 
-testDemandParis = list(test_df_Paris_nodes.loc[:, "Demand[kg]"])    # select demand column (in kg) and convert it to a list
+testDemandParis = list(
+    test_df_Paris_nodes.loc[:, "Demand[kg]"])  # select demand column (in kg) and convert it to a list
 # print(testDemandParis)
-testDemandParisVolume = list(test_df_Paris_nodes.loc[:, "Demand[m^3*10^-3]"])    # select demand column (in volume) and convert it to a list
+testDemandParisVolume = list(
+    test_df_Paris_nodes.loc[:, "Demand[m^3*10^-3]"])  # select demand column (in volume) and convert it to a list
 # print(testDemandParisVolume)
-testParisCustomerDuration = list(test_df_Paris_nodes.loc[:, "Duration"])  # select duration column (in volume) and convert it to a list
+testParisCustomerDuration = list(
+    test_df_Paris_nodes.loc[:, "Duration"])  # select duration column (in volume) and convert it to a list
 # print(testParisCustomerDuration)
 
-testParisDistances = {}                                             # the purpose of the following up loop is
-for row, content in test_df_Paris_routes.iterrows():                # to create tuples with distances from one Id
-    key = (int(content[0][1:]), int(content[1][1:]))                # to another
+testParisDistances = {}  # the purpose of the following up loop is
+for row, content in test_df_Paris_routes.iterrows():  # to create tuples with distances from one Id
+    key = (int(content[0][1:]), int(content[1][1:]))  # to another
     testParisDistances[key] = content[2]
 # print(testParisDistances)
 
-testParisDistancesInside = {}                                       # the purpose of the following up loop is
-for row, content in test_df_Paris_routes.iterrows():                # to create tuples with distances from one Id
-    key = (int(content[0][1:]), int(content[1][1:]))                # to another inside the city
+testParisDistancesInside = {}  # the purpose of the following up loop is
+for row, content in test_df_Paris_routes.iterrows():  # to create tuples with distances from one Id
+    key = (int(content[0][1:]), int(content[1][1:]))  # to another inside the city
     testParisDistancesInside[key] = content[3]
 # print(testParisDistancesInside)
 
-testParisDistancesOutside = {}                                      # the purpose of the following up loop is
-for row, content in test_df_Paris_routes.iterrows():                # to create tuples with distances from one Id
-    key = (int(content[0][1:]), int(content[1][1:]))                # to another outside the city
+testParisDistancesOutside = {}  # the purpose of the following up loop is
+for row, content in test_df_Paris_routes.iterrows():  # to create tuples with distances from one Id
+    key = (int(content[0][1:]), int(content[1][1:]))  # to another outside the city
     testParisDistancesOutside[key] = content[4]
 # print(testParisDistancesOutside)
 
-testParisArcDuration = {}                                           # the purpose of the following up loop is
-for row, content in test_df_Paris_routes.iterrows():                # to create tuples with durations from one Id
-    key = (int(content[0][1:]), int(content[1][1:]))                # to another inside the city
+testParisArcDuration = {}  # the purpose of the following up loop is
+for row, content in test_df_Paris_routes.iterrows():  # to create tuples with durations from one Id
+    key = (int(content[0][1:]), int(content[1][1:]))  # to another inside the city
     testParisArcDuration[key] = content[5]
 # print(testParisArcDuration)
 
@@ -117,7 +122,8 @@ numI_ScooterS = 30
 numI_eCargoBike = 30
 
 # create vehicles via function in Trucks.py-file
-listOfInitialVehicles = create_vehicles(city, numI_Atego, numI_VWTrans, numI_VWCaddy, numI_DeFuso, numI_ScooterL, numI_ScooterS, numI_eCargoBike)
+listOfInitialVehicles = create_vehicles(city, numI_Atego, numI_VWTrans, numI_VWCaddy, numI_DeFuso, numI_ScooterL,
+                                        numI_ScooterS, numI_eCargoBike)
 print(f"List of initial Vehicle payloads_kg: {list(map(lambda x: x.payload_kg, listOfInitialVehicles))}")
 
 # test feasibility of our vehicle assignment. Need enough capacity to carry all demand.
@@ -158,69 +164,91 @@ if sumOfCapacity < sumOfDemand:
 # 8. Sensitive Analysis
 perform_dict = {}
 params_dict = {
-    'max_iterations' :  [30000],
-    'max_time' : [999999],
-    'init_temp' : [0.5],
-    'init_weight_destroy_random' : [25],
-    'init_weight_destroy_expensive' : [100],
-    'init_weight_destroy_route' : [50],
-    'init_weight_destroy_related' : [50],
-    'init_weight_insert_cheapest' : [50],
-    'init_weight_insert_regret' : [25],
+    'max_iterations': [10],
+    'init_temp': [0.5],
+    'temp_target_percentage': [0.025],
+    'temp_target_iteration': [1.2],
+    'freeze_period_length': [0.01],
+    'destroy_random_ub': [0.15],
+    'destroy_expensive_ub': [0.1],
+    'destroy_route_ub': [1],
+    'destroy_related_ub': [0.15],
+    'max_weight': [200],
+    'min_weight': [10],
+    'reduce_step': [1],
+    'step_penalty': [0.1],
 }
 n = 0
 for a in params_dict['max_iterations']:
-    for b in params_dict['max_time']:
-        for c in params_dict['init_temp']:
-            for d in params_dict['init_weight_destroy_random']:
-                for e in params_dict['init_weight_destroy_expensive']:
-                    for f in params_dict['init_weight_destroy_route']:
-                        for g in params_dict['init_weight_destroy_related']:
-                            for h in params_dict['init_weight_insert_cheapest']:
-                                for i in params_dict['init_weight_insert_regret']:
-                                    parser = argparse.ArgumentParser()
-                                    parser.add_argument('--' + str('max_iterations'), default=a)
-                                    parser.add_argument('--' + str('max_time'), default=b)
-                                    parser.add_argument('--' + str('init_temp'), default=c)
-                                    parser.add_argument('--' + str('init_weight_destroy_random'), default=d)
-                                    parser.add_argument('--' + str('init_weight_destroy_expensive'), default=e)
-                                    parser.add_argument('--' + str('init_weight_destroy_route'), default=f)
-                                    parser.add_argument('--' + str('init_weight_destroy_related'), default=g)
-                                    parser.add_argument('--' + str('init_weight_insert_cheapest'), default=h)
-                                    parser.add_argument('--' + str('init_weight_insert_regret'), default=i)
-                                    args = parser.parse_args()
-                                    ourInstance = Instance_tune(testDimension, listOfInitialVehicles, testDemandParis,
-                                                           testDemandParisVolume, testParisCustomerDuration,
-                                                           testParisDistances, testParisDistancesInside,
-                                                           testParisDistancesOutside, testParisArcDuration, coordinates,
-                                                           args)
-                                    bestCostRandomSweep = 10e10
-                                    for i in range(
-                                            10):  # we run the sweep heuristic multiple times with different starting angles to get a good starting solution
-                                        tempSolutionRandomSweep = random_sweep(ourInstance, listOfInitialVehicles)
-                                        tempCost = solution_cost(tempSolutionRandomSweep, ourInstance, 0, True)
-                                        # print(f"Rand Sweep Heuristic, temp distance: {compute_distances(tempSolutionRandomSweep, ourInstance)}")
-                                        if tempCost < bestCostRandomSweep:
-                                            bestSolutionRandomSweep = copy.deepcopy(tempSolutionRandomSweep)
-                                            bestCostRandomSweep = tempCost
-                                    listOfInitAvailableVehicles = vehicle_assignment(bestSolutionRandomSweep,
-                                                                                     listOfInitialVehicles, ourInstance,
-                                                                                     0, True)
-                                    sol, final_cost = ouralgorithm(ourInstance, bestSolutionRandomSweep, listOfInitialVehicles,
-                                                                   listOfInitAvailableVehicles, coordinates_int)
+    for b in params_dict['init_temp']:
+        for c in params_dict['temp_target_percentage']:
+            for d in params_dict['temp_target_iteration']:
+                for e in params_dict['freeze_period_length']:
+                    for f in params_dict['destroy_random_ub']:
+                        for g in params_dict['destroy_expensive_ub']:
+                            for h in params_dict['destroy_route_ub']:
+                                for i in params_dict['destroy_related_ub']:
+                                    for j in params_dict['max_weight']:
+                                        for k in params_dict['min_weight']:
+                                            for l in params_dict['reduce_step']:
+                                                for m in params_dict['step_penalty']:
+                                                    parser = argparse.ArgumentParser()
+                                                    parser.add_argument('--' + str('max_iterations'), default=a)
+                                                    parser.add_argument('--' + str('init_temp'), default=b)
+                                                    parser.add_argument('--' + str('temp_target_percentage'), default=c)
+                                                    parser.add_argument('--' + str('temp_target_iteration'), default=d)
+                                                    parser.add_argument('--' + str('freeze_period_length'), default=e)
+                                                    parser.add_argument('--' + str('destroy_random_ub'), default=f)
+                                                    parser.add_argument('--' + str('destroy_expensive_ub'), default=g)
+                                                    parser.add_argument('--' + str('destroy_route_ub'), default=h)
+                                                    parser.add_argument('--' + str('destroy_related_ub'), default=i)
+                                                    parser.add_argument('--' + str('max_weight'), default=j)
+                                                    parser.add_argument('--' + str('min_weight'), default=k)
+                                                    parser.add_argument('--' + str('reduce_step'), default=l)
+                                                    parser.add_argument('--' + str('step_penalty'), default=m)
+                                                    args = parser.parse_args()
+                                                    ourInstance = Instance_tune(testDimension, listOfInitialVehicles,
+                                                                                testDemandParis,
+                                                                                testDemandParisVolume,
+                                                                                testParisCustomerDuration,
+                                                                                testParisDistances,
+                                                                                testParisDistancesInside,
+                                                                                testParisDistancesOutside,
+                                                                                testParisArcDuration, coordinates,
+                                                                                args)
+                                                    bestCostRandomSweep = 10e10
+                                                    for i in range(10):
+                                                        tempSolutionRandomSweep = random_sweep(ourInstance,
+                                                                                               listOfInitialVehicles)
+                                                        tempCost = solution_cost(tempSolutionRandomSweep, ourInstance,
+                                                                                 0, True)
+                                                        # print(f"Rand Sweep Heuristic, temp distance: {compute_distances(tempSolutionRandomSweep, ourInstance)}")
+                                                        if tempCost < bestCostRandomSweep:
+                                                            bestSolutionRandomSweep = copy.deepcopy(
+                                                                tempSolutionRandomSweep)
+                                                            bestCostRandomSweep = tempCost
+                                                    listOfInitAvailableVehicles = vehicle_assignment(
+                                                        bestSolutionRandomSweep,
+                                                        listOfInitialVehicles, ourInstance,
+                                                        0, True)
+                                                    sol, final_cost = ouralgorithm(ourInstance, bestSolutionRandomSweep,
+                                                                                   listOfInitialVehicles,
+                                                                                   listOfInitAvailableVehicles,
+                                                                                   coordinates_int)
 
-                                    print(
-                                        f"numI_Atego: {numI_Atego,}, numI_VWTrans: {numI_VWTrans}, numI_VWCaddy: {numI_VWCaddy}, numI_DeFuso: {numI_DeFuso}, numI_ScooterL: {numI_ScooterL}, numI_ScooterS: {numI_ScooterS}, numI_eCargoBike: {numI_eCargoBike}")
-                                    no_depot_title = 'No Depot Plot ' + str(n)
-                                    depot_title = 'Route Plot in Permutation ' + str(n)
-                                    plotTSP(sol, coordinates_int, 'g', False, 'No Depot Plot')
-                                    plotTSP(sol, coordinates_int, 'g', True, 'Route Plot')
-                                
-                                    perform_dict[n] = [a, b, c, d, e, f, g, h, i, final_cost]
-                                    n += 1
+                                                    print(
+                                                        f"numI_Atego: {numI_Atego,}, numI_VWTrans: {numI_VWTrans}, numI_VWCaddy: {numI_VWCaddy}, numI_DeFuso: {numI_DeFuso}, numI_ScooterL: {numI_ScooterL}, numI_ScooterS: {numI_ScooterS}, numI_eCargoBike: {numI_eCargoBike}")
+                                                    no_depot_title = 'No Depot Plot ' + str(n)
+                                                    depot_title = 'Route Plot in Permutation ' + str(n)
+                                                    plotTSP(sol, coordinates_int, 'g', False, 'No Depot Plot')
+                                                    plotTSP(sol, coordinates_int, 'g', True, 'Route Plot')
+
+                                                    perform_dict[n] = [a, b, c, d, e, f, g, h, i, j, k, l, m, final_cost]
+                                                    n += 1
+
 summary_performance = pd.DataFrame.from_dict(perform_dict, orient='index', columns=list(params_dict.keys()) + ['cost'])
 print(summary_performance)
 
 date_string = str(datetime.datetime.now())
 date_string = date_string.replace(":", "-")
-summary_performance.to_csv(date_string[:16]+' - sensitive_analysis.csv')
+summary_performance.to_csv(date_string[:16] + ' - sensitive_analysis.csv')
