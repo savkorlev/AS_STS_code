@@ -4,13 +4,17 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) finalised Sensitivity Analysis">
+    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/AS_STS_code.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/AS_STS_code.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instances/Construction.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Construction.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/NewYork.2.nodes" beforeDir="false" afterPath="$PROJECT_DIR$/data/NewYork.2.nodes" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instances/DestructionOps.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/DestructionOps.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instances/InsertionOps.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/InsertionOps.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instances/Intialization.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Intialization.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instances/LocalSearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/LocalSearch.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instances/Plot.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Plot.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instances/Trucks.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Trucks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instances/Utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -40,6 +44,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitSEFilterConfiguration">
@@ -51,12 +60,13 @@
     </file-type-list>
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/src/main.py" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/instances/Utils.py" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/instances/LocalSearch.py" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/tests/TestConstruction.py" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/instances/Trucks.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/tests/TestConstruction.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/instances/LocalSearch.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/main.py" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/instances/Construction.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../../../Python310/Lib/site-packages/pandas/io/common.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/instances/Utils.py" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProjectId" id="21PNUh1l9QXN6taUlC8LXgOvLDj" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -107,7 +117,7 @@
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="C:\Users\Christopher\AppData\Local\Programs\Python\Python39\python.exe" />
+      <option name="SDK_HOME" value="C:\Python310\python.exe" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
@@ -123,8 +133,8 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.TestConstruction" />
       <item itemvalue="Python.main" />
+      <item itemvalue="Python.TestConstruction" />
     </list>
     <recent_temporary>
       <list>
@@ -226,15 +236,12 @@
       <workItem from="1641736887573" duration="2725000" />
       <workItem from="1641829356767" duration="2087000" />
       <workItem from="1642339197009" duration="1432000" />
-      <workItem from="1642594322271" duration="5488000" />
-      <workItem from="1642621715785" duration="357000" />
-      <workItem from="1642657448374" duration="23952000" />
-      <workItem from="1642703648428" duration="27000" />
-      <workItem from="1642761707496" duration="142000" />
-      <workItem from="1643030937668" duration="20488000" />
-      <workItem from="1643116517973" duration="8079000" />
-      <workItem from="1643183997989" duration="18399000" />
-      <workItem from="1643317886062" duration="562000" />
+      <workItem from="1642594322271" duration="6318000" />
+      <workItem from="1643117017693" duration="2008000" />
+      <workItem from="1643119113039" duration="4317000" />
+      <workItem from="1643296090721" duration="972000" />
+      <workItem from="1643450722305" duration="9517000" />
+      <workItem from="1643544663954" duration="4347000" />
     </task>
     <task id="LOCAL-00001" summary="Let's see">
       <created>1637839022626</created>
@@ -502,84 +509,14 @@
       <option name="project" value="LOCAL" />
       <updated>1641662594586</updated>
     </task>
-    <task id="LOCAL-00039" summary="1) added duration costs&#10;2) added penalties for range &amp; duration">
-      <created>1642621388095</created>
+    <task id="LOCAL-00039" summary="1) Added more parameters being passed to the instance">
+      <created>1642599905972</created>
       <option name="number" value="00039" />
       <option name="presentableId" value="LOCAL-00039" />
       <option name="project" value="LOCAL" />
-      <updated>1642621388095</updated>
+      <updated>1642599905972</updated>
     </task>
-    <task id="LOCAL-00040" summary="1) added inside&amp;outside km&#10;2) added volume penalty">
-      <created>1642674774682</created>
-      <option name="number" value="00040" />
-      <option name="presentableId" value="LOCAL-00040" />
-      <option name="project" value="LOCAL" />
-      <updated>1642674774682</updated>
-    </task>
-    <task id="LOCAL-00041" summary="1) added inside&amp;outside km&#10;2) added volume penalty&#10;3) printing only happens every 100th iteration. Change in blockPrint() enablePrint() calls in construction&#10;4) added a graph to show accepted solutions and temperature cooling">
-      <created>1642674919161</created>
-      <option name="number" value="00041" />
-      <option name="presentableId" value="LOCAL-00041" />
-      <option name="project" value="LOCAL" />
-      <updated>1642674919161</updated>
-    </task>
-    <task id="LOCAL-00042" summary="1) added inside&amp;outside km&#10;2) added volume penalty&#10;3) printing only happens every 100th iteration. Change in blockPrint() enablePrint() calls in construction&#10;4) added a graph to show accepted solutions and temperature cooling">
-      <created>1642676337585</created>
-      <option name="number" value="00042" />
-      <option name="presentableId" value="LOCAL-00042" />
-      <option name="project" value="LOCAL" />
-      <updated>1642676337586</updated>
-    </task>
-    <task id="LOCAL-00043" summary="1) added inside&amp;outside km&#10;2) added volume penalty&#10;3) printing only happens every 100th iteration. Change in blockPrint() enablePrint() calls in construction&#10;4) added a graph to show accepted solutions and temperature cooling&#10;5) addded a function to set the cooling factor depending on the max_iterations">
-      <created>1642676470538</created>
-      <option name="number" value="00043" />
-      <option name="presentableId" value="LOCAL-00043" />
-      <option name="project" value="LOCAL" />
-      <updated>1642676470538</updated>
-    </task>
-    <task id="LOCAL-00044" summary="1) added inside&amp;outside km&#10;2) added volume penalty&#10;3) printing only happens every 100th iteration. Change in blockPrint() enablePrint() calls in construction&#10;4) added a graph to show accepted solutions and temperature cooling&#10;5) addded a function to set the cooling factor depending on the max_iterations&#10;6) added all vehicle types">
-      <created>1642679214538</created>
-      <option name="number" value="00044" />
-      <option name="presentableId" value="LOCAL-00044" />
-      <option name="project" value="LOCAL" />
-      <updated>1642679214538</updated>
-    </task>
-    <task id="LOCAL-00045" summary="1) added related_removal with durations as qualifier">
-      <created>1642697511671</created>
-      <option name="number" value="00045" />
-      <option name="presentableId" value="LOCAL-00045" />
-      <option name="project" value="LOCAL" />
-      <updated>1642697511671</updated>
-    </task>
-    <task id="LOCAL-00046" summary="1) started work on combining routes. Pushing for cory.">
-      <created>1643049921528</created>
-      <option name="number" value="00046" />
-      <option name="presentableId" value="LOCAL-00046" />
-      <option name="project" value="LOCAL" />
-      <updated>1643049921528</updated>
-    </task>
-    <task id="LOCAL-00047" summary="1) added a function to calculate the best vehicle for a route in 50% of the time compared to before&#10;2) added a local search operation that allows us to combine 2 routes into one. The operation is first_improvement and only checks two routes at a time. If two routes get combined, they can be combined with more routes within the same run.&#10;In theory we could improve by going for best improvement or 3-route-combinations, but this would increase runtime a lot.">
-      <created>1643060107311</created>
-      <option name="number" value="00047" />
-      <option name="presentableId" value="LOCAL-00047" />
-      <option name="project" value="LOCAL" />
-      <updated>1643060107311</updated>
-    </task>
-    <task id="LOCAL-00048" summary="1) added a check to see if we are infeasible before we start calculating overload... I'm dumb :)">
-      <created>1643133769968</created>
-      <option name="number" value="00048" />
-      <option name="presentableId" value="LOCAL-00048" />
-      <option name="project" value="LOCAL" />
-      <updated>1643133769968</updated>
-    </task>
-    <task id="LOCAL-00049" summary="1) finalised Sensitivity Analysis">
-      <created>1643458705320</created>
-      <option name="number" value="00049" />
-      <option name="presentableId" value="LOCAL-00049" />
-      <option name="project" value="LOCAL" />
-      <updated>1643458705320</updated>
-    </task>
-    <option name="localTasksCounter" value="50" />
+    <option name="localTasksCounter" value="40" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -613,6 +550,15 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="Completely removed all .csv files since we don't actually need them, we can load the data in the same format directly from .nodes and .routes files" />
+    <MESSAGE value="1) implemented distruction" />
+    <MESSAGE value="1) small renaming" />
+    <MESSAGE value="1) started insertion phase" />
+    <MESSAGE value="1) updated destruction algorithm so that it works with any input data (not only the test one)" />
+    <MESSAGE value="1) fixed a small error" />
+    <MESSAGE value="1) insertion part without checking for feasibility" />
+    <MESSAGE value="1) got insertion algorithm working (check in-line comments!)" />
+    <MESSAGE value="Add optimization to ourAlgorithm and add a class of local search" />
     <MESSAGE value="added Christophers local directory" />
     <MESSAGE value="1) Updated print statements to get a good-looking output for the presentation" />
     <MESSAGE value="1) Added multiple algorythm's runs (for loop)&#10;2) Added the test class&#10;3) Figured out the error (to be discussed)" />
@@ -628,29 +574,11 @@
     <MESSAGE value="1) Licence plates" />
     <MESSAGE value="1) Licence plates (last time we had different trucks as classes)" />
     <MESSAGE value="1) Switched to cost in insertion phase&#10;2) Using Vehicles instead of Trucks&#10;3) Added Routes class&#10;4) Completely (almost) rewrote the insertion phase" />
-    <MESSAGE value="1) added duration costs&#10;2) added penalties for range &amp; duration" />
-    <MESSAGE value="1) added inside&amp;outside km&#10;2) added volume penalty" />
-    <MESSAGE value="1) added inside&amp;outside km&#10;2) added volume penalty&#10;3) printing only happens every 100th iteration. Change in blockPrint() enablePrint() calls in construction&#10;4) added a graph to show accepted solutions and temperature cooling" />
-    <MESSAGE value="1) added inside&amp;outside km&#10;2) added volume penalty&#10;3) printing only happens every 100th iteration. Change in blockPrint() enablePrint() calls in construction&#10;4) added a graph to show accepted solutions and temperature cooling&#10;5) addded a function to set the cooling factor depending on the max_iterations" />
-    <MESSAGE value="1) added inside&amp;outside km&#10;2) added volume penalty&#10;3) printing only happens every 100th iteration. Change in blockPrint() enablePrint() calls in construction&#10;4) added a graph to show accepted solutions and temperature cooling&#10;5) addded a function to set the cooling factor depending on the max_iterations&#10;6) added all vehicle types" />
-    <MESSAGE value="1) added related_removal with durations as qualifier" />
-    <MESSAGE value="1) started work on combining routes. Pushing for cory." />
-    <MESSAGE value="1) added a function to calculate the best vehicle for a route in 50% of the time compared to before&#10;2) added a local search operation that allows us to combine 2 routes into one. The operation is first_improvement and only checks two routes at a time. If two routes get combined, they can be combined with more routes within the same run.&#10;In theory we could improve by going for best improvement or 3-route-combinations, but this would increase runtime a lot." />
-    <MESSAGE value="1) added a check to see if we are infeasible before we start calculating overload... I'm dumb :)" />
-    <MESSAGE value="1) finalised Sensitivity Analysis" />
-    <option name="LAST_COMMIT_MESSAGE" value="1) finalised Sensitivity Analysis" />
-  </component>
-  <component name="XDebuggerManager">
-    <watches-manager>
-      <configuration name="PythonConfigurationType">
-        <watch expression="r" />
-        <watch expression="list_of_routes" />
-      </configuration>
-    </watches-manager>
+    <MESSAGE value="1) Added more parameters being passed to the instance" />
+    <option name="LAST_COMMIT_MESSAGE" value="1) Added more parameters being passed to the instance" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/main_py$config.coverage" NAME="config Coverage Results" MODIFIED="1642964086397" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/instances" />
     <SUITE FILE_PATH="coverage/main_py$TestConstruction.coverage" NAME="TestConstruction Coverage Results" MODIFIED="1640299941018" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1643482398462" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1643553383966" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

@@ -23,34 +23,33 @@ from instances.Plot import plotTSP, create_list_int_coordinates
 # instance = TSPLibReader.read("instances/carModel1.vrp") //using .vrp
 ###
 
+# 0. ENTER THE CITY (NY - New York, P - Paris, S - Shanghai)
+city = "NY"
+
 # 1. LOADING THE DATA
+
 # df_NewYork_1_nodes = pd.read_csv("data/NewYork.1.nodes", sep=' ')
 # df_NewYork_2_nodes = pd.read_csv("data/NewYork.2.nodes", sep=' ')
-# df_NewYork_routes = pd.read_csv("data/NewYork.routes", sep=' ')
-df_nodes = pd.read_csv("data/Paris.nodes", sep=' ')
-df_nodes["Duration"] = pd.to_timedelta(
-    df_nodes["Duration"]).dt.total_seconds() / 60  # converting duration column to floats instead of strings
-df_routes = pd.read_csv("data/Paris.routes", sep=' ')
-df_routes["Duration[s]"] = pd.to_timedelta(
-    df_routes["Duration[s]"]).dt.total_seconds() / 60  # converting duration column to floats instead of strings
-# df_Shanghai_nodes = pd.read_csv("data/Shanghai.nodes", sep=' ')
-# df_Shanghai_routes = pd.read_csv("data/Shanghai.routes", sep=' ')
-
-
-# # .loc[] - access the data by the name
-# print(df_NewYork_1_nodes.loc[:, "Duration"])  #select all rows and the "Duration" column
-# print(type(df_NewYork_1_nodes.loc[:, "Duration"]))  #return type - Series
-#
-# print(df_NewYork_1_nodes.loc[:, ["Duration"]])  #select all rows and the "Duration" column
-# print(type(df_NewYork_1_nodes.loc[:, ["Duration"]]))  #return type - DataFrame
-#
-# # .iloc[] - access the data by its number
-# print(df_NewYork_1_nodes.iloc[:, 2])  #select all rows and the third column
-# print(df_NewYork_1_nodes.iloc[2, 2])  #select the third row and the third column
+if city == "NY":
+    df_nodes = pd.read_csv("data/NewYork.nodes", sep=' ')
+    df_nodes["Duration"] = pd.to_timedelta(df_nodes["Duration"]).dt.total_seconds() / 60  # converting duration column to floats instead of strings
+    df_routes = pd.read_csv("data/NewYork.routes", sep=' ')
+    df_routes["Duration[s]"] = pd.to_timedelta(df_routes["Duration[s]"]).dt.total_seconds() / 60  # converting duration column to floats instead of strings
+if city == "P":
+    df_nodes = pd.read_csv("data/Paris.nodes", sep=' ')
+    df_nodes["Duration"] = pd.to_timedelta(df_nodes["Duration"]).dt.total_seconds() / 60  # converting duration column to floats instead of strings
+    df_routes = pd.read_csv("data/Paris.routes", sep=' ')
+    df_routes["Duration[s]"] = pd.to_timedelta(df_routes["Duration[s]"]).dt.total_seconds() / 60  # converting duration column to floats instead of strings
+if city == "S":
+    df_nodes = pd.read_csv("data/Shanghai.nodes", sep=' ')
+    df_nodes["Duration"] = pd.to_timedelta(df_nodes["Duration"]).dt.total_seconds() / 60  # converting duration column to floats instead of strings
+    df_routes = pd.read_csv("data/Shanghai.routes", sep=' ')
+    df_routes["Duration[s]"] = pd.to_timedelta(df_routes["Duration[s]"]).dt.total_seconds() / 60  # converting duration column to floats instead of strings
+print(len(df_nodes))
 
 # 2. CREATING TEST DATASET AND ATTRIBUTES OF FUTURE INSTANCE
 # set testDimension to 1 more than customers
-testDimension = 1 + 112  # change this to use more or less customers of the data set. Max for Paris is 112. Also need to change the iloc for the nodes file
+testDimension = len(df_nodes)  # change this to use more or less customers of the data set. Max for Paris is 112. Also need to change the iloc for the nodes file
 # 1 + either 19, 39 or 112
 
 # DON'T FORGET TO SET MORE VEHICLES IF YOU HAVE MORE CUSTOMERS
@@ -61,20 +60,17 @@ if testDimension == 20:
 if testDimension == 40:
     df_nodes_subset = df_nodes.iloc[:40, :]  # select elements from D0 to C40 in nodes
     df_routes_subset = df_routes.iloc[:4633, :]  # select elements from D0 to C40 in routes
-if testDimension == 113:
+if testDimension == len(df_nodes):
     df_nodes_subset = df_nodes  # select all elements (choose if 112 customers)
     df_routes_subset = df_routes  # select all elements (choose if 112 customers)
 # print(df_nodes_subset)
 # print(df_routes_subset)
 
-subsetDemand = list(
-    df_nodes_subset.loc[:, "Demand[kg]"])  # select demand column (in kg) and convert it to a list
+subsetDemand = list(df_nodes_subset.loc[:, "Demand[kg]"])  # select demand column (in kg) and convert it to a list
 # print(subsetDemand)
-subsetVolume = list(
-    df_nodes_subset.loc[:, "Demand[m^3*10^-3]"])  # select demand column (in volume) and convert it to a list
+subsetVolume = list(df_nodes_subset.loc[:, "Demand[m^3*10^-3]"])  # select demand column (in volume) and convert it to a list
 # print(subsetVolume)
-subsetDuration = list(
-    df_nodes_subset.loc[:, "Duration"])  # select duration column (in volume) and convert it to a list
+subsetDuration = list(df_nodes_subset.loc[:, "Duration"])  # select duration column (in volume) and convert it to a list
 # print(subsetDuration)
 
 subsetDistances = {}  # the purpose of the following up loop is
@@ -166,7 +162,7 @@ if sumOfCapacity < sumOfDemand:
 # 8. Sensitive Analysis
 perform_dict = {}
 params_dict = {
-    'max_iterations': [5000],
+    'max_iterations': [500],
     'init_temp': [0.5],
     'temp_target_percentage': [0.025],
     'temp_target_iteration': [1.2],

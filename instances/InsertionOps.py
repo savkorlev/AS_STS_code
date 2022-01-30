@@ -4,8 +4,8 @@ from instances.Utils import Instance, temporaryRouteCost, routeCost
 
 
 def cheapest_insertion_iterative(listOfRoutes: list[RouteObject], listOfRemoved: list[int],
-                     list_of_available_vehicles: list[Vehicle], instance: Instance, iteration: int) -> list[Vehicle]:
-
+                                 list_of_available_vehicles: list[Vehicle], instance: Instance, iteration: int) -> list[
+    Vehicle]:
     # first iteration. create a list_of_customers_to_insert, which will include every removed customer + their regret + their best position + A LIST OF ALL POSITIONS AND ASSOCIATED COST!
     list_of_customers_to_insert = []
 
@@ -17,7 +17,8 @@ def cheapest_insertion_iterative(listOfRoutes: list[RouteObject], listOfRemoved:
             for v in list_of_available_vehicles:  # check the cost of a new route
                 if v.type != previousVehicleType:  # since we don't have multi-trips, all vehicels with the same type are equal. We therefore only need to check one of each type.
                     newCustomerList = [0, cd, 0]
-                    newRouteCost = temporaryRouteCost(newCustomerList, v, instance, iteration, True)  # get cost of new route
+                    newRouteCost = temporaryRouteCost(newCustomerList, v, instance, iteration,
+                                                      True)  # get cost of new route
                     list_of_insert_positions.append((newRouteCost, 'new_route', v))
                     previousVehicleType = v.type
 
@@ -35,7 +36,8 @@ def cheapest_insertion_iterative(listOfRoutes: list[RouteObject], listOfRemoved:
         customer_best_route = list_of_insert_positions[0][1]  # best route or new_route
         customer_best_position = list_of_insert_positions[0][2]  # best position or best vehicle
 
-        list_of_customers_to_insert.append([cd, customer_cheapest, customer_best_route, customer_best_position, list_of_insert_positions])
+        list_of_customers_to_insert.append(
+            [cd, customer_cheapest, customer_best_route, customer_best_position, list_of_insert_positions])
 
     list_of_customers_to_insert.sort(key=lambda y: y[1], reverse=False)  # sort the list by cost, ascending.
     best_customer = list_of_customers_to_insert[0][0]
@@ -52,7 +54,7 @@ def cheapest_insertion_iterative(listOfRoutes: list[RouteObject], listOfRemoved:
     else:
         best_route.customer_list.insert(best_position + 1, best_customer)
 
-    best_route.current_cost = routeCost(best_route, instance, iteration,)  # update cost of changed route
+    best_route.current_cost = routeCost(best_route, instance, iteration, )  # update cost of changed route
 
     listOfRemoved.remove(best_customer)  # delete current bestCustomer from a list of removed customers
     list_of_customers_to_insert.pop(0)
@@ -76,7 +78,8 @@ def cheapest_insertion_iterative(listOfRoutes: list[RouteObject], listOfRemoved:
                 for v in list_of_available_vehicles:  # check the cost of a new route
                     if v.type != previousVehicleType:  # since we don't have multi-trips, all vehicels with the same type are equal. We therefore only need to check one of each type.
                         newCustomerList = [0, current_customer, 0]
-                        newRouteCost = temporaryRouteCost(newCustomerList, v, instance, iteration, True)  # get cost of new route
+                        newRouteCost = temporaryRouteCost(newCustomerList, v, instance, iteration,
+                                                          True)  # get cost of new route
                         list_of_insert_positions.append((newRouteCost, 'new_route', v))
                         previousVehicleType = v.type
 
@@ -110,13 +113,12 @@ def cheapest_insertion_iterative(listOfRoutes: list[RouteObject], listOfRemoved:
         listOfRemoved.remove(best_customer)  # delete current bestCustomer from a list of removed customers
         list_of_customers_to_insert.pop(0)
         # next iterations
-    
+
     return list_of_available_vehicles
 
 
 def regret_insertion(listOfRoutes: list[RouteObject], listOfRemoved: list[int],
                      list_of_available_vehicles: list[Vehicle], instance: Instance, iteration: int) -> list[Vehicle]:
-
     # first iteration. create a list_of_customers_to_insert, which will include every removed customer + their regret + their best position + A LIST OF ALL POSITIONS AND ASSOCIATED COST!
     list_of_customers_to_insert = []
 
@@ -128,7 +130,8 @@ def regret_insertion(listOfRoutes: list[RouteObject], listOfRemoved: list[int],
             for v in list_of_available_vehicles:  # check the cost of a new route
                 if v.type != previousVehicleType:  # since we don't have multi-trips, all vehicels with the same type are equal. We therefore only need to check one of each type.
                     newCustomerList = [0, cd, 0]
-                    newRouteCost = temporaryRouteCost(newCustomerList, v, instance, iteration, True)  # get cost of new route
+                    newRouteCost = temporaryRouteCost(newCustomerList, v, instance, iteration,
+                                                      True)  # get cost of new route
                     list_of_insert_positions.append((newRouteCost, 'new_route', v))
                     previousVehicleType = v.type
 
@@ -142,11 +145,13 @@ def regret_insertion(listOfRoutes: list[RouteObject], listOfRemoved: list[int],
                 list_of_insert_positions.append((insertionCost, i, j))
 
         list_of_insert_positions.sort(key=lambda y: y[0], reverse=False)  # sort the list by cost, ascending.
-        customer_regret = list_of_insert_positions[1][0] - list_of_insert_positions[0][0]  # 2nd cheapest cost - cheapest cost = regret
+        customer_regret = list_of_insert_positions[1][0] - list_of_insert_positions[0][
+            0]  # 2nd cheapest cost - cheapest cost = regret
         customer_best_route = list_of_insert_positions[0][1]  # best route or new_route
         customer_best_position = list_of_insert_positions[0][2]  # best position or best vehicle
 
-        list_of_customers_to_insert.append([cd, customer_regret, customer_best_route, customer_best_position, list_of_insert_positions])
+        list_of_customers_to_insert.append(
+            [cd, customer_regret, customer_best_route, customer_best_position, list_of_insert_positions])
 
     list_of_customers_to_insert.sort(key=lambda y: y[1], reverse=True)  # sort the list by regret, descending.
     best_customer = list_of_customers_to_insert[0][0]
@@ -163,7 +168,7 @@ def regret_insertion(listOfRoutes: list[RouteObject], listOfRemoved: list[int],
     else:
         best_route.customer_list.insert(best_position + 1, best_customer)
 
-    best_route.current_cost = routeCost(best_route, instance, iteration,)  # update cost of changed route
+    best_route.current_cost = routeCost(best_route, instance, iteration, )  # update cost of changed route
 
     listOfRemoved.remove(best_customer)  # delete current bestCustomer from a list of removed customers
     list_of_customers_to_insert.pop(0)
@@ -187,12 +192,14 @@ def regret_insertion(listOfRoutes: list[RouteObject], listOfRemoved: list[int],
                 for v in list_of_available_vehicles:  # check the cost of a new route
                     if v.type != previousVehicleType:  # since we don't have multi-trips, all vehicels with the same type are equal. We therefore only need to check one of each type.
                         newCustomerList = [0, current_customer, 0]
-                        newRouteCost = temporaryRouteCost(newCustomerList, v, instance, iteration, True)  # get cost of new route
+                        newRouteCost = temporaryRouteCost(newCustomerList, v, instance, iteration,
+                                                          True)  # get cost of new route
                         list_of_insert_positions.append((newRouteCost, 'new_route', v))
                         previousVehicleType = v.type
 
             list_of_insert_positions.sort(key=lambda y: y[0], reverse=False)  # sort the list by cost, ascending.
-            customer_regret = list_of_insert_positions[1][0] - list_of_insert_positions[0][0]  # 2nd cheapest cost - cheapest cost = regret
+            customer_regret = list_of_insert_positions[1][0] - list_of_insert_positions[0][
+                0]  # 2nd cheapest cost - cheapest cost = regret
             customer_best_route = list_of_insert_positions[0][1]  # best route or new_route
             customer_best_position = list_of_insert_positions[0][2]  # best position or best vehicle
 
@@ -221,7 +228,7 @@ def regret_insertion(listOfRoutes: list[RouteObject], listOfRemoved: list[int],
         listOfRemoved.remove(best_customer)  # delete current bestCustomer from a list of removed customers
         list_of_customers_to_insert.pop(0)
         # next iterations
-        
+
     return list_of_available_vehicles
 
 # def cheapest_insertion_slow(listOfRoutes: list[RouteObject], listOfRemoved: list[int],
@@ -269,7 +276,6 @@ def regret_insertion(listOfRoutes: list[RouteObject], listOfRemoved: list[int],
 #             list_of_available_vehicles.remove(bestNewVehicle)
 #
 #         listOfRemoved.remove(bestCustomer)  # delete current bestCustomer from a list of removed customers
-
 
 
 # def regret_insertion_slow(listOfRoutes: list[RouteObject], listOfRemoved: list[int],

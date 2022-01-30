@@ -1,4 +1,3 @@
-
 class Vehicle:
     def __init__(self, type: str, city: str, plateNr: str, fixed_cost_bool: bool):
         self.plateNr = plateNr
