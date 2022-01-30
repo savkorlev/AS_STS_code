@@ -23,29 +23,28 @@ from instances.Plot import plotTSP, create_list_int_coordinates
 # instance = TSPLibReader.read("instances/carModel1.vrp") //using .vrp
 ###
 
-# 0. ENTER THE CITY (NY - New York, P - Paris, S - Shanghai)
-city = "NY"
+# 0. ENTER THE CITY (NewYork, Paris, Shanghai)
+city = "Shanghai"
 
 # 1. LOADING THE DATA
 
 # df_NewYork_1_nodes = pd.read_csv("data/NewYork.1.nodes", sep=' ')
 # df_NewYork_2_nodes = pd.read_csv("data/NewYork.2.nodes", sep=' ')
-if city == "NY":
+if city == "NewYork":
     df_nodes = pd.read_csv("data/NewYork.nodes", sep=' ')
     df_nodes["Duration"] = pd.to_timedelta(df_nodes["Duration"]).dt.total_seconds() / 60  # converting duration column to floats instead of strings
     df_routes = pd.read_csv("data/NewYork.routes", sep=' ')
     df_routes["Duration[s]"] = pd.to_timedelta(df_routes["Duration[s]"]).dt.total_seconds() / 60  # converting duration column to floats instead of strings
-if city == "P":
+if city == "Paris":
     df_nodes = pd.read_csv("data/Paris.nodes", sep=' ')
     df_nodes["Duration"] = pd.to_timedelta(df_nodes["Duration"]).dt.total_seconds() / 60  # converting duration column to floats instead of strings
     df_routes = pd.read_csv("data/Paris.routes", sep=' ')
     df_routes["Duration[s]"] = pd.to_timedelta(df_routes["Duration[s]"]).dt.total_seconds() / 60  # converting duration column to floats instead of strings
-if city == "S":
+if city == "Shanghai":
     df_nodes = pd.read_csv("data/Shanghai.nodes", sep=' ')
     df_nodes["Duration"] = pd.to_timedelta(df_nodes["Duration"]).dt.total_seconds() / 60  # converting duration column to floats instead of strings
     df_routes = pd.read_csv("data/Shanghai.routes", sep=' ')
     df_routes["Duration[s]"] = pd.to_timedelta(df_routes["Duration[s]"]).dt.total_seconds() / 60  # converting duration column to floats instead of strings
-print(len(df_nodes))
 
 # 2. CREATING TEST DATASET AND ATTRIBUTES OF FUTURE INSTANCE
 # set testDimension to 1 more than customers
@@ -108,7 +107,6 @@ coordinates_int = create_list_int_coordinates(df_nodes_subset)
 
 # 3. CREATING OUR VEHICLES
 # set the # of vehicles available to Sweep and Algorithm
-city = "Paris"
 numI_Atego = 30
 numI_VWTrans = 30
 numI_VWCaddy = 30
@@ -162,7 +160,7 @@ if sumOfCapacity < sumOfDemand:
 # 8. Sensitive Analysis
 perform_dict = {}
 params_dict = {
-    'max_iterations': [500],
+    'max_iterations': [10],
     'init_temp': [0.5],
     'temp_target_percentage': [0.025],
     'temp_target_iteration': [1.2],

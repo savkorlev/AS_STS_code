@@ -78,7 +78,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], listOfI
         iteration += 1  # count up the iterations
 
         blockPrint()
-        if iteration % 100 == 0 or iteration == 1:
+        if iteration % 10 == 0 or iteration == 1:
             enablePrint()
 
         print(f"New iteration__________{iteration}")

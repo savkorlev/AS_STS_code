@@ -62,7 +62,7 @@ class Instance:
 
         # algorithm will run until first of these conditions is met. Either iterations or time.
         self.max_iterations = 100 * 1
-        self.max_time = 60.0 * 1
+        self.max_time = 10e10
         # seconds
 
         """ the idea here is to fall back to our best known solution after getting away from it with SimAnnealing. 
