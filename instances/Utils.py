@@ -80,9 +80,9 @@ class Instance:
         # todo: tune cooling_target parameters [init_temp], [temp_target_percentage], [temp_target_iteration]
         self.freeze_period_length = 0.01  # currently set up to freeze for x * iterations. Not max_iterations, but iterations-so-far. So a freeze will be longer if the algorithm runs long.
         # todo: tune freeze period length
-        
+
         self.final_effort = 0.02  # this parameter determines when we start our final effort. For the last x% of max_iterations, we will jump back to the best known solution and turn off simulated annealing. We then try to optimize this solution locally.
-        
+
         # set the initial weights for each operator
         self.init_weight_destroy_random = 25
         self.init_weight_destroy_expensive = 100
@@ -652,5 +652,4 @@ class Instance_tune:
         self.step_penalty = args.step_penalty  # step by which penalty grows in every iteration -> penalty_cost()
         # TODO: Choose suitable penalty-factor. Maybe depending on max_iterations?
 
-        self.penalty_cost_iteration_for_initialization = 1000  # setting this parameter correctly is very important for the initial solution.
-        # self.penalty_cost_iteration_for_initialization = 0.75 * self.max_iterations   # setting this parameter correctly is very important for the initial solution.
+        self.penalty_cost_iteration_for_initialization = max(10000, 0.75 * self.max_iterations)  # setting this parameter correctly is very important for the initial solution.

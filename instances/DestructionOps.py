@@ -18,7 +18,9 @@ def route_removal(list_of_routes: list[RouteObject], instance: Instance) -> list
     sacrifice_route = random.choice(list_of_routes)
     numberOfRemoved = max(1, random.randint(round(instance.destroy_route_lb * (len(sacrifice_route.customer_list) - 2)),  # delete at least 1
                                             round(instance.destroy_route_ub * (len(sacrifice_route.customer_list) - 2))))  # generate number customers to be removed
-
+    
+    numberOfRemoved = min(20, numberOfRemoved)
+    
     for i in range(numberOfRemoved):
         listOfRemoved.append(sacrifice_route.customer_list[i+1])  # add customers to the list
 
@@ -77,6 +79,6 @@ def related_removal(instance: Instance) -> list:
     duration_from_seed.sort(key=lambda y: y[1], reverse=False)
 
     for i in range(0, numberOfRemoved):
-        listOfRemoved.append(duration_from_seed[i][0])
+        listOfRemoved.append(duration_from_seed[i][0])  # todo: found a BUG here when we try to run multiple runs with the InstanceTuner
 
     return listOfRemoved

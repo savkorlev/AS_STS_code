@@ -10,7 +10,7 @@ from instances.Construction import ouralgorithm
 from instances.Intialization import random_sweep
 from instances.Trucks import create_vehicles
 from instances.Utils import Instance, vehicle_assignment, solution_cost, find_cheapest_vehicle, Instance_tune
-from instances.Plot import plotTSP, create_list_int_coordinates
+from instances.Plot import create_list_int_coordinates, plotVRP
 
 # import os
 # os.chdir('C:/Users/Евгений/Desktop/TUM/WS 2021-2022/Advanced Seminar Sustainable Transportation Systems/AS_STS_code')
@@ -24,7 +24,7 @@ from instances.Plot import plotTSP, create_list_int_coordinates
 ###
 
 # 0. ENTER THE CITY (NewYork, Paris, Shanghai)
-city = "Shanghai"
+city = "NewYork"
 
 # 1. LOADING THE DATA
 
@@ -157,10 +157,10 @@ if sumOfCapacity < sumOfDemand:
 # plotTSP(solutionOur[0], coordinates_int, 'g', False, 'No Depot Plot')
 # plotTSP(solutionOur[0], coordinates_int, 'g', True, 'Route Plot')
 
-# 8. Sensitive Analysis
+# 8. Parameter Analysis
 perform_dict = {}
 params_dict = {
-    'max_iterations': [10],
+    'max_iterations': [5000],
     'init_temp': [0.5],
     'temp_target_percentage': [0.025],
     'temp_target_iteration': [1.2],
@@ -171,7 +171,7 @@ params_dict = {
     'destroy_related_ub': [0.15],
     'max_weight': [200],
     'min_weight': [10],
-    'reduce_step': [1],
+    'reduce_step': [1, 1, 1],
     'step_penalty': [0.25],
 }
 n = 0
@@ -183,7 +183,7 @@ for a in params_dict['max_iterations']:
                     for f in params_dict['destroy_random_ub']:
                         for g in params_dict['destroy_expensive_ub']:
                             for h in params_dict['destroy_route_ub']:
-                                for i in params_dict['destroy_related_ub']:
+                                for i_par in params_dict['destroy_related_ub']:
                                     for j in params_dict['max_weight']:
                                         for k in params_dict['min_weight']:
                                             for l in params_dict['reduce_step']:
@@ -197,7 +197,7 @@ for a in params_dict['max_iterations']:
                                                     parser.add_argument('--' + str('destroy_random_ub'), default=f)
                                                     parser.add_argument('--' + str('destroy_expensive_ub'), default=g)
                                                     parser.add_argument('--' + str('destroy_route_ub'), default=h)
-                                                    parser.add_argument('--' + str('destroy_related_ub'), default=i)
+                                                    parser.add_argument('--' + str('destroy_related_ub'), default=i_par)
                                                     parser.add_argument('--' + str('max_weight'), default=j)
                                                     parser.add_argument('--' + str('min_weight'), default=k)
                                                     parser.add_argument('--' + str('reduce_step'), default=l)
@@ -213,6 +213,7 @@ for a in params_dict['max_iterations']:
                                                                                 subsetArcDuration, coordinates,
                                                                                 args)
                                                     bestCostRandomSweep = 10e10
+                                                    start_time_run = time.perf_counter()
                                                     for i in range(10):
                                                         tempSolutionRandomSweep = random_sweep(ourInstance,
                                                                                                listOfInitialVehicles)
@@ -231,21 +232,22 @@ for a in params_dict['max_iterations']:
                                                                                    listOfInitialVehicles,
                                                                                    listOfInitAvailableVehicles,
                                                                                    coordinates_int)
-
+                                                    end_time_run = time.perf_counter()
+                                                    runtime_run = end_time_run - start_time_run
                                                     print(
                                                         f"numI_Atego: {numI_Atego,}, numI_VWTrans: {numI_VWTrans}, numI_VWCaddy: {numI_VWCaddy}, numI_DeFuso: {numI_DeFuso}, numI_ScooterL: {numI_ScooterL}, numI_ScooterS: {numI_ScooterS}, numI_eCargoBike: {numI_eCargoBike}")
                                                     no_depot_title = 'No Depot Plot ' + str(n)
                                                     depot_title = 'Route Plot in Permutation ' + str(n)
-                                                    plotTSP(sol, coordinates_int, 'g', False, no_depot_title)
-                                                    plotTSP(sol, coordinates_int, 'g', True, depot_title)
+                                                    # plotVRP(sol, coordinates_int, False, no_depot_title)
+                                                    plotVRP(sol, coordinates_int, True, depot_title)
 
-                                                    perform_dict[n] = [a, b, c, d, e, f, g, h, i, j, k, l, m, final_cost]
+                                                    perform_dict[n] = [a, b, c, d, e, f, g, h, i_par, j, k, l, m, final_cost, runtime_run]
                                                     n += 1
 
-summary_performance = pd.DataFrame.from_dict(perform_dict, orient='index', columns=list(params_dict.keys()) + ['cost'])
+summary_performance = pd.DataFrame.from_dict(perform_dict, orient='index', columns=list(params_dict.keys()) + ['cost'] + ['runtime in s'])
 print(f"/n")
 print(summary_performance)
 
 date_string = str(datetime.datetime.now())
 date_string = date_string.replace(":", "-")
-summary_performance.to_csv(date_string[:16] + ' - sensitive_analysis.csv')
+summary_performance.to_csv(date_string[:16] + ' - parameter_analysis.csv')
