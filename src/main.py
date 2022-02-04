@@ -24,7 +24,7 @@ from instances.Plot import create_list_int_coordinates, plotVRP
 ###
 
 # 0. ENTER THE CITY (NewYork, Paris, Shanghai)
-city = "NewYork"
+city = "Paris"
 
 # 1. LOADING THE DATA
 
@@ -107,13 +107,13 @@ coordinates_int = create_list_int_coordinates(df_nodes_subset)
 
 # 3. CREATING OUR VEHICLES
 # set the # of vehicles available to Sweep and Algorithm
-numI_Atego = 30
-numI_VWTrans = 30
-numI_VWCaddy = 30
-numI_DeFuso = 30
-numI_ScooterL = 30
-numI_ScooterS = 30
-numI_eCargoBike = 30
+numI_Atego = 20
+numI_VWTrans = 0
+numI_VWCaddy = 0
+numI_DeFuso = 5
+numI_ScooterL = 0
+numI_ScooterS = 0
+numI_eCargoBike = 0
 
 fixed_cost_active = True
 
@@ -169,9 +169,9 @@ params_dict = {
     'destroy_expensive_ub': [0.1],
     'destroy_route_ub': [1],
     'destroy_related_ub': [0.15],
-    'max_weight': [200],
+    'max_weight': [5000],
     'min_weight': [10],
-    'reduce_step': [1, 1, 1],
+    'reduce_step': [1],
     'step_penalty': [0.25],
 }
 n = 0
@@ -228,7 +228,7 @@ for a in params_dict['max_iterations']:
                                                         bestSolutionRandomSweep,
                                                         listOfInitialVehicles, ourInstance,
                                                         0, True)
-                                                    sol, final_cost = ouralgorithm(ourInstance, bestSolutionRandomSweep,
+                                                    sol, final_cost, feasible = ouralgorithm(ourInstance, bestSolutionRandomSweep,
                                                                                    listOfInitialVehicles,
                                                                                    listOfInitAvailableVehicles,
                                                                                    coordinates_int)
@@ -245,7 +245,7 @@ for a in params_dict['max_iterations']:
                                                     n += 1
 
 summary_performance = pd.DataFrame.from_dict(perform_dict, orient='index', columns=list(params_dict.keys()) + ['cost'] + ['runtime in s'])
-print(f"/n")
+print()
 print(summary_performance)
 
 date_string = str(datetime.datetime.now())

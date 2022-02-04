@@ -22,6 +22,9 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], list_of
                  listOfInitAvailableVehicles: List[Vehicle], coordinates_int=[]): # coordinates_int is only for matplot
     # START OF INITIALIZATION PHASE
     starttime = datetime.datetime.now()
+
+    feasible_solution_found = False  # to track if we found a feasible solution
+    
     accepted_list_of_av_vehicles = listOfInitAvailableVehicles.copy()
     # setting the initial solution up so we can compare to it in acceptance phase
     bestSolution = copy.deepcopy(initialSolution)  # set the initial solution as the best solution (until acceptance check)
@@ -219,6 +222,10 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], list_of
                 if not route.currently_feasible:
                     solution_feasible = False
             bestSolutionPlot.append((iteration, costThisIteration, solution_feasible))
+            if solution_feasible:
+                best_feasible_solution = copy.deepcopy(bestSolution)  # stores the best feasible solution
+                feasible_solution_found = True
+
             counter_iterations_no_improvement = 0  # reset the counter
 
             if destroy_op_used == 'random_removal':
@@ -324,6 +331,12 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], list_of
     #plotSubplots(simAnnPlot, simAnnTemp, 'SimAnn Accepted + Temp')
     plot3Subplots(simAnnPlot, bestSolutionPlot, simAnnTemp, 'SimAnn Accepted + Temp')
 
-
+    if feasible_solution_found:
+        return best_feasible_solution, bestCost, feasible_solution_found
+    else:
+        print(f"FOUND NO FEASIBLE SOLUTION!")
+        return bestSolution, bestCost, feasible_solution_found
+    
+    
     # return list(map(lambda x: x.customer_list, bestSolution)), bestCost
-    return bestSolution, bestCost
+    # return bestSolution, bestCost
