@@ -330,7 +330,8 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], list_of
     print(str(endtime))
 
     #plotSubplots(simAnnPlot, simAnnTemp, 'SimAnn Accepted + Temp')
-    plot3Subplots(simAnnPlot, bestSolutionPlot, simAnnTemp, 'SimAnn Accepted + Temp')
+    formated_cost = "{:.2f}".format(bestCost)
+    plot3Subplots(simAnnPlot, bestSolutionPlot, simAnnTemp, 'SimAnn Accepted / Temp - Best Cost: '+ formated_cost)
 
     if feasible_solution_found:
         return best_feasible_solution, bestCost, feasible_solution_found
