@@ -158,6 +158,24 @@ if sumOfCapacity < sumOfDemand:
 # plotTSP(solutionOur[0], coordinates_int, 'g', True, 'Route Plot')
 
 # 8. Parameter Analysis
+
+# Design Freeze - 2022-02-07 - 14:00
+# params_dict = {
+#     'max_iterations': [10000],
+#     'init_temp': [0.1],
+#     'temp_target_percentage': [0.025],
+#     'temp_target_iteration': [1.2],
+#     'freeze_period_length': [0.02],
+#     'destroy_random_ub': [0.12],
+#     'destroy_expensive_ub': [0.1],
+#     'destroy_route_ub': [1],
+#     'destroy_related_ub': [0.12],
+#     'max_weight': [5000],
+#     'min_weight': [10],
+#     'reduce_step': [4],
+#     'step_penalty': [1],
+# }
+
 perform_dict = {}
 params_dict = {
     'max_iterations': [10000],
