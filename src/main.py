@@ -259,10 +259,10 @@ for a in params_dict['max_iterations']:
                                                     # plotVRP(sol, coordinates_int, False, no_depot_title)
                                                     plotVRP(sol, coordinates_int, True, depot_title)
 
-                                                    perform_dict[n] = [a, b, c, d, e, f, g, h, i_par, j, k, l, m, feasible, fixed_cost_active, final_cost, runtime_run]
+                                                    perform_dict[n] = [a, b, c, d, e, f, g, h, i_par, j, k, l, m, feasible, fixed_cost_active, tax_ins_active, final_cost, runtime_run]
                                                     n += 1
 
-summary_performance = pd.DataFrame.from_dict(perform_dict, orient='index', columns=list(params_dict.keys()) + ['feasible'] + ['fixed costs'] + ['cost'] + ['runtime in s'])
+summary_performance = pd.DataFrame.from_dict(perform_dict, orient='index', columns=list(params_dict.keys()) + ['feasible'] + ['fixed costs'] +['tax+ins'] + ['cost'] + ['runtime in s'])
 print()
 print(summary_performance)
 

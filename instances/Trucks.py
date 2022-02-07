@@ -10,9 +10,13 @@ class Vehicle:
             city_tax = 0.25  # I took the average from the expected toll range
             # city_tax = 0.40  # top end
         elif city == "NewYork":
+            # city_tax = 0.10  # low end
             city_tax = 0.25
+            # city_tax = 0.40  # top end
         elif city == "Shanghai":
+            # city_tax = 0.05  # low end
             city_tax = 0.125
+            # city_tax = 0.20  # top end
 
         if type == "MercedesBenzAtego":
             self.payload_kg = 2800
