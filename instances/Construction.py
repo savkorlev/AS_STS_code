@@ -127,7 +127,8 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], list_of
         
         # testing to see if vehicle assignment after destruction helps with using more vehicle types
         # the test failed. It was worse in New York
-        # list_of_available_vehicles = vehicle_assignment(listOfRoutes, list_of_all_vehicles, instance, iteration)  # def vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: List[Vehicle], instance: Instance):
+        if instance.max_weight == 5001:  # Botch: if instance.max_weight is set to 5001, we activate Vehicle_Assignment after Destruction
+            list_of_available_vehicles = vehicle_assignment(listOfRoutes, list_of_all_vehicles, instance, iteration)  # def vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: List[Vehicle], instance: Instance):
 
         #  -------------------------------------------------------------------------------------------------------------
         # START OF INSERTION PHASE
@@ -159,7 +160,6 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], list_of
         # else:
         #     local_search_function = find_first_improvement_relocate
         local_search_function = find_best_improvement_2Opt
-
         listAfterOptimization = hillclimbing(list(map(lambda x: x.customer_list, listOfRoutes)), instance, local_search_function)
         for i in range(len(listAfterOptimization)):
             listOfRoutes[i].customer_list = listAfterOptimization[i].copy()  # put the optimized customer lists back into our RouteObjects
@@ -170,6 +170,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], list_of
         #     print(f"{v.type}, nr: {v.plateNr}")    
        
         listOfRoutes, list_of_available_vehicles = combine_routes(listOfRoutes, list_of_available_vehicles, instance, iteration)
+        # todo: we could do a 2 opt of the combined routes. I think this would be really strong.
         # END OF LOCAL OPTIMIZATION 2-opt
 
         # START OF VEHICLE SWAP PHASE
@@ -191,7 +192,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], list_of
         bestCost = solution_cost(bestSolution, instance, iteration, True)  # we have to recalculate best cost after every iteration because we need to update infeasibility costs
         print(f"Best known cost before this iteration: {bestCost}")
         print(f"Best iteration before this one: {bestIteration}")
-        ## costThisIteration = solution_cost(listOfRoutes, instance, iteration, True) # todo: maybe we should implement something that forces the algorithm to go to the bestSolution and try to improve it for the last 1% iterations?
+        ## costThisIteration = solution_cost(listOfRoutes, instance, iteration, True)
         accept, costThisIteration, temperature, freeze_iterations = simulated_annealing(instance, currentSolution, listOfRoutes, temperature,
                                                                      iteration, freeze_iterations)
         

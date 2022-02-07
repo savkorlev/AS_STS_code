@@ -1,10 +1,5 @@
-# requires matplotlib package (https://matplotlib.org)
-# Note: PyPy might have problems with this lib
 import copy
-import random
 import matplotlib.pyplot as plt
-from matplotlib.pyplot import cm
-import numpy as np
 import seaborn as sns
 
 

@@ -467,7 +467,7 @@ def simulated_annealing(instance: Instance, currentSolution: List[RouteObject], 
         elif temp < 0.1:
             print(f"We reject the latest solution. Temperature {temp:.2f} was to cold for SimAnn.")
         else:
-            if (rand < math.exp((curcost - newcost) / temp)):  # todo: we get a math error if cooling is too low. Cory will fix this.
+            if (rand < math.exp((curcost - newcost) / temp)):
                 accept = True
                 print(f"We accept the latest solution. We had a {100 * math.exp((curcost - newcost) / temp):.2f}% chance to accept.")
             else:
@@ -498,7 +498,7 @@ def find_cheapest_vehicle(customer_list: list[int], instance: Instance, iteratio
 
     iteration_penalty = instance.init_penalty + iteration * instance.step_penalty
 
-    best_vehicle = Vehicle("DummyType", "DummyCity", "999999", True)
+    best_vehicle = Vehicle("DummyType", "DummyCity", "999999", True, True)
     best_vehicle_cost = 10e10
     last_vehicle_type = "FirstRound"
     for vehicle in list_of_avb_vehicles:
@@ -537,7 +537,7 @@ def vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: Li
     #list_of_routes.sort(key=lambda x: x.current_cost, reverse=True)  # orders routes by cost descending # TODO: We can quickly become adaptive by not always starting with the most expensive route
     # print(f"Routes costs descending: {list(map(lambda x: x.current_cost, listOfRoutes))}")
     list_of_available_vehicles = initial_list_of_vehicles.copy()
-    dummyAtego = Vehicle("MercedesBenzAtego", "Paris", "999999", True)
+    dummyAtego = Vehicle("MercedesBenzAtego", "Paris", "999999", True, True)
     counter = 0
     for r in list_of_routes:  # check all routes. Before this they should be ordered by their costs descending
         counter += 1

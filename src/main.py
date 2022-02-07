@@ -25,6 +25,17 @@ from instances.Plot import create_list_int_coordinates, plotVRP
 
 # 0. ENTER THE CITY (NewYork, Paris, Shanghai)
 city = "Paris"
+# set the # of vehicles available to Sweep and Algorithm
+numI_Atego = 20
+numI_VWTrans = 20
+numI_VWCaddy = 20
+numI_DeFuso = 20
+numI_ScooterL = 20
+numI_ScooterS = 20
+numI_eCargoBike = 20
+# set fixed costs on/off
+fixed_cost_active = True  # sets fixed costs active for all vehicles
+tax_ins_active = True  # sets taxes and insurance active. Makes fixed costs for all non-leased vehicles 90% higher (20% for bike).
 
 # 1. LOADING THE DATA
 
@@ -106,20 +117,9 @@ for row, content in df_nodes_subset.iterrows():
 coordinates_int = create_list_int_coordinates(df_nodes_subset)
 
 # 3. CREATING OUR VEHICLES
-# set the # of vehicles available to Sweep and Algorithm
-numI_Atego = 20
-numI_VWTrans = 0
-numI_VWCaddy = 0
-numI_DeFuso = 5
-numI_ScooterL = 0
-numI_ScooterS = 0
-numI_eCargoBike = 0
-
-fixed_cost_active = True
-
 # create vehicles via function in Trucks.py-file
 listOfInitialVehicles = create_vehicles(city, numI_Atego, numI_VWTrans, numI_VWCaddy, numI_DeFuso, numI_ScooterL,
-                                        numI_ScooterS, numI_eCargoBike, fixed_cost_active)
+                                        numI_ScooterS, numI_eCargoBike, fixed_cost_active, tax_ins_active)
 print(f"List of initial Vehicle payloads_kg: {list(map(lambda x: x.payload_kg, listOfInitialVehicles))}")
 
 # test feasibility of our vehicle assignment. Need enough capacity to carry all demand.
@@ -160,19 +160,19 @@ if sumOfCapacity < sumOfDemand:
 # 8. Parameter Analysis
 perform_dict = {}
 params_dict = {
-    'max_iterations': [5000],
-    'init_temp': [0.5],
+    'max_iterations': [10000],
+    'init_temp': [0.1],
     'temp_target_percentage': [0.025],
     'temp_target_iteration': [1.2],
-    'freeze_period_length': [0.01],
-    'destroy_random_ub': [0.15],
+    'freeze_period_length': [0.02],
+    'destroy_random_ub': [0.12],
     'destroy_expensive_ub': [0.1],
     'destroy_route_ub': [1],
-    'destroy_related_ub': [0.15],
-    'max_weight': [5000],
+    'destroy_related_ub': [0.12],
+    'max_weight': [5000],  # Botch: if this is set to 5001, we activate Vehicle_Assignment after Destruction
     'min_weight': [10],
-    'reduce_step': [1],
-    'step_penalty': [0.25],
+    'reduce_step': [4],
+    'step_penalty': [1],
 }
 n = 0
 for a in params_dict['max_iterations']:
@@ -241,10 +241,10 @@ for a in params_dict['max_iterations']:
                                                     # plotVRP(sol, coordinates_int, False, no_depot_title)
                                                     plotVRP(sol, coordinates_int, True, depot_title)
 
-                                                    perform_dict[n] = [a, b, c, d, e, f, g, h, i_par, j, k, l, m, final_cost, runtime_run]
+                                                    perform_dict[n] = [a, b, c, d, e, f, g, h, i_par, j, k, l, m, feasible, fixed_cost_active, final_cost, runtime_run]
                                                     n += 1
 
-summary_performance = pd.DataFrame.from_dict(perform_dict, orient='index', columns=list(params_dict.keys()) + ['cost'] + ['runtime in s'])
+summary_performance = pd.DataFrame.from_dict(perform_dict, orient='index', columns=list(params_dict.keys()) + ['feasible'] + ['fixed costs'] + ['cost'] + ['runtime in s'])
 print()
 print(summary_performance)
 
