@@ -3,7 +3,7 @@
 from instances.Route import RouteObject
 from instances.Trucks import Vehicle
 from instances.Utils import compute_distance, Solution, Instance, compute_total_demand, find_cheapest_vehicle, \
-    delete_empty_routes
+    delete_empty_routes, compute_duration
 
 
 def hillclimbing(solution: Solution, instance: Instance, function) -> Solution:
@@ -198,6 +198,35 @@ def find_best_improvement_2Opt(solution: Solution,
             solution[r_index] = route[:best_2opt[0]] + list(reversed(route[best_2opt[0]:(best_2opt[1] + 1)])) + route[(
                                                                                                                                   best_2opt[
                                                                                                                                       1] + 1):]
+            return True
+    return False
+
+def find_best_duration_improvement_2Opt(solution: Solution,
+                               instance: Instance) -> bool:  # todo: should probably either optimize for cost or time
+    """
+    search for the best improving 2-opt move.
+    :param solution: list of routes to improve
+    :param instance: corresponding instance
+    :return: `True` if an improvement was found, otherwise `False`.
+    """
+    # https://github.com/saper0/tsp-heuristics/blob/master/ls_2opt.py
+
+    for r_index, route in enumerate(solution):  # List[Route]
+        best_2opt = None
+        best_duration = compute_duration(route, instance)
+        for i in range(1, len(route) - 2):  # i: the first position to be switched (the last index should -2)
+            for j in range(i + 1, len(route) - 1):  # j: the second position to be switched (the last index should -1)
+                new_route = route[:i] + list(reversed(route[i:(j + 1)])) + route[(j + 1):]
+                new_duration = compute_duration(new_route, instance)
+
+                change = new_duration - best_duration
+
+                if change < -0.000001:
+                    # improvement
+                    best_duration = new_duration
+                    best_2opt = (i, j)
+        if best_2opt is not None:
+            solution[r_index] = route[:best_2opt[0]] + list(reversed(route[best_2opt[0]:(best_2opt[1] + 1)])) + route[(best_2opt[1] + 1):]
             return True
     return False
 

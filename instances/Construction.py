@@ -7,7 +7,7 @@ from typing import List
 from instances.DestructionOps import random_removal, expensive_removal, route_removal, related_removal
 from instances.InsertionOps import cheapest_insertion_iterative, regret_insertion
 from instances.LocalSearch import hillclimbing, find_first_improvement_2Opt, vnd, find_first_improvement_relocate, \
-    find_best_improvement_2Opt, combine_routes
+    find_best_improvement_2Opt, combine_routes, find_best_duration_improvement_2Opt
 from instances.Plot import plotSubplots, plot3Subplots
 from instances.Route import RouteObject
 from instances.Trucks import Vehicle
@@ -155,10 +155,6 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], list_of
         # START OF LOCAL OPTIMIZATION 2-opt
         """ 2-opt currently optimizes for distance. Since it is inter-route, I am fine with this. - Christopher"""
 
-        # if random.uniform(0, 1) > 0.3:
-        #     local_search_function = find_first_improvement_2Opt
-        # else:
-        #     local_search_function = find_first_improvement_relocate
         local_search_function = find_best_improvement_2Opt
         listAfterOptimization = hillclimbing(list(map(lambda x: x.customer_list, listOfRoutes)), instance, local_search_function)
         for i in range(len(listAfterOptimization)):
@@ -216,8 +212,8 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], list_of
             bestCost = costThisIteration
             bestSolution = copy.deepcopy(listOfRoutes)
             bestIteration = iteration
-            listImprovingIterations.append((iteration, destroy_op_used, insert_op_used))
-
+            formated_cost = "{:.2f}".format(bestCost)
+            
             solution_feasible = True
             for route in bestSolution:  # checking if all our routes are feasible
                 if not route.currently_feasible:
@@ -226,6 +222,9 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], list_of
             if solution_feasible:
                 best_feasible_solution = copy.deepcopy(bestSolution)  # stores the best feasible solution
                 feasible_solution_found = True
+
+            # listImprovingIterations.append((iteration, destroy_op_used, insert_op_used))
+            listImprovingIterations.append((iteration, formated_cost, solution_feasible))
 
             counter_iterations_no_improvement = 0  # reset the counter
 
@@ -279,9 +278,10 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], list_of
             #     instance.destroy_random_ub = min(0.75, instance.destroy_random_ub + 0.05)
             #     instance.max_iterations_no_improvement = min(0.25, instance.max_iterations_no_improvement + 0.01)
 
-        print(f"Total cost of the current iteration: {costThisIteration}")
+        print(f"Total cost of the current iteration: {costThisIteration}, Feasible: {solution_feasible}")
         print(f"Best known cost: {bestCost}")
-        print(f"Best iteration: {bestIteration}, iterations without improvement: {counter_iterations_no_improvement}\n")
+        print(f"Best iteration: {bestIteration}, iterations without improvement: {counter_iterations_no_improvement}")
+        print(f"End of iteration__________{iteration}\n")
         
         time_so_far = time.perf_counter() - perf_starttime  # update time for maxTime
         # END OF ACCEPTANCE PHASE
@@ -323,7 +323,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], list_of
     
     print(f"We improved by {improvement:.2f}%. Average improvement per iteration: {imp_per_it:.2f}%.")
     print(f"We improved {len(listImprovingIterations)} times, in the following iterations: {listImprovingIterations}.")
-    print(f"We fell back {len(listFallbackIterations)} times, in the following iterations: {listFallbackIterations}.")
+    # print(f"We fell back {len(listFallbackIterations)} times, in the following iterations: {listFallbackIterations}.")
     print('accept: ' + str(accept_counter) + ', iterations: ' + str(iteration) + ', ratio: ' + str(accept_counter / iteration))
     endtime = datetime.datetime.now()
     print(f"Length of the run: {endtime - starttime}.\n")
