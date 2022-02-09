@@ -10,7 +10,7 @@ from instances.Construction import ouralgorithm
 from instances.Intialization import random_sweep
 from instances.Trucks import create_vehicles
 from instances.Utils import Instance, vehicle_assignment, solution_cost, find_cheapest_vehicle, Instance_tune
-from instances.Plot import create_list_int_coordinates, plotVRP
+from instances.Plot import plotVRP, inner_city_check
 
 # import os
 # os.chdir('C:/Users/Евгений/Desktop/TUM/WS 2021-2022/Advanced Seminar Sustainable Transportation Systems/AS_STS_code')
@@ -24,7 +24,7 @@ from instances.Plot import create_list_int_coordinates, plotVRP
 ###
 
 # 0. ENTER THE CITY (NewYork, Paris, Shanghai)
-city = "Paris"
+city = "Shanghai"
 # set the # of vehicles available to Sweep and Algorithm
 numI_Atego = 20
 numI_VWTrans = 20
@@ -111,11 +111,16 @@ coordinates = []
 for row, content in df_nodes_subset.iterrows():
     coordinate = (content[1], content[2])
     coordinates.append(coordinate)
-# print(coordinates)
+print(coordinates)
+
+outside_dictionary = inner_city_check(df_nodes_subset, subsetDistanceInside, subsetDistanceOutside)
+# print(outside_dictionary)
 
 # coordinates for matplot
-coordinates_int = create_list_int_coordinates(df_nodes_subset)
-
+# coordinates_int = create_list_int_coordinates(df_nodes_subset)
+# print(coordinates_int)
+# coordinates_float = create_list_float_coordinates(df_nodes_subset)
+# print(coordinates_float)
 # 3. CREATING OUR VEHICLES
 # create vehicles via function in Trucks.py-file
 listOfInitialVehicles = create_vehicles(city, numI_Atego, numI_VWTrans, numI_VWCaddy, numI_DeFuso, numI_ScooterL,
@@ -145,17 +150,15 @@ if sumOfCapacity < sumOfDemand:
 #         bestCostRandomSweep = tempCost
 # print(f"Rand Sweep Heuristic, #Vehicles: {len(bestSolutionRandomSweep)}, cost: {bestCostRandomSweep}")
 # 
-# # plotTSP(list(map(lambda x: x.customer_list, bestSolutionRandomSweep)), coordinates_int, 'r')  # matplot of sweep solution
 # 
 # # 6.1 VehicleSwap for the SweepSolution
 # listOfInitAvailableVehicles = vehicle_assignment(bestSolutionRandomSweep, listOfInitialVehicles, ourInstance, 0, True)  # vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: List[Vehicle], instance: Instance):
 # 
 # # 7. OUR ALGORITHM (DESTRUCTION + INSERTION + OPTIMIZATION + ACCEPTANCE)
 # solutionOur = ouralgorithm(ourInstance, bestSolutionRandomSweep, listOfInitialVehicles, listOfInitAvailableVehicles,
-#                            coordinates_int)
+#                            coordinates)
 # print(f"numI_Atego: {numI_Atego,}, numI_VWTrans: {numI_VWTrans}, numI_VWCaddy: {numI_VWCaddy}, numI_DeFuso: {numI_DeFuso}, numI_ScooterL: {numI_ScooterL}, numI_ScooterS: {numI_ScooterS}, numI_eCargoBike: {numI_eCargoBike}")
-# plotTSP(solutionOur[0], coordinates_int, 'g', False, 'No Depot Plot')
-# plotTSP(solutionOur[0], coordinates_int, 'g', True, 'Route Plot')
+
 
 # 8. Parameter Analysis
 
@@ -178,7 +181,7 @@ if sumOfCapacity < sumOfDemand:
 
 perform_dict = {}
 params_dict = {
-    'max_iterations': [10000],
+    'max_iterations': [50],
     'init_temp': [0.1],
     'temp_target_percentage': [0.025],
     'temp_target_iteration': [1.2],
@@ -249,15 +252,15 @@ for a in params_dict['max_iterations']:
                                                     sol, final_cost, feasible = ouralgorithm(ourInstance, bestSolutionRandomSweep,
                                                                                    listOfInitialVehicles,
                                                                                    listOfInitAvailableVehicles,
-                                                                                   coordinates_int)
+                                                                                   coordinates)
                                                     end_time_run = time.perf_counter()
                                                     runtime_run = end_time_run - start_time_run
                                                     print(
                                                         f"numI_Atego: {numI_Atego,}, numI_VWTrans: {numI_VWTrans}, numI_VWCaddy: {numI_VWCaddy}, numI_DeFuso: {numI_DeFuso}, numI_ScooterL: {numI_ScooterL}, numI_ScooterS: {numI_ScooterS}, numI_eCargoBike: {numI_eCargoBike}")
                                                     no_depot_title = 'No Depot Plot ' + str(n)
                                                     depot_title = 'Route Plot in Permutation ' + str(n)
-                                                    # plotVRP(sol, coordinates_int, False, no_depot_title)
-                                                    plotVRP(sol, coordinates_int, True, depot_title)
+                                                    # plotVRP(sol, coordinates, False, no_depot_title)
+                                                    plotVRP(sol, coordinates, outside_dictionary, True, depot_title)
 
                                                     perform_dict[n] = [a, b, c, d, e, f, g, h, i_par, j, k, l, m, feasible, fixed_cost_active, tax_ins_active, final_cost, runtime_run]
                                                     n += 1
@@ -269,3 +272,5 @@ print(summary_performance)
 date_string = str(datetime.datetime.now())
 date_string = date_string.replace(":", "-")
 summary_performance.to_csv(date_string[:16] + ' - parameter_analysis.csv')
+
+# os.system("start C:/Users/Christopher/PycharmProjects/AS_STS_code/Doorbell.wav")

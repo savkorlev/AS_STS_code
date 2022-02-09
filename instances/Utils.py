@@ -545,7 +545,7 @@ def vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: Li
         list_of_available_vehicles.remove(best_vehicle)  # remove the bestVehicle from available.
         r.vehicle = best_vehicle
         r.current_cost = routeCost(r, instance, iteration, penalty_active)  # update the route cost
-        print(f"After Vehicle Assignment: route {counter} , vehicle {r.vehicle.plateNr}, cost: {r.current_cost:.2f} €, load: {compute_total_demand(r.customer_list, instance)} kg, vol: {compute_total_volume(r.customer_list, instance)/1000:.2f} m^3, dist: {compute_distance(r.customer_list, instance):.0f} km, customerCount: {len(r.customer_list)-2}, feasible: {r.currently_feasible}, customers: {r.customer_list}")
+        print(f"After Vehicle Assignment: route {counter} , vehicle {r.vehicle.plateNr}, cost: {r.current_cost:.2f} €, load: {compute_total_demand(r.customer_list, instance)} kg, vol: {compute_total_volume(r.customer_list, instance)/1000:.2f} m^3, dist: {compute_distance(r.customer_list, instance):.0f} km, duration: {compute_duration(r.customer_list, instance):.0f} minutes, customerCount: {len(r.customer_list)-2}, feasible: {r.currently_feasible}, customers: {r.customer_list}")
     return list_of_available_vehicles
 
 
@@ -651,5 +651,6 @@ class Instance_tune:
         self.init_penalty = 25  # starting penalty costs in the 0. iteration -> penalty_cost()
         self.step_penalty = args.step_penalty  # step by which penalty grows in every iteration -> penalty_cost()
         # TODO: Choose suitable penalty-factor. Maybe depending on max_iterations?
-
-        self.penalty_cost_iteration_for_initialization = max(10000, 0.75 * self.max_iterations)  # setting this parameter correctly is very important for the initial solution.
+        
+        # must be forced high enough not create ultra-infeasible solutions for short runs. Otherwise we get super long routes which cause very timeconsuming 2opt
+        self.penalty_cost_iteration_for_initialization = max(1000, 0.75 * self.max_iterations)  # setting this parameter correctly is very important for the initial solution.
