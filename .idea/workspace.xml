@@ -4,17 +4,10 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) added a printout of the best cost to SimAnn graph">
-      <change beforePath="$PROJECT_DIR$/.idea/AS_STS_code.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/AS_STS_code.iml" afterDir="false" />
+    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) minor change because a parameter was set wrong">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/NewYork.routes" beforeDir="false" afterPath="$PROJECT_DIR$/data/NewYork.routes" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/Paris.routes" beforeDir="false" afterPath="$PROJECT_DIR$/data/Paris.routes" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/Shanghai.routes" beforeDir="false" afterPath="$PROJECT_DIR$/data/Shanghai.routes" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instances/Construction.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Construction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instances/LocalSearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/LocalSearch.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instances/Plot.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Plot.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instances/Trucks.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Trucks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instances/Utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -254,28 +247,13 @@
       <workItem from="1644211748765" duration="23177000" />
       <workItem from="1644301198531" duration="9897000" />
       <workItem from="1644325598211" duration="12472000" />
-      <workItem from="1644384430335" duration="10248000" />
-    </task>
-    <task id="LOCAL-00001" summary="Let's see">
-      <created>1637839022626</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1637839022626</updated>
-    </task>
-    <task id="LOCAL-00002" summary="Let's see">
-      <created>1637839248196</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1637839248196</updated>
-    </task>
-    <task id="LOCAL-00003" summary="Commit via InteliJ">
-      <created>1637839586612</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1637839586612</updated>
+      <workItem from="1644384430335" duration="12695000" />
+      <workItem from="1644408798054" duration="4452000" />
+      <workItem from="1644423397211" duration="287000" />
+      <workItem from="1644424329699" duration="4354000" />
+      <workItem from="1644430754305" duration="1950000" />
+      <workItem from="1644508679344" duration="1186000" />
+      <workItem from="1644516878014" duration="1452000" />
     </task>
     <task id="LOCAL-00004" summary="Commit via InteliJ">
       <created>1637839692213</created>
@@ -592,7 +570,35 @@
       <option name="project" value="LOCAL" />
       <updated>1644241318113</updated>
     </task>
-    <option name="localTasksCounter" value="49" />
+    <task id="LOCAL-00049" summary="1) changed vrp-plot to use real coordinates&#10;2) changed vrp-plot to show inside/outside customers">
+      <created>1644404433281</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1644404433281</updated>
+    </task>
+    <task id="LOCAL-00050" summary="1) changed vrp-plot to use real coordinates&#10;2) changed vrp-plot to show inside/outside customers">
+      <created>1644404559904</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1644404559909</updated>
+    </task>
+    <task id="LOCAL-00051" summary="1) changed vrp-plot to use real coordinates&#10;2) changed vrp-plot to show inside/outside customers">
+      <created>1644404611184</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1644404611184</updated>
+    </task>
+    <task id="LOCAL-00052" summary="1) minor change because a parameter was set wrong">
+      <created>1644404661978</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1644404661978</updated>
+    </task>
+    <option name="localTasksCounter" value="53" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -626,8 +632,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="1) insertion part without checking for feasibility" />
-    <MESSAGE value="1) got insertion algorithm working (check in-line comments!)" />
     <MESSAGE value="Add optimization to ourAlgorithm and add a class of local search" />
     <MESSAGE value="added Christophers local directory" />
     <MESSAGE value="1) Updated print statements to get a good-looking output for the presentation" />
@@ -651,7 +655,9 @@
     <MESSAGE value="1) added insurance &amp; taxes boolean" />
     <MESSAGE value="1) DESIGN FREEZE" />
     <MESSAGE value="1) added a printout of the best cost to SimAnn graph" />
-    <option name="LAST_COMMIT_MESSAGE" value="1) added a printout of the best cost to SimAnn graph" />
+    <MESSAGE value="1) changed vrp-plot to use real coordinates&#10;2) changed vrp-plot to show inside/outside customers" />
+    <MESSAGE value="1) minor change because a parameter was set wrong" />
+    <option name="LAST_COMMIT_MESSAGE" value="1) minor change because a parameter was set wrong" />
   </component>
   <component name="XDebuggerManager">
     <watches-manager>
@@ -663,6 +669,6 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/main_py$config.coverage" NAME="config Coverage Results" MODIFIED="1642964086397" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/instances" />
     <SUITE FILE_PATH="coverage/main_py$TestConstruction.coverage" NAME="TestConstruction Coverage Results" MODIFIED="1640299941018" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1644404339607" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1644517539949" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

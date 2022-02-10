@@ -12,7 +12,7 @@ from instances.Trucks import create_vehicles
 from instances.Utils import Instance, vehicle_assignment, solution_cost, find_cheapest_vehicle, Instance_tune
 from instances.Plot import plotVRP, inner_city_check
 
-# import os
+import os
 # os.chdir('C:/Users/Евгений/Desktop/TUM/WS 2021-2022/Advanced Seminar Sustainable Transportation Systems/AS_STS_code')
 # os.chdir('C:/Users/Maximilian Sammer/PycharmProjects/AS_STS_code/')
 # os.chdir('/Users/tuminyu/Desktop/Cory/TUM Master/Advanced Seminar/Code/Project')
@@ -24,18 +24,45 @@ from instances.Plot import plotVRP, inner_city_check
 ###
 
 # 0. ENTER THE CITY (NewYork, Paris, Shanghai)
-city = "Shanghai"
+city = "NewYork"
 # set the # of vehicles available to Sweep and Algorithm
-numI_Atego = 20
-numI_VWTrans = 20
-numI_VWCaddy = 20
-numI_DeFuso = 20
-numI_ScooterL = 20
-numI_ScooterS = 20
-numI_eCargoBike = 20
+numI_Atego = 30
+numI_VWTrans = 30
+numI_VWCaddy = 30
+numI_DeFuso = 30
+numI_ScooterL = 30
+numI_ScooterS = 30
+numI_eCargoBike = 30
+
 # set fixed costs on/off
 fixed_cost_active = True  # sets fixed costs active for all vehicles
-tax_ins_active = True  # sets taxes and insurance active. Makes fixed costs for all non-leased vehicles 90% higher (20% for bike).
+tax_ins_active = True  # sets taxes and insurance active. Makes fixed costs for all non-leased vehicles ~90% higher (20% for bike).
+
+# set demand_factor
+kg_factor = 1
+# set volume_factor
+vol_factor = 1
+# set city cost lvl: 'none', 'low', 'medium', 'high', 'ban'
+city_cost_level = 'ban'
+
+# set the run parameters
+perform_dict = {}
+params_dict = {
+    'max_iterations': [5000, 5000, 5000],
+    'init_temp': [0.1],
+    'temp_target_percentage': [0.025],
+    'temp_target_iteration': [1.2],
+    'freeze_period_length': [0.02],
+    'destroy_random_ub': [0.12],
+    'destroy_expensive_ub': [0.1],
+    'destroy_route_ub': [0.5],
+    'destroy_related_ub': [0.12],
+    'max_weight': [5000],  # Botch: if this is set to 5001, we activate Vehicle_Assignment after Destruction
+    'min_weight': [10],
+    'reduce_step': [4],
+    'step_penalty': [1],
+}
+
 
 # 1. LOADING THE DATA
 
@@ -78,7 +105,22 @@ if testDimension == len(df_nodes):
 
 subsetDemand = list(df_nodes_subset.loc[:, "Demand[kg]"])  # select demand column (in kg) and convert it to a list
 # print(subsetDemand)
+
+if kg_factor != 1:
+    print(f"original demand kg: {subsetDemand}")
+    for i in range(len(subsetDemand)):
+        subsetDemand[i] = round(subsetDemand[i] * kg_factor)
+    print(f"kg factor: {kg_factor}")
+    print(f"changed demand kg: {subsetDemand}\n")
+
 subsetVolume = list(df_nodes_subset.loc[:, "Demand[m^3*10^-3]"])  # select demand column (in volume) and convert it to a list
+if vol_factor != 1:
+    print(f"original volume: {subsetVolume}")
+    for i in range(len(subsetVolume)):
+        subsetVolume[i] = round(subsetVolume[i] * kg_factor)
+    print(f"volume factor: {vol_factor}")
+    print(f"changed volume: {subsetVolume}\n")
+
 # print(subsetVolume)
 subsetDuration = list(df_nodes_subset.loc[:, "Duration"])  # select duration column (in volume) and convert it to a list
 # print(subsetDuration)
@@ -123,7 +165,7 @@ outside_dictionary = inner_city_check(df_nodes_subset, subsetDistanceInside, sub
 # print(coordinates_float)
 # 3. CREATING OUR VEHICLES
 # create vehicles via function in Trucks.py-file
-listOfInitialVehicles = create_vehicles(city, numI_Atego, numI_VWTrans, numI_VWCaddy, numI_DeFuso, numI_ScooterL,
+listOfInitialVehicles = create_vehicles(city, city_cost_level, numI_Atego, numI_VWTrans, numI_VWCaddy, numI_DeFuso, numI_ScooterL,
                                         numI_ScooterS, numI_eCargoBike, fixed_cost_active, tax_ins_active)
 print(f"List of initial Vehicle payloads_kg: {list(map(lambda x: x.payload_kg, listOfInitialVehicles))}")
 
@@ -135,6 +177,7 @@ if sumOfCapacity < sumOfDemand:
     sys.exit()
 
 # # 5. CREATING INSTANCE
+""" alter code für einzelnen Lauf ohne Parameter"""
 # ourInstance = Instance(testDimension, listOfInitialVehicles, testDemandParis, testDemandParisVolume, testParisCustomerDuration,
 #                        testParisDistances, testParisDistancesInside, testParisDistancesOutside, testParisArcDuration, coordinates)
 # 
@@ -179,22 +222,7 @@ if sumOfCapacity < sumOfDemand:
 #     'step_penalty': [1],
 # }
 
-perform_dict = {}
-params_dict = {
-    'max_iterations': [50],
-    'init_temp': [0.1],
-    'temp_target_percentage': [0.025],
-    'temp_target_iteration': [1.2],
-    'freeze_period_length': [0.02],
-    'destroy_random_ub': [0.12],
-    'destroy_expensive_ub': [0.1],
-    'destroy_route_ub': [1],
-    'destroy_related_ub': [0.12],
-    'max_weight': [5000],  # Botch: if this is set to 5001, we activate Vehicle_Assignment after Destruction
-    'min_weight': [10],
-    'reduce_step': [4],
-    'step_penalty': [1],
-}
+
 n = 0
 for a in params_dict['max_iterations']:
     for b in params_dict['init_temp']:
@@ -273,4 +301,4 @@ date_string = str(datetime.datetime.now())
 date_string = date_string.replace(":", "-")
 summary_performance.to_csv(date_string[:16] + ' - parameter_analysis.csv')
 
-# os.system("start C:/Users/Christopher/PycharmProjects/AS_STS_code/Doorbell.wav")
+os.system("start C:/Users/Christopher/PycharmProjects/AS_STS_code/Doorbell.wav")

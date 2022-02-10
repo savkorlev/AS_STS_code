@@ -61,10 +61,12 @@ def plotVRP(solution, points, outside_dict, show_depot=True, title='ArcPlot'):
                 
             if outside_dict[r.customer_list[i]] == 'outside':
                 plt.plot(x[i], y[i], "bo", markersize=6)
-                # plt.text(x[i], y[i], r.customer_list[i])
+                # plt.text(x[i], y[i], r.customer_list[i])  # adds customer number to every dot
+                plt.text(x[i], y[i], str(counter_route))  # adds route_counter to every dot
             else:
                 plt.plot(x[i], y[i], "ro", markersize=6)
                 # plt.text(x[i], y[i], r.customer_list[i])
+                plt.text(x[i], y[i], str(counter_route))
         
         plt.plot(points[0][0], points[0][1], "ks", markersize=8)
 
