@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) minor change because a parameter was set wrong">
+    <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="1) added kg_ and vol_factor to increase/decrease kg and volume of each customer -&gt; for scenario runs&#10;2) added city_cost_level in main which allows us to set the city cost level without having to touch vehicle class">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instances/Plot.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Plot.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instances/Trucks.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Trucks.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -253,14 +251,8 @@
       <workItem from="1644424329699" duration="4354000" />
       <workItem from="1644430754305" duration="1950000" />
       <workItem from="1644508679344" duration="1186000" />
-      <workItem from="1644516878014" duration="1452000" />
-    </task>
-    <task id="LOCAL-00004" summary="Commit via InteliJ">
-      <created>1637839692213</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1637839692213</updated>
+      <workItem from="1644516878014" duration="4590000" />
+      <workItem from="1644556946981" duration="7726000" />
     </task>
     <task id="LOCAL-00005" summary="Commit via PyCharm">
       <created>1637839764432</created>
@@ -598,7 +590,14 @@
       <option name="project" value="LOCAL" />
       <updated>1644404661978</updated>
     </task>
-    <option name="localTasksCounter" value="53" />
+    <task id="LOCAL-00053" summary="1) added kg_ and vol_factor to increase/decrease kg and volume of each customer -&gt; for scenario runs&#10;2) added city_cost_level in main which allows us to set the city cost level without having to touch vehicle class">
+      <created>1644518742639</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1644518742639</updated>
+    </task>
+    <option name="localTasksCounter" value="54" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -632,7 +631,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="Add optimization to ourAlgorithm and add a class of local search" />
     <MESSAGE value="added Christophers local directory" />
     <MESSAGE value="1) Updated print statements to get a good-looking output for the presentation" />
     <MESSAGE value="1) Added multiple algorythm's runs (for loop)&#10;2) Added the test class&#10;3) Figured out the error (to be discussed)" />
@@ -657,7 +655,8 @@
     <MESSAGE value="1) added a printout of the best cost to SimAnn graph" />
     <MESSAGE value="1) changed vrp-plot to use real coordinates&#10;2) changed vrp-plot to show inside/outside customers" />
     <MESSAGE value="1) minor change because a parameter was set wrong" />
-    <option name="LAST_COMMIT_MESSAGE" value="1) minor change because a parameter was set wrong" />
+    <MESSAGE value="1) added kg_ and vol_factor to increase/decrease kg and volume of each customer -&gt; for scenario runs&#10;2) added city_cost_level in main which allows us to set the city cost level without having to touch vehicle class" />
+    <option name="LAST_COMMIT_MESSAGE" value="1) added kg_ and vol_factor to increase/decrease kg and volume of each customer -&gt; for scenario runs&#10;2) added city_cost_level in main which allows us to set the city cost level without having to touch vehicle class" />
   </component>
   <component name="XDebuggerManager">
     <watches-manager>
@@ -669,6 +668,6 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/main_py$config.coverage" NAME="config Coverage Results" MODIFIED="1642964086397" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/instances" />
     <SUITE FILE_PATH="coverage/main_py$TestConstruction.coverage" NAME="TestConstruction Coverage Results" MODIFIED="1640299941018" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1644517539949" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1644577773533" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

@@ -45,7 +45,7 @@ class Vehicle:
 
         elif type == "VWTransporter":
             self.payload_kg = 883
-            self.payload_vol = 5.8 * 9000 # todo # needs to be * 1000 because the volumes in nodes is given with unit m^3 * 10^-3
+            self.payload_vol = 5.8 * 1000 # needs to be * 1000 because the volumes in nodes is given with unit m^3 * 10^-3
             self.range_km = 99999  # range for ICEVs is unlimited
             self.fixed_cost = 10.31 * fixed_cost_bool *(1+0.9085 * tax_ins_bool) # 27.82 * fixed_cost_bool
             if city == "Paris":
@@ -58,8 +58,8 @@ class Vehicle:
                 self.cost_m = 0.459
             elif city == "Shanghai":
                 self.cost_km = 0.113
-                self.cost_km_in = self.cost_km #+ city_tax #todo
-                self.cost_m = 0 #0.112 #todo
+                self.cost_km_in = self.cost_km + city_tax
+                self.cost_m = 0.112
 
         elif type == "VWCaddy":
             self.payload_kg = 670

@@ -24,15 +24,15 @@ import os
 ###
 
 # 0. ENTER THE CITY (NewYork, Paris, Shanghai)
-city = "NewYork"
+city = "Shanghai"
 # set the # of vehicles available to Sweep and Algorithm
-numI_Atego = 30
-numI_VWTrans = 30
-numI_VWCaddy = 30
-numI_DeFuso = 30
-numI_ScooterL = 30
-numI_ScooterS = 30
-numI_eCargoBike = 30
+numI_Atego = 20
+numI_VWTrans = 20
+numI_VWCaddy = 20
+numI_DeFuso = 20
+numI_ScooterL = 20
+numI_ScooterS = 20
+numI_eCargoBike = 20
 
 # set fixed costs on/off
 fixed_cost_active = True  # sets fixed costs active for all vehicles
@@ -43,7 +43,7 @@ kg_factor = 1
 # set volume_factor
 vol_factor = 1
 # set city cost lvl: 'none', 'low', 'medium', 'high', 'ban'
-city_cost_level = 'ban'
+city_cost_level = 'medium'
 
 # set the run parameters
 perform_dict = {}
