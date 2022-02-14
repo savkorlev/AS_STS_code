@@ -75,7 +75,8 @@ class Instance:
         temp_target_percentage = 0.025  # this parameter decides which % of the initial temperature should be achieved in the target iteration
         temp_target_iteration = 1.2  # this parameter decides in which iteration the target percentage should be used. iteration = 1/x77: 4 -> 25% of max iterations. 2 -> 50% of max iterations. 1.333 -> 75% of max iterations. 1 -> 100% of max iterations.
         # example: with a temp_target_percentage of 0.01 and a temp_target_iteration of 2 we reach 1% of the initial temperature after 50% of the max iterations
-        cooling_target = np.power(temp_target_percentage, (temp_target_iteration/self.max_iterations))  # this function sets our cooling factor dependent on the max_iterations. Example: (0.05, (2/self.max_iterations)) forces the temperature to 5% of the starting temp after 50% of iterations.
+        cooling_target = np.power(temp_target_percentage, (
+                    temp_target_iteration / self.max_iterations))  # this function sets our cooling factor dependent on the max_iterations. Example: (0.05, (2/self.max_iterations)) forces the temperature to 5% of the starting temp after 50% of iterations.
         self.cooling = cooling_target  # factor with which temperature is reduced after every instance  -> simulated_annealing()
         # todo: tune cooling_target parameters [init_temp], [temp_target_percentage], [temp_target_iteration]
         self.freeze_period_length = 0.01  # currently set up to freeze for x * iterations. Not max_iterations, but iterations-so-far. So a freeze will be longer if the algorithm runs long.
@@ -101,14 +102,11 @@ class Instance:
         self.destroy_related_lb = 0.05
         self.destroy_related_ub = 0.15
 
-
         self.init_penalty = 10  # starting penalty costs in the 0. iteration -> penalty_cost()
         self.step_penalty = 0.1  # step by which penalty grows in every iteration -> penalty_cost()
         # TODO: Choose suitable penalty-factor. Maybe depending on max_iterations?
 
-        self.penalty_cost_iteration_for_initialization = 0.75 * self.max_iterations   # setting this parameter correctly is very important for the initial solution.
-
-
+        self.penalty_cost_iteration_for_initialization = 0.75 * self.max_iterations  # setting this parameter correctly is very important for the initial solution.
 
 
 Route = List[int]
@@ -138,7 +136,8 @@ def compute_distances_objects(solution: Solution, instance: Instance) -> float:
     return sum_distances
 
 
-def compute_distance(route: Route, instance: Instance) -> float:   # make faster with: https://medium.com/dev-today/the-fastest-way-to-loop-using-python-the-simple-truth-7a1f151aa81b
+def compute_distance(route: Route,
+                     instance: Instance) -> float:  # make faster with: https://medium.com/dev-today/the-fastest-way-to-loop-using-python-the-simple-truth-7a1f151aa81b
     sum_distances = 0.0
 
     # route: [0,1,2,3,4,0]
@@ -250,8 +249,6 @@ def solution_cost(listOfRoutes: List[Route], instance: Instance, iteration: int,
     return solutionCost
 
 
-
-
 def routeCost(routeObject: RouteObject, instance: Instance, iteration: int, penalty_active=True) -> float:
     # distance
     # distance = compute_distance(routeObject.customer_list, instance)
@@ -263,11 +260,10 @@ def routeCost(routeObject: RouteObject, instance: Instance, iteration: int, pena
     cost_km = cost_ins + cost_out
     distance = distance_ins + distance_out
 
-
     # duration
     duration = compute_duration(routeObject.customer_list, instance)
     cost_minute = duration * routeObject.vehicle.cost_m
-    
+
     # fixed cost
     fixed_cost = routeObject.vehicle.fixed_cost
 
@@ -280,7 +276,8 @@ def routeCost(routeObject: RouteObject, instance: Instance, iteration: int, pena
     return cost
 
 
-def penalty_cost(route: RouteObject, vehicle: Vehicle, instance: Instance, iteration: int, distance: float, duration: float) -> float:
+def penalty_cost(route: RouteObject, vehicle: Vehicle, instance: Instance, iteration: int, distance: float,
+                 duration: float) -> float:
     iteration_penalty = instance.init_penalty + iteration * instance.step_penalty  # penalty in each iteration.
     customer_list = route.customer_list
 
@@ -319,7 +316,7 @@ def penalty_cost(route: RouteObject, vehicle: Vehicle, instance: Instance, itera
         penalty_duration = overload_duration * iteration_penalty
 
     # combine
-    penalty = penalty_kg + penalty_vol + penalty_range + penalty_duration # + all other penalized constraints
+    penalty = penalty_kg + penalty_vol + penalty_range + penalty_duration  # + all other penalized constraints
 
     if penalty > 0:  # set the feasibility of the route by checking if penality > 0.
         route.currently_feasible = False
@@ -338,7 +335,9 @@ to do depending on the arguments that got passed, but I'm not smart enough for t
 - Christopher 2022-01-10
 """
 
-def temporaryRouteCost(customer_list: Route, vehicle: Vehicle, instance: Instance, iteration: int, penalty_active=True) -> float:
+
+def temporaryRouteCost(customer_list: Route, vehicle: Vehicle, instance: Instance, iteration: int,
+                       penalty_active=True) -> float:
     tempRoute = RouteObject(customer_list, vehicle)
     cost = routeCost(tempRoute, instance, iteration, penalty_active)
     return cost
@@ -393,7 +392,8 @@ def temporaryRouteCost(customer_list: Route, vehicle: Vehicle, instance: Instanc
 
 def compute_overload(constraint: int, load: int) -> float:
     # Overload factor can be changed to our will. Probably should get smthing from literature
-    overload_factor = (max(load - constraint, 0) / constraint)# ** 2  # we normalize the factor by the constraint (to not punish more because values are higher), then we square to punish bigger overloads much more
+    overload_factor = (max(load - constraint,
+                           0) / constraint)  # ** 2  # we normalize the factor by the constraint (to not punish more because values are higher), then we square to punish bigger overloads much more
     return overload_factor
 
 
@@ -406,11 +406,11 @@ def delete_empty_routes(list_of_routes: list[Route]) -> list[Route]:
 
 
 # def vehicle_assignment_old(list_of_routes: list[Route], initial_list_of_vehicles: List[Vehicle], instance: Instance, iteration=0, penalty_active=True) -> List[Vehicle]:
-#     list_of_routes.sort(key=lambda x: x.current_cost, reverse=True)  # orders routes by cost descending 
+#     list_of_routes.sort(key=lambda x: x.current_cost, reverse=True)  # orders routes by cost descending
 #     # print(f"Routes costs descending: {list(map(lambda x: x.current_cost, listOfRoutes))}")
 #     list_of_available_vehicles = initial_list_of_vehicles.copy()
 #     dummyAtego = Vehicle("MercedesBenzAtego", "Paris", "999999")
-# 
+#
 #     counter = 0
 #     for r in list_of_routes:  # check all routes. Before this they should be ordered by their costs descending
 #         counter += 1
@@ -426,9 +426,9 @@ def delete_empty_routes(list_of_routes: list[Route]) -> list[Route]:
 #                     best_vehicle = v
 #                     best_cost = tempCost
 #                 previousVehicleType = v.type
-# 
+#
 #         r.vehicle = best_vehicle  # assign the bestVehicle to the route
-#         list_of_available_vehicles.remove(best_vehicle)  # remove the bestVehicle from available. 
+#         list_of_available_vehicles.remove(best_vehicle)  # remove the bestVehicle from available.
 #         r.current_cost = routeCost(r, instance, iteration, penalty_active)  # update the route cost
 #         print(f"Route cost after Vehicle Assignment: route {counter} , vehicle {r.vehicle.type} {r.vehicle.plateNr}, cost: {r.current_cost:.2f}, demand {compute_total_demand(r.customer_list, instance)}, customerCount: {len(r.customer_list)-2}, feasible: {r.currently_feasible}")
 #     return list_of_available_vehicles
@@ -450,14 +450,15 @@ def delete_empty_routes(list_of_routes: list[Route]) -> list[Route]:
 #     return accept, newcost, temperature
 
 
-def simulated_annealing(instance: Instance, currentSolution: List[RouteObject], newSoluion: List[RouteObject], temp: float,
+def simulated_annealing(instance: Instance, currentSolution: List[RouteObject], newSoluion: List[RouteObject],
+                        temp: float,
                         iteration: int, freeze_period: int) -> bool:
     # https://github.com/perrygeo/simanneal
     curcost = solution_cost(currentSolution, instance, iteration, True)
     newcost = solution_cost(newSoluion, instance, iteration, True)
     accept = False
     rand = random.random()
-    
+
     if newcost < curcost:
         accept = True
         print(f"We accepted a strictly better solution.")
@@ -469,26 +470,32 @@ def simulated_annealing(instance: Instance, currentSolution: List[RouteObject], 
         else:
             if (rand < math.exp((curcost - newcost) / temp)):
                 accept = True
-                print(f"We accept the latest solution. We had a {100 * math.exp((curcost - newcost) / temp):.2f}% chance to accept.")
+                print(
+                    f"We accept the latest solution. We had a {100 * math.exp((curcost - newcost) / temp):.2f}% chance to accept.")
             else:
-                print(f"We reject the latest solution. We had a {100 * math.exp((curcost - newcost) / temp):.2f}% chance to accept.")
+                print(
+                    f"We reject the latest solution. We had a {100 * math.exp((curcost - newcost) / temp):.2f}% chance to accept.")
 
     temperature = instance.cooling * temp  # update temperature
     freeze_period += -1
     return accept, newcost, temperature, freeze_period
 
+
 import sys, os
+
 
 # Disable printing
 def blockPrint():
     sys.stdout = open(os.devnull, 'w')
 
+
 # Restore printing
 def enablePrint():
     sys.stdout = sys.__stdout__
-    
-    
-def find_cheapest_vehicle(customer_list: list[int], instance: Instance, iteration: int, list_of_avb_vehicles: list[Vehicle]):
+
+
+def find_cheapest_vehicle(customer_list: list[int], instance: Instance, iteration: int,
+                          list_of_avb_vehicles: list[Vehicle]):
     distance_ins = compute_distance_inside(customer_list, instance)
     distance_out = compute_distance_outside(customer_list, instance)
     distance = distance_ins + distance_out
@@ -504,11 +511,11 @@ def find_cheapest_vehicle(customer_list: list[int], instance: Instance, iteratio
     for vehicle in list_of_avb_vehicles:
         if vehicle.type != last_vehicle_type:
             last_vehicle_type = vehicle.type
-            
+
             cost_ins = distance_ins * vehicle.cost_km_in
             cost_out = distance_out * vehicle.cost_km
             cost_minute = duration * vehicle.cost_m
-            
+
             constraint_kg = vehicle.payload_kg
             overload_kg = compute_overload(constraint_kg, load_kg)
             penalty_kg = overload_kg * iteration_penalty
@@ -521,31 +528,35 @@ def find_cheapest_vehicle(customer_list: list[int], instance: Instance, iteratio
             constraint_duration = vehicle.max_duration
             overload_duration = compute_overload(constraint_duration, duration)
             penalty_duration = overload_duration * iteration_penalty
-            
+
             fixed_cost = vehicle.fixed_cost
-            
+
             this_vehicle_cost = cost_ins + cost_out + cost_minute + penalty_kg + penalty_vol + penalty_range + penalty_duration + fixed_cost
-        
+
             if this_vehicle_cost < best_vehicle_cost:
                 best_vehicle_cost = this_vehicle_cost
                 best_vehicle = vehicle
-    
+
     # print(f"{best_vehicle.type}, {best_vehicle_cost}, {customer_list}")
     return best_vehicle_cost, best_vehicle
 
-def vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: List[Vehicle], instance: Instance, iteration: int, penalty_active=True) -> List[Vehicle]:
-    #list_of_routes.sort(key=lambda x: x.current_cost, reverse=True)  # orders routes by cost descending # TODO: We can quickly become adaptive by not always starting with the most expensive route
+
+def vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: List[Vehicle], instance: Instance,
+                       iteration: int, penalty_active=True) -> List[Vehicle]:
+    # list_of_routes.sort(key=lambda x: x.current_cost, reverse=True)  # orders routes by cost descending # TODO: We can quickly become adaptive by not always starting with the most expensive route
     # print(f"Routes costs descending: {list(map(lambda x: x.current_cost, listOfRoutes))}")
     list_of_available_vehicles = initial_list_of_vehicles.copy()
     dummyAtego = Vehicle("MercedesBenzAtego", "Paris", "none", "999999", True, True)
     counter = 0
     for r in list_of_routes:  # check all routes. Before this they should be ordered by their costs descending
         counter += 1
-        route_cost, best_vehicle = find_cheapest_vehicle(r.customer_list, instance, iteration, list_of_available_vehicles)
+        route_cost, best_vehicle = find_cheapest_vehicle(r.customer_list, instance, iteration,
+                                                         list_of_available_vehicles)
         list_of_available_vehicles.remove(best_vehicle)  # remove the bestVehicle from available.
         r.vehicle = best_vehicle
         r.current_cost = routeCost(r, instance, iteration, penalty_active)  # update the route cost
-        print(f"After Vehicle Assignment: route {counter} , vehicle {r.vehicle.plateNr}, cost: {r.current_cost:.2f} €, load: {compute_total_demand(r.customer_list, instance)} kg, vol: {compute_total_volume(r.customer_list, instance)/1000:.2f} m^3, dist: {compute_distance(r.customer_list, instance):.0f} km, duration: {compute_duration(r.customer_list, instance):.0f} minutes, customerCount: {len(r.customer_list)-2}, feasible: {r.currently_feasible}, customers: {r.customer_list}")
+        print(
+            f"After Vehicle Assignment: route {counter} , vehicle {r.vehicle.plateNr}, cost: {r.current_cost:.2f} €, load: {compute_total_demand(r.customer_list, instance)} kg, vol: {compute_total_volume(r.customer_list, instance) / 1000:.2f} m^3, dist: {compute_distance(r.customer_list, instance):.0f} km, duration: {compute_duration(r.customer_list, instance):.0f} minutes, customerCount: {len(r.customer_list) - 2}, feasible: {r.currently_feasible}, customers: {r.customer_list}")
     return list_of_available_vehicles
 
 
@@ -611,11 +622,12 @@ class Instance_tune:
         self.max_iterations_no_improvement = max(50, self.max_iterations * 0.05)
 
         self.init_temp = args.init_temp  # factor with which the solution of the 0. iteration is turned into first temperature -> ourAlgorithm()
-        
+
         temp_target_percentage = args.temp_target_percentage  # this parameter decides which % of the initial temperature should be achieved in the target iteration
         temp_target_iteration = args.temp_target_iteration  # this parameter decides in which iteration the target percentage should be used. iteration = 1/x77: 4 -> 25% of max iterations. 2 -> 50% of max iterations. 1.333 -> 75% of max iterations. 1 -> 100% of max iterations.
         # example: with a temp_target_percentage of 0.01 and a temp_target_iteration of 2 we reach 1% of the initial temperature after 50% of the max iterations
-        cooling_target = np.power(temp_target_percentage, (temp_target_iteration / self.max_iterations))  # this function sets our cooling factor dependent on the max_iterations. Example: (0.05, (2/self.max_iterations)) forces the temperature to 5% of the starting temp after 50% of iterations.
+        cooling_target = np.power(temp_target_percentage, (
+                    temp_target_iteration / self.max_iterations))  # this function sets our cooling factor dependent on the max_iterations. Example: (0.05, (2/self.max_iterations)) forces the temperature to 5% of the starting temp after 50% of iterations.
 
         self.cooling = cooling_target  # factor with which temperature is reduced after every instance  -> simulated_annealing()
         # todo: tune cooling_target parameters [init_temp], [temp_target_percentage], [temp_target_iteration]
@@ -641,7 +653,7 @@ class Instance_tune:
         self.destroy_route_ub = args.destroy_route_ub  # of the chosen route
         self.destroy_related_lb = 0.05
         self.destroy_related_ub = args.destroy_related_ub
-        
+
         # set max and min weights a ops can take
         self.max_weight = args.max_weight
         self.min_weight = args.min_weight
@@ -651,6 +663,7 @@ class Instance_tune:
         self.init_penalty = 25  # starting penalty costs in the 0. iteration -> penalty_cost()
         self.step_penalty = args.step_penalty  # step by which penalty grows in every iteration -> penalty_cost()
         # TODO: Choose suitable penalty-factor. Maybe depending on max_iterations?
-        
+
         # must be forced high enough not create ultra-infeasible solutions for short runs. Otherwise we get super long routes which cause very timeconsuming 2opt
-        self.penalty_cost_iteration_for_initialization = max(1000, 0.75 * self.max_iterations)  # setting this parameter correctly is very important for the initial solution.
+        self.penalty_cost_iteration_for_initialization = max(1000,
+                                                             0.75 * self.max_iterations)  # setting this parameter correctly is very important for the initial solution.

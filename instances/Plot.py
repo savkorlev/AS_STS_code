@@ -2,6 +2,7 @@ import copy
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+
 def inner_city_check(nodes_subset, subset_distances_inside, subset_distances_outside) -> dict:
     dict_outside = {}
 
@@ -10,12 +11,14 @@ def inner_city_check(nodes_subset, subset_distances_inside, subset_distances_out
         for c_other in range(len(nodes_subset)):
             if subset_distances_inside[c_checked, c_other] + subset_distances_outside[c_checked, c_other] > 0:
 
-                if subset_distances_inside[c_checked, c_other] == 0:  # if there exists a trip from this customer for which inner city costs are 0, the customer must be outside
+                if subset_distances_inside[
+                    c_checked, c_other] == 0:  # if there exists a trip from this customer for which inner city costs are 0, the customer must be outside
                     position = 'outside'
 
         dict_outside[c_checked] = position
-    
+
     return dict_outside
+
 
 def plotVRP(solution, points, outside_dict, show_depot=True, title='ArcPlot'):
     """
@@ -54,11 +57,12 @@ def plotVRP(solution, points, outside_dict, show_depot=True, title='ArcPlot'):
         for i in range(0, len(x) - 1):  # draw the route
             if i == 0:
                 plt.arrow(x[i], y[i], (x[i + 1] - x[i]), (y[i + 1] - y[i]), head_width=a_scale,
-                          color=color, length_includes_head=True, label="route " + str(counter_route) + ' - ' + str(r.vehicle.type))
+                          color=color, length_includes_head=True,
+                          label="route " + str(counter_route) + ' - ' + str(r.vehicle.type))
             else:
                 plt.arrow(x[i], y[i], (x[i + 1] - x[i]), (y[i + 1] - y[i]), head_width=a_scale,
                           color=color, length_includes_head=True)
-                
+
             if outside_dict[r.customer_list[i]] == 'outside':
                 plt.plot(x[i], y[i], "bo", markersize=6)
                 # plt.text(x[i], y[i], r.customer_list[i])  # adds customer number to every dot
@@ -67,7 +71,7 @@ def plotVRP(solution, points, outside_dict, show_depot=True, title='ArcPlot'):
                 plt.plot(x[i], y[i], "ro", markersize=6)
                 # plt.text(x[i], y[i], r.customer_list[i])
                 plt.text(x[i], y[i], str(counter_route))
-        
+
         plt.plot(points[0][0], points[0][1], "ks", markersize=8)
 
     plt.legend(loc="upper left")
@@ -152,7 +156,8 @@ def plot3Subplots(points, points2, points3, title='SubPlots'):
     fig = plt.figure(1, figsize=(10, 9))
     ax1 = fig.add_subplot(211)
     plt.plot(x, y, "o", color='c', markersize=2)  # draw the nodes.
-    plt.plot(x2_red, y2_red, "d", color='orange', markersize=4)  # draw best solutions in red/green depending on feasibility
+    plt.plot(x2_red, y2_red, "d", color='orange',
+             markersize=4)  # draw best solutions in red/green depending on feasibility
     plt.plot(x2_green, y2_green, "d", color='blue', markersize=5)
 
     ax2 = fig.add_subplot(212, sharex=ax1)
@@ -164,6 +169,7 @@ def plot3Subplots(points, points2, points3, title='SubPlots'):
 
     plt.show()
 
+
 """ draw function from live coding. I could not get it to work - Christopher"""
 # # draw nodes and routes
 # # requires list of routes R = [[0,..,0],..], i.e., list of list of visits
@@ -171,32 +177,32 @@ def plot3Subplots(points, points2, points3, title='SubPlots'):
 #     # set color scheme
 #     # https://matplotlib.org/3.2.1/gallery/color/colormap_reference.html
 #     colors = plt.cm.get_cmap('tab10', len(R))
-# 
+#
 #     fig, ax = plt.subplots()
-# 
+#
 #     for r_idx, r in enumerate(R):
 #         path = list()
 #         for i in range(len(r)):
 #             path.append((nodes[r[i]]['x'], nodes[r[i]]['y']))
 #             # path.append((nodes[i][0], nodes[i][1]))
-# 
+#
 #         # plot control points and connecting lines
 #         x, y = zip(*path)
 #         line, = ax.plot(x, y, 'o-', color=colors(r_idx))
-# 
+#
 #     ax.plot(nodes[0]['x'], nodes[0]['y'], 'ks')
-# 
+#
 #     # ax.grid()
 #     ax.axis('equal')
-# 
+#
 #     # hide axis labels
 #     plt.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=False)
 #     plt.tick_params(axis='y', which='both', right=False, left=False, labelleft=False)
-# 
+#
 #     # hide bounding box
 #     # for pos in ['right', 'top', 'bottom', 'left']:
 #     #     plt.gca().spines[pos].set_visible(False)
-# 
+#
 #     plt.show()
 
 # # coordinates for matplot START
@@ -207,37 +213,37 @@ def plot3Subplots(points, points2, points3, title='SubPlots'):
 #         lon = lon * 10000000  # probably the stupidest way to turn a flot into an int... sorry - Christopher
 #         lon = int(lon)
 #         LonInt.append(lon)
-# 
+#
 #     LatInt = []
 #     Lat = list(df_nodes.loc[:, "Lat"])
 #     for lat in Lat:
 #         lat = lat * 10000000
 #         lat = int(lat)
 #         LatInt.append(lat)
-# 
+#
 #     coordinates_int = []
 #     for i in range(len(LonInt)):
 #         cord_int = (LonInt[i], LatInt[i])
 #         coordinates_int.append(cord_int)
-# 
+#
 #     return coordinates_int
-# 
-# def create_list_float_coordinates(df_nodes) -> list(): 
+#
+# def create_list_float_coordinates(df_nodes) -> list():
 #     LonFloat = []
 #     Lon = list(df_nodes.loc[:, "Lon"])
 #     for lon in Lon:
 #         LonFloat.append(lon)
-# 
+#
 #     LatFloat = []
 #     Lat = list(df_nodes.loc[:, "Lat"])
 #     for lat in Lat:
 #         LatFloat.append(lat)
-# 
+#
 #     coordinates_float = []
 #     for i in range(len(LonFloat)):
 #         cord_float = (LonFloat[i], LatFloat[i])
 #         coordinates_float.append(cord_float)
-# 
+#
 #     return coordinates_float
 
 # def plotTSP(routes, points, color, show_depot=True, title='ArcPlot'):
@@ -249,19 +255,19 @@ def plot3Subplots(points, points2, points3, title='SubPlots'):
 #     """
 #     plt.figure(1, figsize=(10, 9))
 #     plt.title(title)
-# 
+#
 #     path = copy.deepcopy(routes)  # need to deepcopy so we dont destroy the real route by drawing them without depot
-# 
+#
 #     if not show_depot:  # allows us to draw routes without depot, which gives a clearer picture
 #         for r in path:
 #             while 0 in r:
 #                 r.remove(0)
-# 
+#
 #     a_scale = 30000  # size of the arrowhead
-# 
+#
 #     n = len(path)
 #     colorlist = sns.color_palette("husl", n)
-# 
+#
 #     counter_route = 0
 #     for r in range(len(path)):
 #         counter_route += 1
@@ -279,9 +285,8 @@ def plot3Subplots(points, points2, points3, title='SubPlots'):
 #             else:
 #                 plt.arrow(x[i], y[i], (x[i + 1] - x[i]), (y[i + 1] - y[i]), head_width=a_scale,
 #                           color=color, length_includes_head=True)
-# 
+#
 #         plt.plot(x, y, "co", markersize=4)  # draw the nodes. If I change the color, everything breaks...
-# 
+#
 #     plt.legend(loc="upper left")
 #     plt.show()
-

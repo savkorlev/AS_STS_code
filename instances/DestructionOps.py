@@ -7,22 +7,27 @@ from instances.Utils import Instance, temporaryRouteCost, routeCost
 def random_removal(instance: Instance) -> list:
     """ random removal simply samples from the customer list in instance.q
     """
-    numberOfRemoved = max(2, random.randint(round(instance.destroy_random_lb * (len(instance.q) - 1)),  # delete at least 2
-                                            round(instance.destroy_random_ub * (len(instance.q) - 1)))) # generate number customers to be removed
+    numberOfRemoved = max(2,
+                          random.randint(round(instance.destroy_random_lb * (len(instance.q) - 1)),  # delete at least 2
+                                         round(instance.destroy_random_ub * (
+                                                     len(instance.q) - 1))))  # generate number customers to be removed
     listOfRemoved = random.sample(range(1, len(instance.q)),
                                   numberOfRemoved)  # generate customers to be removed, starting from 1 so depo isn't getting deleted
     return listOfRemoved
 
+
 def route_removal(list_of_routes: list[RouteObject], instance: Instance) -> list:
     listOfRemoved = []
     sacrifice_route = random.choice(list_of_routes)
-    numberOfRemoved = max(1, random.randint(round(instance.destroy_route_lb * (len(sacrifice_route.customer_list) - 2)),  # delete at least 1
-                                            round(instance.destroy_route_ub * (len(sacrifice_route.customer_list) - 2))))  # generate number customers to be removed
-    
+    numberOfRemoved = max(1, random.randint(round(instance.destroy_route_lb * (len(sacrifice_route.customer_list) - 2)),
+                                            # delete at least 1
+                                            round(instance.destroy_route_ub * (
+                                                        len(sacrifice_route.customer_list) - 2))))  # generate number customers to be removed
+
     numberOfRemoved = min(20, numberOfRemoved)
-    
+
     for i in range(numberOfRemoved):
-        listOfRemoved.append(sacrifice_route.customer_list[i+1])  # add customers to the list
+        listOfRemoved.append(sacrifice_route.customer_list[i + 1])  # add customers to the list
 
     return listOfRemoved
 
@@ -37,10 +42,12 @@ def expensive_removal(currentSolution: list[RouteObject], instance: Instance, it
     :return:
     """
     for r in currentSolution:
-        r.current_cost = routeCost(r, instance, iteration, True) # recalculate all the routeCosts. Because we start a new iteration, penalty costs are updated.
+        r.current_cost = routeCost(r, instance, iteration,
+                                   True)  # recalculate all the routeCosts. Because we start a new iteration, penalty costs are updated.
 
     numberOfRemoved = max(2, random.randint(round(instance.destroy_expensive_lb * (len(instance.q) - 1)),
-                                            round(instance.destroy_expensive_ub * (len(instance.q) - 1))))  # generate number customers to be removed
+                                            round(instance.destroy_expensive_ub * (
+                                                        len(instance.q) - 1))))  # generate number customers to be removed
     tupleList = []  # we will save all customers and their cost in this list, so we can later sort by cost
     for r in currentSolution:  # iterate over all routes
         complete_route = r.customer_list.copy()  # make a copy so we dont accidentally change the route inside the routeObject
@@ -65,8 +72,10 @@ def related_removal(instance: Instance) -> list:
     """ related removal picks a random customer and deletes him and others near him
     """
     listOfRemoved = []
-    numberOfRemoved = max(2, random.randint(round(instance.destroy_related_lb * (len(instance.q) - 1)),  # delete at least 2
-                                            round(instance.destroy_related_ub * (len(instance.q) - 1)))) # generate number customers to be removed
+    numberOfRemoved = max(2, random.randint(round(instance.destroy_related_lb * (len(instance.q) - 1)),
+                                            # delete at least 2
+                                            round(instance.destroy_related_ub * (
+                                                        len(instance.q) - 1))))  # generate number customers to be removed
     # todo: instead of removing a random number of customers, we could remove all within a certain radius
 
     seed_customer = random.choice(range(1, len(instance.q) - 1))  # get 1 random sample customer
@@ -79,6 +88,7 @@ def related_removal(instance: Instance) -> list:
     duration_from_seed.sort(key=lambda y: y[1], reverse=False)
 
     for i in range(0, numberOfRemoved):
-        listOfRemoved.append(duration_from_seed[i][0])  # todo: found a BUG here when we try to run multiple runs with the InstanceTuner
+        listOfRemoved.append(
+            duration_from_seed[i][0])  # todo: found a BUG here when we try to run multiple runs with the InstanceTuner
 
     return listOfRemoved

@@ -24,19 +24,19 @@ import os
 ###
 
 # 0. ENTER THE CITY (NewYork, Paris, Shanghai)
-city = "Shanghai"
+city = "NewYork"
 # set the # of vehicles available to Sweep and Algorithm
-numI_Atego = 20
-numI_VWTrans = 20
-numI_VWCaddy = 20
-numI_DeFuso = 20
-numI_ScooterL = 20
-numI_ScooterS = 20
-numI_eCargoBike = 20
+numI_Atego = 8
+numI_VWTrans = 12
+numI_VWCaddy = 0
+numI_DeFuso = 0
+numI_ScooterL = 0
+numI_ScooterS = 0
+numI_eCargoBike = 0
 
 # set fixed costs on/off
-fixed_cost_active = True  # sets fixed costs active for all vehicles
-tax_ins_active = True  # sets taxes and insurance active. Makes fixed costs for all non-leased vehicles ~90% higher (20% for bike).
+fixed_cost_active = False  # sets fixed costs active for all vehicles
+tax_ins_active = False  # sets taxes and insurance active. Makes fixed costs for all non-leased vehicles ~90% higher (20% for bike).
 
 # set demand_factor
 kg_factor = 1
@@ -48,7 +48,7 @@ city_cost_level = 'medium'
 # set the run parameters
 perform_dict = {}
 params_dict = {
-    'max_iterations': [5000, 5000, 5000],
+    'max_iterations': [5000],
     'init_temp': [0.1],
     'temp_target_percentage': [0.025],
     'temp_target_iteration': [1.2],
@@ -301,4 +301,4 @@ date_string = str(datetime.datetime.now())
 date_string = date_string.replace(":", "-")
 summary_performance.to_csv(date_string[:16] + ' - parameter_analysis.csv')
 
-os.system("start C:/Users/Christopher/PycharmProjects/AS_STS_code/Doorbell.wav")
+# os.system("start C:/Users/Christopher/PycharmProjects/AS_STS_code/Doorbell.wav")
