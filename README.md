@@ -12,7 +12,7 @@ Before that, however, make sure that the following conditions are fulfilled:
 2. The script path is set up correctly. You can check the current script path by navigating to "Run > Edit Configurations > main > Script path". To set the correct script path, select the "main.py" file within the software folder you downloaded. Therefore, the correctly set script path must end with "\AS_STS_code\src\main.py".
 3. All the required external packages are installed. These packages are: "pandas", "matplotlib" and "seaborn". To install a package, first navigate to "File > Settings > Project: main.py > Python Interpreter". Then, click the plus sign on the right. Finally, type the name of the package and click "Install Package".
 ## Choosing the inputs
-The software provides an option to enter the input data. To change the inputs first navigate to "\AS_STS_code\src\main.py". The following inputs can be changed:
+The software provides an option to enter the input data. To change the inputs, first navigate to "\AS_STS_code\src" and open the "main.py" file. The following inputs can be changed:
 1. Set a city. You can choose among all the three cities. To select a city change the 15th line of code accordingly. The names are: NewYork, Paris, Shanghai.
 2. Set a fleet. You can choose among all the seven vehicle types. To select a specific number of vehicles of each type, change the lines 17-23 of code accordingly. The vehicle types are:
    1. numI_Atego      - the number of Mercedes Benz Atego vehicles.
@@ -31,4 +31,4 @@ The software can work with heterogeneous fleet. To optimise the current fleet en
 6. Set the city cost level. Changes the level of restrictions on vehicles driving across the city center. To set the level change the 34th line of code accordingly. The levels are: 'none', 'low', 'medium', 'high', 'ban'.
 7. Set the number of iterations the algorithm can run. To set the number of iterations change the 39th line of code accordingly. The higher the value of "max_iterations" - the slower the algorithm is but the more precise the solution is.
 ## Data analysis
-The software provides a feature of saving the results of the algorithm runs in separate .csv files for further analysis. The results are saved in "\AS_STS_code" directory. To disable this feature, first navigate to "\AS_STS_code\src\main.py". Then find the 214th line of code and put a "#" sign on the first position.
+The software provides a feature of saving the results (and input parameters) of the algorithm runs in separate ".csv" files for further analysis. The results are saved to "\AS_STS_code" directory. To disable this feature, first navigate to "\AS_STS_code\src" and open the "main.py" file. Then find the 214th line of code and put a "#" sign on the first position.
