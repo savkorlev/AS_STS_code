@@ -5,15 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/AS_STS_code.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/AS_STS_code.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instances/Construction.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Construction.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instances/DestructionOps.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/DestructionOps.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instances/InsertionOps.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/InsertionOps.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instances/Intialization.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Intialization.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instances/LocalSearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/LocalSearch.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instances/Plot.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Plot.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instances/Pseudocode.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/instances/Route.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Route.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instances/Trucks.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Trucks.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instances/Utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instances/carModel1.vrp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/TSPLibReader.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/TestConstruction.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,7 +65,6 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/instances/Trucks.py" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/tests/TestConstruction.py" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/instances/LocalSearch.py" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/main.py" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/instances/Construction.py" root0="FORCE_HIGHLIGHTING" />
@@ -256,7 +261,13 @@
       <workItem from="1644342211799" duration="2341000" />
       <workItem from="1644436481979" duration="3162000" />
       <workItem from="1644681791259" duration="1287000" />
-      <workItem from="1644863440558" duration="3255000" />
+      <workItem from="1644863440558" duration="3639000" />
+      <workItem from="1644868623121" duration="3049000" />
+      <workItem from="1645214791384" duration="369000" />
+      <workItem from="1646588170586" duration="2102000" />
+      <workItem from="1646952092539" duration="2465000" />
+      <workItem from="1647207747301" duration="6337000" />
+      <workItem from="1647216130169" duration="5270000" />
     </task>
     <task id="LOCAL-00001" summary="Let's see">
       <created>1637839022626</created>
@@ -545,7 +556,14 @@
       <option name="project" value="LOCAL" />
       <updated>1643563135133</updated>
     </task>
-    <option name="localTasksCounter" value="42" />
+    <task id="LOCAL-00042" summary="1) Reverted the code to 3 days ago one">
+      <created>1644868457412</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1644868457413</updated>
+    </task>
+    <option name="localTasksCounter" value="43" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -579,7 +597,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="1) small renaming" />
     <MESSAGE value="1) started insertion phase" />
     <MESSAGE value="1) updated destruction algorithm so that it works with any input data (not only the test one)" />
     <MESSAGE value="1) fixed a small error" />
@@ -604,10 +621,11 @@
     <MESSAGE value="1) Added more parameters being passed to the instance" />
     <MESSAGE value="1) Merged New York tables&#10;2) Added simple city selection" />
     <MESSAGE value="1) Renamed the names of cities to be entered" />
-    <option name="LAST_COMMIT_MESSAGE" value="1) Renamed the names of cities to be entered" />
+    <MESSAGE value="1) Reverted the code to 3 days ago one" />
+    <option name="LAST_COMMIT_MESSAGE" value="1) Reverted the code to 3 days ago one" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/main_py$TestConstruction.coverage" NAME="TestConstruction Coverage Results" MODIFIED="1640299941018" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1644867287130" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main Coverage Results" MODIFIED="1647221190592" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

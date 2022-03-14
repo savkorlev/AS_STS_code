@@ -1,7 +1,6 @@
 import copy
 import math
 import random
-
 from instances.Route import RouteObject
 from instances.Trucks import Vehicle
 from instances.Utils import Instance, temporaryRouteCost
@@ -23,12 +22,13 @@ def next_fit_heuristic(all_customers: list[int], instance: Instance, initialVehi
     availableVehicles.remove(randomVehicle)
 
     for current_customer in all_customers:
-        last_route = listOfRoutes[len(listOfRoutes) - 1]  # len - 1 gives us the last position
-        last_position = len(last_route.customer_list) - 1  # len - 1 gives us the last position
+        last_route = listOfRoutes[len(listOfRoutes) - 1]
+        last_position = len(last_route.customer_list) - 1
 
         temp_route = last_route.customer_list.copy()
         temp_route.insert(last_position, current_customer)
-        cost_with = temporaryRouteCost(temp_route, last_route.vehicle, instance, instance.penalty_cost_iteration_for_initialization, True)  # set iteration to something where it will already have reasonable penalties
+        # set iteration to something where it will already have reasonable penalties
+        cost_with = temporaryRouteCost(temp_route, last_route.vehicle, instance, instance.penalty_cost_iteration_for_initialization, True)
         cost_without = temporaryRouteCost(last_route.customer_list, last_route.vehicle, instance, instance.penalty_cost_iteration_for_initialization, True)
         last_route_cost = cost_with - cost_without
 
@@ -61,12 +61,6 @@ def random_sweep(instance: Instance, initialVehicles: list[Vehicle]) -> list[Rou
 
     return next_fit_heuristic(customer_list, instance, initialVehicles)
 
-# def sweep_algorithm(instance: Instance) -> Solution:
-#     # sort the customers according to the sweep
-#     sorted_customers = sort_customers_by_sweep(instance)
-#     # assign them to routes (next fit)
-#     return next_fit_heuristic(sorted_customers, instance)
-
 
 def sort_customers_by_sweep(instance: Instance) -> list[int]:
     """
@@ -93,8 +87,6 @@ def sort_customers_by_sweep(instance: Instance) -> list[int]:
     #  to be sorted against, with the id as a last resort (they are unique).
     #  Tuples are naturally sorted by the first element first, and so on.
     #  We exploit that and provide such a tuple as a key to the sort function
-    #
-    # before: customers_angles.sort(key=lambda entry: entry[1])
 
     customers_angles.sort(key=lambda entry: (entry['angle'], entry['distance'], entry['id']))
 
@@ -103,82 +95,3 @@ def sort_customers_by_sweep(instance: Instance) -> list[int]:
         sorted_customers.append(entry['id'])
 
     return sorted_customers
-
-
-""" old next_fit_heuristic built by Christopher. Can only create feasible routes."""
-# def next_fit_heuristic(all_customers: List[int], instance: Instance, initialVehicles: List[Vehicle]) -> Solution:
-#     routes: Solution = list()
-#     open_route = [0]
-#     open_route_capacity_used = 0
-#     listOfRoutes = []
-#
-#     availiableVehicles = copy.deepcopy(initialVehicles)
-#
-#     randomVehicle = random.choice(availiableVehicles)
-#
-#     for c in all_customers:
-#         demand = instance.q[c]
-#         while (open_route_capacity_used == 0) & (demand > randomVehicle.payload_kg):  # makes sure we only start if we have a vehicle that can fit the customer
-#             randomVehicle = random.choice(availiableVehicles)
-#
-#         if open_route_capacity_used + demand <= randomVehicle.payload_kg: #random.uniform(100, 2400):  # 900 is a made-up number
-#             # assign customer to route
-#             open_route.append(c)
-#             open_route_capacity_used += demand
-#
-#         else:
-#             # close active route
-#             open_route.append(0)
-#             newRoute = RouteObject(open_route, randomVehicle)
-#             newRoute.current_cost = routeCost(newRoute, instance, 0, True)
-#             listOfRoutes.append(newRoute)
-#
-#             availiableVehicles.remove(randomVehicle)
-#
-#             # open new route and assign customer
-#             randomVehicle = random.choice(availiableVehicles)
-#             while demand > randomVehicle.payload_kg:  # makes sure we only start if we have a vehicle that can fit the customer
-#                 randomVehicle = random.choice(availiableVehicles) # This can lead to an infinite loop, if we only have vehicles left that are smaller than the customers left.
-#             open_route = [0, c]
-#             open_route_capacity_used = demand
-#
-#     # close active route
-#     open_route.append(0)
-#     newRoute = RouteObject(open_route, randomVehicle)
-#     newRoute.current_cost = routeCost(newRoute, instance, 0, True)
-#     listOfRoutes.append(newRoute)  # close the last route
-#
-#     return listOfRoutes
-
-""" old next_fit_heuristic as used in life-coding """
-# def next_fit_heuristic(customer_list: List[int], instance: Instance) -> Solution:
-#     routes: Solution = list()
-#     open_route = [0]
-#     open_route_capacity_used = 0
-#
-#     listOfPayloads = []
-#     for i in instance.Q:
-#         listOfPayloads.append(i.payload_kg)
-#
-#     for c in customer_list:
-#         demand = instance.q[c]
-#
-#         if open_route_capacity_used + demand <= random.uniform(100, 2400):  # 900 is a made-up number
-#             # assign customer to route
-#             open_route.append(c)
-#             open_route_capacity_used += demand
-#
-#         else:
-#             # close active route
-#             open_route.append(0)
-#             routes.append(open_route)
-#
-#             # open new route and assign customer
-#             open_route = [0, c]
-#             open_route_capacity_used = demand
-#
-#     # close active route
-#     open_route.append(0)
-#     routes.append(open_route)  # close the last route
-#
-#     return routes

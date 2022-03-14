@@ -1,10 +1,9 @@
 class Vehicle:
-    def __init__(self, type: str, city: str, city_cost_lvl: str, plateNr: str, fixed_cost_bool: bool,
-                 tax_ins_bool: bool):
+    def __init__(self, type: str, city: str, city_cost_lvl: str, plateNr: str, fixed_cost_bool: bool, tax_ins_bool: bool):
         self.plateNr = plateNr
         self.type = type
         self.city = city
-        self.max_duration = 600.0  # todo: get correct max durations for every city
+        self.max_duration = 600.0
 
         # set the city cost level according to the following dictionary
         city_tax_dict = {
@@ -139,8 +138,6 @@ class Vehicle:
             self.payload_vol = 0.2 * 1000  # needs to be * 1000 because the volumes in nodes is given with unit m^3 * 10^-3
             self.range_km = 128
             self.fixed_cost = 2.92 * fixed_cost_bool * (1 + 0.2 * tax_ins_bool)  # 3.5 * fixed_cost_bool
-            # self.speed_factor = 0.5  # todo: we have to think about the speed of the bike compared to the other vehicles. Also maybe the unloading speed.
-            # since driving time and unloading time have a similar power (eg 12 minutes to drive, 10 minutes to unload), we could pretend that the slower speed gets offset by faster unloading
             if city == "Paris":
                 self.cost_km = 0.050
                 self.cost_km_in = self.cost_km
@@ -153,21 +150,6 @@ class Vehicle:
                 self.cost_km = 0.049
                 self.cost_km_in = self.cost_km
                 self.cost_m = 0.112
-
-        # string vehicle_id # the vehicle id is probably needed to attach the vehicle to a route
-        # string vehicle_type # vehicle type is needed to set constraints & prices
-        # string vehicle_numberplate # numberplate is my way to connect Vehicles and their Dummy-Vehicles. We will need to get penalty costs over all vehicles with the same numberplate, so they need to know it
-        # boolean is_electric # could be used to differentiate between ICEV & BEV. This is important because ICEVs will also need to pass their batterie charge (range) to their dummies. ICEVs can be refuelled.
-        #
-        # int cost_per_km_inside
-        # int cost_per_km_outside
-        # int cost_per_min
-        # int fixed_cost # fixed costs are used for the uncapped runs which tell us the best fleet mix. In capped runs, they are 0
-        #
-        # int payload_kg
-        # int payload_vol
-        # int range # we can use range for both ICEV & BEV
-        # int operating_hours
 
 
 def create_vehicles(city: str, city_cost_lv: str, num_Atego: int, num_VWTrans: int, num_VWCaddy: int, num_eFUSO: int,
@@ -205,55 +187,3 @@ def create_vehicles(city: str, city_cost_lv: str, num_Atego: int, num_VWTrans: i
         listOfInitialVehicles.append(Vehicle(vehicleType, city, city_cost_lv, numberplate, fixed_cost_b, tax_ins_b))
 
     return listOfInitialVehicles
-
-
-""" old stuff """
-# class MercedesBenzAtego:
-#
-#     def __init__(self, plateNum: int):
-#         self.capacity = 2800
-#         self.costs_km = 0.28
-#         self.plateNum = plateNum
-#
-# class VWTransporter:
-#
-#     def __init__(self, plateNum: int):
-#         self.capacity = 883
-#         self.costs_km = 0.16
-#         self.plateNum = plateNum
-#
-#
-# class VWCaddypanelvan:
-#     def __init__(self, plateNum: int):
-#         self.capacity = 670
-#         self.costs_km = 0.13
-#         self.plateNum = plateNum
-#
-#
-# class DaimlerFUSOeCanter:
-#     def __init__(self, plateNum: int):
-#         self.capacity = 2800
-#         self.costs_km = 0.1
-#         self.plateNum = plateNum
-#
-#
-# class StreetScooterWORKL:
-#     def __init__(self, plateNum: int):
-#         self.capacity = 905
-#         self.costs_km = 0.07
-#         self.plateNum = plateNum
-#
-#
-# class StreetScooterWORK:
-#     def __init__(self, plateNum: int):
-#         self.capacity = 720
-#         self.costs_km = 0.07
-#         self.plateNum = plateNum
-#
-#
-# class DouzeV2ECargoBike:
-#     def __init__(self, plateNum: int):
-#         self.capacity = 100
-#         self.costs_km = 0.05
-#         self.plateNum = plateNum
-#

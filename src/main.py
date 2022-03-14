@@ -3,31 +3,18 @@ import datetime
 import sys
 import copy
 import time
-
 import pandas as pd
-
 from instances.Construction import ouralgorithm
 from instances.Intialization import random_sweep
 from instances.Trucks import create_vehicles
-from instances.Utils import Instance, vehicle_assignment, solution_cost, find_cheapest_vehicle, Instance_tune
+from instances.Utils import vehicle_assignment, solution_cost, Instance_tune
 from instances.Plot import plotVRP, inner_city_check
 
-import os
-# os.chdir('C:/Users/Евгений/Desktop/TUM/WS 2021-2022/Advanced Seminar Sustainable Transportation Systems/AS_STS_code')
-# os.chdir('C:/Users/Maximilian Sammer/PycharmProjects/AS_STS_code/')
-# os.chdir('/Users/tuminyu/Desktop/Cory/TUM Master/Advanced Seminar/Code/Project')
-# os.chdir('C:/Users/Christopher/PycharmProjects/AS_STS_code/')
-
-### may come in handy later on:
-# from src import TSPLibReader
-# instance = TSPLibReader.read("instances/carModel1.vrp") //using .vrp
-###
-
 # 0. ENTER THE CITY (NewYork, Paris, Shanghai)
-city = "NewYork"
+city = "Shanghai"
 # set the # of vehicles available to Sweep and Algorithm
-numI_Atego = 8
-numI_VWTrans = 12
+numI_Atego = 0
+numI_VWTrans = 17
 numI_VWCaddy = 0
 numI_DeFuso = 0
 numI_ScooterL = 0
@@ -36,7 +23,7 @@ numI_eCargoBike = 0
 
 # set fixed costs on/off
 fixed_cost_active = False  # sets fixed costs active for all vehicles
-tax_ins_active = False  # sets taxes and insurance active. Makes fixed costs for all non-leased vehicles ~90% higher (20% for bike).
+tax_ins_active = False  # sets taxes and insurance active. Makes fixed costs for all non-leased vehicles ~90% higher (20% for bike)
 
 # set demand_factor
 kg_factor = 1
@@ -63,11 +50,7 @@ params_dict = {
     'step_penalty': [1],
 }
 
-
 # 1. LOADING THE DATA
-
-# df_NewYork_1_nodes = pd.read_csv("data/NewYork.1.nodes", sep=' ')
-# df_NewYork_2_nodes = pd.read_csv("data/NewYork.2.nodes", sep=' ')
 if city == "NewYork":
     df_nodes = pd.read_csv("data/NewYork.nodes", sep=' ')
     df_nodes["Duration"] = pd.to_timedelta(df_nodes["Duration"]).dt.total_seconds() / 60  # converting duration column to floats instead of strings
@@ -85,26 +68,15 @@ if city == "Shanghai":
     df_routes["Duration[s]"] = pd.to_timedelta(df_routes["Duration[s]"]).dt.total_seconds() / 60  # converting duration column to floats instead of strings
 
 # 2. CREATING TEST DATASET AND ATTRIBUTES OF FUTURE INSTANCE
-# set testDimension to 1 more than customers
-testDimension = len(df_nodes)  # change this to use more or less customers of the data set. Max for Paris is 112. Also need to change the iloc for the nodes file
-# 1 + either 19, 39 or 112
+testDimension = len(df_nodes)
 
 # DON'T FORGET TO SET MORE VEHICLES IF YOU HAVE MORE CUSTOMERS
 
-if testDimension == 20:
-    df_nodes_subset = df_nodes.iloc[:20, :]  # select elements from D0 to C19 in nodes
-    df_routes_subset = df_routes.iloc[:2260, :]  # select elements from D0 to C19 in routes
-if testDimension == 40:
-    df_nodes_subset = df_nodes.iloc[:40, :]  # select elements from D0 to C40 in nodes
-    df_routes_subset = df_routes.iloc[:4633, :]  # select elements from D0 to C40 in routes
 if testDimension == len(df_nodes):
     df_nodes_subset = df_nodes  # select all elements (choose if 112 customers)
     df_routes_subset = df_routes  # select all elements (choose if 112 customers)
-# print(df_nodes_subset)
-# print(df_routes_subset)
 
-subsetDemand = list(df_nodes_subset.loc[:, "Demand[kg]"])  # select demand column (in kg) and convert it to a list
-# print(subsetDemand)
+subsetDemand = list(df_nodes_subset.loc[:, "Demand[kg]"])  # select the demand column (in kg) and convert it to a list
 
 if kg_factor != 1:
     print(f"original demand kg: {subsetDemand}")
@@ -113,7 +85,7 @@ if kg_factor != 1:
     print(f"kg factor: {kg_factor}")
     print(f"changed demand kg: {subsetDemand}\n")
 
-subsetVolume = list(df_nodes_subset.loc[:, "Demand[m^3*10^-3]"])  # select demand column (in volume) and convert it to a list
+subsetVolume = list(df_nodes_subset.loc[:, "Demand[m^3*10^-3]"])  # select the demand column (in volume) and convert it to a list
 if vol_factor != 1:
     print(f"original volume: {subsetVolume}")
     for i in range(len(subsetVolume)):
@@ -121,108 +93,48 @@ if vol_factor != 1:
     print(f"volume factor: {vol_factor}")
     print(f"changed volume: {subsetVolume}\n")
 
-# print(subsetVolume)
-subsetDuration = list(df_nodes_subset.loc[:, "Duration"])  # select duration column (in volume) and convert it to a list
-# print(subsetDuration)
+subsetDuration = list(df_nodes_subset.loc[:, "Duration"])  # select the duration column (in volume) and convert it to a list
 
-subsetDistances = {}  # the purpose of the following up loop is
-for row, content in df_routes_subset.iterrows():  # to create tuples with distances from one Id
-    key = (int(content[0][1:]), int(content[1][1:]))  # to another
+subsetDistances = {}  # create tuples with distances from one Id to another
+for row, content in df_routes_subset.iterrows():
+    key = (int(content[0][1:]), int(content[1][1:]))
     subsetDistances[key] = content[2]
-# print(subsetDistances)
 
-subsetDistanceInside = {}  # the purpose of the following up loop is
-for row, content in df_routes_subset.iterrows():  # to create tuples with distances from one Id
-    key = (int(content[0][1:]), int(content[1][1:]))  # to another inside the city
+subsetDistanceInside = {}  # create tuples with distances from one Id to another inside the city
+for row, content in df_routes_subset.iterrows():
+    key = (int(content[0][1:]), int(content[1][1:]))
     subsetDistanceInside[key] = content[3]
-# print(subsetDistanceInside)
 
-subsetDistanceOutside = {}  # the purpose of the following up loop is
-for row, content in df_routes_subset.iterrows():  # to create tuples with distances from one Id
-    key = (int(content[0][1:]), int(content[1][1:]))  # to another outside the city
+subsetDistanceOutside = {}  # create tuples with distances from one Id to another outside the city
+for row, content in df_routes_subset.iterrows():
+    key = (int(content[0][1:]), int(content[1][1:]))
     subsetDistanceOutside[key] = content[4]
-# print(subsetDistanceOutside)
 
-subsetArcDuration = {}  # the purpose of the following up loop is
-for row, content in df_routes_subset.iterrows():  # to create tuples with durations from one Id
-    key = (int(content[0][1:]), int(content[1][1:]))  # to another inside the city
+subsetArcDuration = {}
+for row, content in df_routes_subset.iterrows():
+    key = (int(content[0][1:]), int(content[1][1:]))
     subsetArcDuration[key] = content[5]
-# print(subsetArcDuration)
 
 coordinates = []
 for row, content in df_nodes_subset.iterrows():
     coordinate = (content[1], content[2])
     coordinates.append(coordinate)
-print(coordinates)
 
 outside_dictionary = inner_city_check(df_nodes_subset, subsetDistanceInside, subsetDistanceOutside)
-# print(outside_dictionary)
 
-# coordinates for matplot
-# coordinates_int = create_list_int_coordinates(df_nodes_subset)
-# print(coordinates_int)
-# coordinates_float = create_list_float_coordinates(df_nodes_subset)
-# print(coordinates_float)
 # 3. CREATING OUR VEHICLES
 # create vehicles via function in Trucks.py-file
-listOfInitialVehicles = create_vehicles(city, city_cost_level, numI_Atego, numI_VWTrans, numI_VWCaddy, numI_DeFuso, numI_ScooterL,
-                                        numI_ScooterS, numI_eCargoBike, fixed_cost_active, tax_ins_active)
+listOfInitialVehicles = create_vehicles(city, city_cost_level, numI_Atego, numI_VWTrans, numI_VWCaddy, numI_DeFuso, numI_ScooterL, numI_ScooterS, numI_eCargoBike, fixed_cost_active, tax_ins_active)
 print(f"List of initial Vehicle payloads_kg: {list(map(lambda x: x.payload_kg, listOfInitialVehicles))}")
 
-# test feasibility of our vehicle assignment. Need enough capacity to carry all demand.
+# test feasibility of our vehicle assignment. Need enough capacity to carry all demand
 sumOfDemand = sum(subsetDemand)
 sumOfCapacity = numI_Atego * 2800 + numI_VWTrans * 883 + numI_VWCaddy * 670 + numI_DeFuso * 2800 + numI_ScooterL * 905 + numI_ScooterS * 720 + numI_eCargoBike * 100
 if sumOfCapacity < sumOfDemand:
     print(f"Not enough Capacity ({sumOfCapacity}) for Demand ({sumOfDemand})")
     sys.exit()
 
-# # 5. CREATING INSTANCE
-""" alter code für einzelnen Lauf ohne Parameter"""
-# ourInstance = Instance(testDimension, listOfInitialVehicles, testDemandParis, testDemandParisVolume, testParisCustomerDuration,
-#                        testParisDistances, testParisDistancesInside, testParisDistancesOutside, testParisArcDuration, coordinates)
-# 
-# # 6. SWEEP HEURISTIC
-# """ The Sweep Heuristic will only work if we have enough payload_kg capacity to assign all customers to feasible [kg] routes"""
-# bestCostRandomSweep = 10e10
-# for i in range(10): # we run the sweep heuristic multiple times with different starting angles to get a good starting solution
-#     tempSolutionRandomSweep = random_sweep(ourInstance, listOfInitialVehicles)
-#     tempCost = solution_cost(tempSolutionRandomSweep, ourInstance, 0, True)
-#     # print(f"Rand Sweep Heuristic, temp distance: {compute_distances(tempSolutionRandomSweep, ourInstance)}")
-#     if tempCost < bestCostRandomSweep:
-#         bestSolutionRandomSweep = copy.deepcopy(tempSolutionRandomSweep)
-#         bestCostRandomSweep = tempCost
-# print(f"Rand Sweep Heuristic, #Vehicles: {len(bestSolutionRandomSweep)}, cost: {bestCostRandomSweep}")
-# 
-# 
-# # 6.1 VehicleSwap for the SweepSolution
-# listOfInitAvailableVehicles = vehicle_assignment(bestSolutionRandomSweep, listOfInitialVehicles, ourInstance, 0, True)  # vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: List[Vehicle], instance: Instance):
-# 
-# # 7. OUR ALGORITHM (DESTRUCTION + INSERTION + OPTIMIZATION + ACCEPTANCE)
-# solutionOur = ouralgorithm(ourInstance, bestSolutionRandomSweep, listOfInitialVehicles, listOfInitAvailableVehicles,
-#                            coordinates)
-# print(f"numI_Atego: {numI_Atego,}, numI_VWTrans: {numI_VWTrans}, numI_VWCaddy: {numI_VWCaddy}, numI_DeFuso: {numI_DeFuso}, numI_ScooterL: {numI_ScooterL}, numI_ScooterS: {numI_ScooterS}, numI_eCargoBike: {numI_eCargoBike}")
-
-
-# 8. Parameter Analysis
-
-# Design Freeze - 2022-02-07 - 14:00
-# params_dict = {
-#     'max_iterations': [10000],
-#     'init_temp': [0.1],
-#     'temp_target_percentage': [0.025],
-#     'temp_target_iteration': [1.2],
-#     'freeze_period_length': [0.02],
-#     'destroy_random_ub': [0.12],
-#     'destroy_expensive_ub': [0.1],
-#     'destroy_route_ub': [1],
-#     'destroy_related_ub': [0.12],
-#     'max_weight': [5000],
-#     'min_weight': [10],
-#     'reduce_step': [4],
-#     'step_penalty': [1],
-# }
-
-
+# 4. RUN THE ALGORITHM
 n = 0
 for a in params_dict['max_iterations']:
     for b in params_dict['init_temp']:
@@ -283,8 +195,7 @@ for a in params_dict['max_iterations']:
                                                                                    coordinates)
                                                     end_time_run = time.perf_counter()
                                                     runtime_run = end_time_run - start_time_run
-                                                    print(
-                                                        f"numI_Atego: {numI_Atego,}, numI_VWTrans: {numI_VWTrans}, numI_VWCaddy: {numI_VWCaddy}, numI_DeFuso: {numI_DeFuso}, numI_ScooterL: {numI_ScooterL}, numI_ScooterS: {numI_ScooterS}, numI_eCargoBike: {numI_eCargoBike}")
+                                                    print(f"numI_Atego: {numI_Atego,}, numI_VWTrans: {numI_VWTrans}, numI_VWCaddy: {numI_VWCaddy}, numI_DeFuso: {numI_DeFuso}, numI_ScooterL: {numI_ScooterL}, numI_ScooterS: {numI_ScooterS}, numI_eCargoBike: {numI_eCargoBike}")
                                                     no_depot_title = 'No Depot Plot ' + str(n)
                                                     depot_title = 'Route Plot in Permutation ' + str(n)
                                                     # plotVRP(sol, coordinates, False, no_depot_title)
@@ -300,5 +211,3 @@ print(summary_performance)
 date_string = str(datetime.datetime.now())
 date_string = date_string.replace(":", "-")
 summary_performance.to_csv(date_string[:16] + ' - parameter_analysis.csv')
-
-# os.system("start C:/Users/Christopher/PycharmProjects/AS_STS_code/Doorbell.wav")

@@ -3,12 +3,10 @@ import random
 import copy
 import time
 from typing import List
-
 from instances.DestructionOps import random_removal, expensive_removal, route_removal, related_removal
 from instances.InsertionOps import cheapest_insertion_iterative, regret_insertion
-from instances.LocalSearch import hillclimbing, find_first_improvement_2Opt, vnd, find_first_improvement_relocate, \
-    find_best_improvement_2Opt, combine_routes, find_best_duration_improvement_2Opt
-from instances.Plot import plotSubplots, plot3Subplots
+from instances.LocalSearch import hillclimbing, find_best_improvement_2Opt, combine_routes
+from instances.Plot import plot3Subplots
 from instances.Route import RouteObject
 from instances.Trucks import Vehicle
 from instances.Utils import Instance, routeCost, delete_empty_routes, vehicle_assignment, solution_cost, \
@@ -17,18 +15,14 @@ from instances.Utils import Instance, routeCost, delete_empty_routes, vehicle_as
     compute_distance
 
 
-# TODO: Check all copy operations. We need to be sure we use copy.deepcopy() at the correct points.
-def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], list_of_all_vehicles: List[Vehicle],
-                 listOfInitAvailableVehicles: List[Vehicle], coordinates_int=[]):  # coordinates_int is only for matplot
+def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], list_of_all_vehicles: List[Vehicle], listOfInitAvailableVehicles: List[Vehicle], coordinates_int=[]):  # coordinates_int is only for matplot
+
     # START OF INITIALIZATION PHASE
     starttime = datetime.datetime.now()
-
     feasible_solution_found = False  # to track if we found a feasible solution
-
     accepted_list_of_av_vehicles = listOfInitAvailableVehicles.copy()
     # setting the initial solution up so we can compare to it in acceptance phase
-    bestSolution = copy.deepcopy(
-        initialSolution)  # set the initial solution as the best solution (until acceptance check)
+    bestSolution = copy.deepcopy(initialSolution)  # set the initial solution as the best solution (until acceptance check)
     bestIteration = -1  # used in acceptance check
 
     # setting up weights, counters and lists for adaptive LNS and generating reports after algorithm finishes
@@ -44,7 +38,6 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], list_of
     weight_destroy_related = instance.init_weight_destroy_related
     counter_destroy_related_imp = 0
     counter_destroy_related_rej = 0
-
     weight_insert_cheapest = instance.init_weight_insert_cheapest
     counter_insert_cheapest_imp = 0
     counter_insert_cheapest_rej = 0
@@ -56,7 +49,6 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], list_of
 
     # setting up counter to check how long we had no improvement
     counter_iterations_no_improvement = 0
-    listFallbackIterations = []
     freeze_iterations = 0
 
     # set up parameters of simulated annealing
@@ -68,12 +60,11 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], list_of
     simAnnTemp = []
     bestSolutionPlot = []
 
-    print(
-        f"Sweep solution: {list(map(lambda x: x.customer_list, bestSolution))}")  # printing out customer lists after sweep
-    print(
-        f"Route costs:    {list(map(lambda x: x.current_cost, bestSolution))}")  # printing out costs of the routes after sweep after costs are assigned
+    print(f"Sweep solution: {list(map(lambda x: x.customer_list, bestSolution))}")  # printing out customer lists after sweep
+    print(f"Route costs:    {list(map(lambda x: x.current_cost, bestSolution))}")  # printing out costs of the routes after sweep after costs are assigned
     # END OF INITIALIZATION PHASE
-    # -------------------------------------------------------------------------------------------------------------
+
+    # ------------------------------------------------------------------------------------------------------------------
 
     # START OF THE LOOP
     iteration = 0  # iterations are counted up at the start of the loop, so we start with 0 to have the first iteration = 1
@@ -89,21 +80,17 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], list_of
 
         print(f"New iteration__________{iteration}")
 
-        listOfRoutes = copy.deepcopy(
-            currentSolution)  # at the start of each iteration, set the list of routes to current known solution
+        listOfRoutes = copy.deepcopy(currentSolution)  # at the start of each iteration, set the list of routes to current known solution
         list_of_available_vehicles = accepted_list_of_av_vehicles.copy()  # at the start of each iteration, set the list_of_avb_vehicles to the list from the accepted solution
-        # todo: gets overwritten if we do vehicle assignment after destruction
 
         print(f"Routes at start of iteration:     {list(map(lambda x: x.customer_list, listOfRoutes))}")
-        # -------------------------------------------------------------------------------------------------------------
-        # START OF DESTRUCTION PHASE
-        # bestSolution_beforeDestruction = list(map(lambda x: x.customer_list, bestSolution))
 
+        # --------------------------------------------------------------------------------------------------------------
+
+        # START OF DESTRUCTION PHASE
         destroy_ops = ['random_removal', 'expensive_removal', 'route_removal', 'related_removal']
-        destroy_weights = [weight_destroy_random, weight_destroy_expensive, weight_destroy_route,
-                           weight_destroy_related]
-        destroy_op_used_list = random.choices(destroy_ops,
-                                              weights=destroy_weights)  # chooses an option from a weighed list
+        destroy_weights = [weight_destroy_random, weight_destroy_expensive, weight_destroy_route, weight_destroy_related]
+        destroy_op_used_list = random.choices(destroy_ops, weights=destroy_weights)  # chooses an option from a weighed list
         destroy_op_used = destroy_op_used_list[0]  # because the choices-operator returns a list
 
         if destroy_op_used == 'random_removal':  # pick a destroy operation
@@ -115,98 +102,69 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], list_of
         elif destroy_op_used == 'related_removal':
             listOfRemoved = related_removal(instance)
 
-        listOfRemoved.sort()  # for better readability during debugging
+        listOfRemoved.sort()  # for better readability
         print(f"Customers to be removed:          {listOfRemoved}")
 
         temp_listOfRemoved = listOfRemoved.copy()
         for r in listOfRoutes:
-            for rc in temp_listOfRemoved:  # TODO: turn into while len(temp_listOfRemoved) > 0 loop
+            for rc in temp_listOfRemoved:
                 if rc in r.customer_list:
                     r.customer_list.remove(rc)
-                    # temp_listOfRemoved.remove(rc)  # causes a bug where customers dont get deleted TODO: Fix this bug
         print(f"Routes after destruction:         {list(map(lambda x: x.customer_list, listOfRoutes))}")
 
         for r in listOfRoutes:
             r.current_cost = routeCost(r, instance, iteration, True)  # recalculate route cost after destruction
         # END OF DESTRUCTION PHASE
 
-        # testing to see if vehicle assignment after destruction helps with using more vehicle types
-        # the test failed. It was worse in New York
-        if instance.max_weight == 5001:  # Botch: if instance.max_weight is set to 5001, we activate Vehicle_Assignment after Destruction
-            list_of_available_vehicles = vehicle_assignment(listOfRoutes, list_of_all_vehicles, instance,
-                                                            iteration)  # def vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: List[Vehicle], instance: Instance):
-
         #  -------------------------------------------------------------------------------------------------------------
-        # START OF INSERTION PHASE
 
+        # START OF INSERTION PHASE
         insert_ops = ['cheapest_insert', 'regret_insert']
         insert_weights = [weight_insert_cheapest, weight_insert_regret]
-        insert_op_used_list = random.choices(insert_ops,
-                                             weights=insert_weights)  # chooses an option from a weighed list
+        insert_op_used_list = random.choices(insert_ops, weights=insert_weights)  # chooses an option from a weighed list
         insert_op_used = insert_op_used_list[0]  # because the choices-operator returns a list
 
         if insert_op_used == 'cheapest_insert':  # pick a destroy operation
-            list_of_available_vehicles = cheapest_insertion_iterative(listOfRoutes, listOfRemoved,
-                                                                      list_of_available_vehicles, instance,
-                                                                      iteration)
+            list_of_available_vehicles = cheapest_insertion_iterative(listOfRoutes, listOfRemoved, list_of_available_vehicles, instance, iteration)
         elif insert_op_used == 'regret_insert':
-            list_of_available_vehicles = regret_insertion(listOfRoutes, listOfRemoved, list_of_available_vehicles,
-                                                          instance, iteration)
+            list_of_available_vehicles = regret_insertion(listOfRoutes, listOfRemoved, list_of_available_vehicles, instance, iteration)
 
         print(f"Route objects after insertion:    {list(map(lambda x: x.customer_list, listOfRoutes))}")
         # END OF INSERTION PHASE
-        # -------------------------------------------------------------------------------------------------------------
-        # START OF OPTIMIZATION PHASE.
-        # DELETING EMPTY ROUTES
-        listOfRoutes = delete_empty_routes(
-            listOfRoutes)  # todo: when deleting empty routes, give vehicles back to list_of_available vehicles
+
+        # --------------------------------------------------------------------------------------------------------------
+
+        # START OF OPTIMIZATION PHASE
+        listOfRoutes = delete_empty_routes(listOfRoutes)
         print(f"Route objects no empty routes:    {list(map(lambda x: x.customer_list, listOfRoutes))}")
-
-        # START OF LOCAL OPTIMIZATION 2-opt
-        """ 2-opt currently optimizes for distance. Since it is inter-route, I am fine with this. - Christopher"""
-
         local_search_function = find_best_improvement_2Opt
-        listAfterOptimization = hillclimbing(list(map(lambda x: x.customer_list, listOfRoutes)), instance,
-                                             local_search_function)
+        listAfterOptimization = hillclimbing(list(map(lambda x: x.customer_list, listOfRoutes)), instance, local_search_function)
         for i in range(len(listAfterOptimization)):
-            listOfRoutes[i].customer_list = listAfterOptimization[
-                i].copy()  # put the optimized customer lists back into our RouteObjects
+            listOfRoutes[i].customer_list = listAfterOptimization[i].copy()  # put the optimized customer lists back into our RouteObjects
         print(f"Route objects after optimization: {list(map(lambda x: x.customer_list, listOfRoutes))}")
 
-        # print(f"Currently availiable vehicles:")
-        # for v in list_of_available_vehicles:
-        #     print(f"{v.type}, nr: {v.plateNr}")
-
-        listOfRoutes, list_of_available_vehicles = combine_routes(listOfRoutes, list_of_available_vehicles, instance,
-                                                                  iteration)
-        # todo: we could do a 2 opt of the combined routes. I think this would be really strong.
-        # END OF LOCAL OPTIMIZATION 2-opt
+        listOfRoutes, list_of_available_vehicles = combine_routes(listOfRoutes, list_of_available_vehicles, instance, iteration)
 
         # START OF VEHICLE SWAP PHASE
-        list_of_available_vehicles = vehicle_assignment(listOfRoutes, list_of_all_vehicles,
-                                                        instance,
-                                                        iteration)  # def vehicle_assignment(list_of_routes: list[Route], initial_list_of_vehicles: List[Vehicle], instance: Instance):
+        list_of_available_vehicles = vehicle_assignment(listOfRoutes, list_of_all_vehicles, instance, iteration)
         # END OF VEHICLE SWAP PHASE
-        # END OF OPTIMIZATION PHASE.
-        # -------------------------------------------------------------------------------------------------------------
-        # START OF ACCEPTANCE PHASE
 
+        # END OF OPTIMIZATION PHASE.
+
+        # --------------------------------------------------------------------------------------------------------------
+
+        # START OF ACCEPTANCE PHASE
         # count customers
         customer_count = 0
         for r in listOfRoutes:
             customer_count += len(r.customer_list) - 2  # -2 because of two depots in each customer_list
-        # if customer_count != 111: # this needs to be set to the exact amount of customers we have, and then it can be used to check if we lose/gain customers
-        #     print(f"Error! Customer Count is: {customer_count}")
-        #     os._exit()
         print(f"customer count check: {customer_count}")
-        bestCost = solution_cost(bestSolution, instance, iteration,
-                                 True)  # we have to recalculate best cost after every iteration because we need to update infeasibility costs
+
+        bestCost = solution_cost(bestSolution, instance, iteration, True)  # we have to recalculate best cost after every iteration because we need to update infeasibility costs
         print(f"Best known cost before this iteration: {bestCost}")
         print(f"Best iteration before this one: {bestIteration}")
-        ## costThisIteration = solution_cost(listOfRoutes, instance, iteration, True)
-        accept, costThisIteration, temperature, freeze_iterations = simulated_annealing(instance, currentSolution,
-                                                                                        listOfRoutes, temperature,
-                                                                                        iteration, freeze_iterations)
+        # costThisIteration = solution_cost(listOfRoutes, instance, iteration, True)
+        accept, costThisIteration, temperature, freeze_iterations = simulated_annealing(instance, currentSolution, listOfRoutes, temperature, iteration, freeze_iterations)
 
         accept_counter += accept
         if accept:
@@ -221,8 +179,7 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], list_of
         else:
             simAnnTemp.append((iteration, temperature))
 
-        if iteration == (
-                1 - instance.final_effort) * instance.max_iterations:  # this statement forces our algorithm back to the best known solution at 99% of iterations. This helps us optimize the bestSolution for a little bit longer in the end.
+        if iteration == (1 - instance.final_effort) * instance.max_iterations:  # this statement forces our algorithm back to the best known solution at 99% of iterations. This helps us optimize the bestSolution for a little bit longer in the end.
             currentSolution = copy.deepcopy(bestSolution)
             freeze_iterations = instance.max_iterations  # we freeze the SimAnnealing at the end so we only accept better solutions
 
@@ -241,7 +198,6 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], list_of
                 best_feasible_solution = copy.deepcopy(bestSolution)  # stores the best feasible solution
                 feasible_solution_found = True
 
-            # listImprovingIterations.append((iteration, destroy_op_used, insert_op_used))
             listImprovingIterations.append((iteration, formated_cost, solution_feasible))
 
             counter_iterations_no_improvement = 0  # reset the counter
@@ -289,13 +245,6 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], list_of
                 weight_insert_regret = max(10, weight_insert_regret - instance.reduce_step)
                 counter_insert_regret_rej += 1
 
-            # if counter_iterations_no_improvement >= instance.max_iterations_no_improvement:  # if we cant find an improvement for very long, go back to the best known solution
-            #     currentSolution = copy.deepcopy(bestSolution)
-            #     counter_iterations_no_improvement = 0
-            #     listFallbackIterations.append((iteration, costThisIteration, bestCost))
-            #     instance.destroy_random_ub = min(0.75, instance.destroy_random_ub + 0.05)
-            #     instance.max_iterations_no_improvement = min(0.25, instance.max_iterations_no_improvement + 0.01)
-
         print(f"Total cost of the current iteration: {costThisIteration}, Feasible: {solution_feasible}")
         print(f"Best known cost: {bestCost}")
         print(f"Best iteration: {bestIteration}, iterations without improvement: {counter_iterations_no_improvement}")
@@ -303,28 +252,25 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], list_of
 
         time_so_far = time.perf_counter() - perf_starttime  # update time for maxTime
         # END OF ACCEPTANCE PHASE
+
     # -------------------------------------------------------------------------------------------------------------
+
     # END OF LOOP
     enablePrint()
     print(f"Routes of the best Solution:")
     counter = 0
     for r in bestSolution:
         counter += 1
-        print(
-            f"Best Solution - route {counter} , vehicle {r.vehicle.plateNr}, cost: {r.current_cost:.2f} €, load: {compute_total_demand(r.customer_list, instance)} kg, vol: {compute_total_volume(r.customer_list, instance) / 1000:.2f} m^3, dist: {compute_distance(r.customer_list, instance):.0f} km, customerCount: {len(r.customer_list) - 2}, feasible: {r.currently_feasible}, customers: {r.customer_list}")
+        print(f"Best Solution - route {counter} , vehicle {r.vehicle.plateNr}, cost: {r.current_cost:.2f} €, load: {compute_total_demand(r.customer_list, instance)} kg, vol: {compute_total_volume(r.customer_list, instance) / 1000:.2f} m^3, dist: {compute_distance(r.customer_list, instance):.0f} km, customerCount: {len(r.customer_list) - 2}, feasible: {r.currently_feasible}, customers: {r.customer_list}")
     print()
 
     print(f"random_removal stats: improvements: {counter_destroy_random_imp}, rejected: {counter_destroy_random_rej}")
-    print(
-        f"expensive_removal stats: improvements: {counter_destroy_expensive_imp}, rejected: {counter_destroy_expensive_rej}")
+    print(f"expensive_removal stats: improvements: {counter_destroy_expensive_imp}, rejected: {counter_destroy_expensive_rej}")
     print(f"route_removal stats: improvements: {counter_destroy_route_imp}, rejected: {counter_destroy_route_rej}")
-    print(
-        f"related_removal stats: improvements: {counter_destroy_related_imp}, rejected: {counter_destroy_related_rej}")
-    print(
-        f"Weights at end of run: random_removal: {weight_destroy_random}, expensive_removal: {weight_destroy_expensive}, route_removal: {weight_destroy_route}, related_removal: {weight_destroy_related}")
+    print(f"related_removal stats: improvements: {counter_destroy_related_imp}, rejected: {counter_destroy_related_rej}")
+    print(f"Weights at end of run: random_removal: {weight_destroy_random}, expensive_removal: {weight_destroy_expensive}, route_removal: {weight_destroy_route}, related_removal: {weight_destroy_related}")
 
-    print(
-        f"cheapest_insert stats: improvements: {counter_insert_cheapest_imp}, rejected: {counter_insert_cheapest_rej}")
+    print(f"cheapest_insert stats: improvements: {counter_insert_cheapest_imp}, rejected: {counter_insert_cheapest_rej}")
     print(f"regret_insert stats: improvements: {counter_insert_regret_imp}, rejected: {counter_insert_regret_rej}")
     print(f"Weights at end of run: cheapest_insert: {weight_insert_cheapest}, regret_insert: {weight_insert_regret}")
     print()
@@ -344,14 +290,11 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], list_of
 
     print(f"We improved by {improvement:.2f}%. Average improvement per iteration: {imp_per_it:.2f}%.")
     print(f"We improved {len(listImprovingIterations)} times, in the following iterations: {listImprovingIterations}.")
-    # print(f"We fell back {len(listFallbackIterations)} times, in the following iterations: {listFallbackIterations}.")
-    print('accept: ' + str(accept_counter) + ', iterations: ' + str(iteration) + ', ratio: ' + str(
-        accept_counter / iteration))
+    print('accept: ' + str(accept_counter) + ', iterations: ' + str(iteration) + ', ratio: ' + str(accept_counter / iteration))
     endtime = datetime.datetime.now()
     print(f"Length of the run: {endtime - starttime}.\n")
     print(str(endtime))
 
-    # plotSubplots(simAnnPlot, simAnnTemp, 'SimAnn Accepted + Temp')
     formated_cost = "{:.2f}".format(bestCost)
     plot3Subplots(simAnnPlot, bestSolutionPlot, simAnnTemp, 'SimAnn Accepted / Temp - Best Cost: ' + formated_cost)
 
@@ -360,6 +303,3 @@ def ouralgorithm(instance: Instance, initialSolution: List[RouteObject], list_of
     else:
         print(f"FOUND NO FEASIBLE SOLUTION!")
         return bestSolution, bestCost, feasible_solution_found
-
-    # return list(map(lambda x: x.customer_list, bestSolution)), bestCost
-    # return bestSolution, bestCost
