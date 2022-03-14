@@ -6,20 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="8c680e45-7c97-481f-92a5-74cbaa3d7be3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instances/Construction.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Construction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instances/DestructionOps.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/DestructionOps.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instances/InsertionOps.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/InsertionOps.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instances/Intialization.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Intialization.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instances/LocalSearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/LocalSearch.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instances/Plot.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Plot.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instances/Pseudocode.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/instances/Route.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Route.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instances/Trucks.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Trucks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instances/Utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/instances/Utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instances/carModel1.vrp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TSPLibReader.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/TestConstruction.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,7 +71,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="com.intellij.openapi.externalSystem.service.settings.ExternalSystemGroupConfigurable" value="ALL" />
-    <property name="last_opened_file_path" value="$USER_HOME$/Documents/Python Projects/Data camp, Python Programmer/7. Working with Dates and Times in Python/Working with Dates and Times in Python.py" />
+    <property name="last_opened_file_path" value="$USER_HOME$/Downloads/README.md" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
@@ -267,7 +255,7 @@
       <workItem from="1646588170586" duration="2102000" />
       <workItem from="1646952092539" duration="2465000" />
       <workItem from="1647207747301" duration="6337000" />
-      <workItem from="1647216130169" duration="5270000" />
+      <workItem from="1647216130169" duration="10508000" />
     </task>
     <task id="LOCAL-00001" summary="Let's see">
       <created>1637839022626</created>
@@ -563,7 +551,14 @@
       <option name="project" value="LOCAL" />
       <updated>1644868457413</updated>
     </task>
-    <option name="localTasksCounter" value="43" />
+    <task id="LOCAL-00043" summary="1) Cleaned up the code">
+      <created>1647221774549</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1647221774549</updated>
+    </task>
+    <option name="localTasksCounter" value="44" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -597,7 +592,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="1) started insertion phase" />
     <MESSAGE value="1) updated destruction algorithm so that it works with any input data (not only the test one)" />
     <MESSAGE value="1) fixed a small error" />
     <MESSAGE value="1) insertion part without checking for feasibility" />
@@ -622,7 +616,8 @@
     <MESSAGE value="1) Merged New York tables&#10;2) Added simple city selection" />
     <MESSAGE value="1) Renamed the names of cities to be entered" />
     <MESSAGE value="1) Reverted the code to 3 days ago one" />
-    <option name="LAST_COMMIT_MESSAGE" value="1) Reverted the code to 3 days ago one" />
+    <MESSAGE value="1) Cleaned up the code" />
+    <option name="LAST_COMMIT_MESSAGE" value="1) Cleaned up the code" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/main_py$TestConstruction.coverage" NAME="TestConstruction Coverage Results" MODIFIED="1640299941018" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

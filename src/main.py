@@ -10,7 +10,8 @@ from instances.Trucks import create_vehicles
 from instances.Utils import vehicle_assignment, solution_cost, Instance_tune
 from instances.Plot import plotVRP, inner_city_check
 
-# 0. ENTER THE CITY (NewYork, Paris, Shanghai)
+# 0. ENTER THE CITY.
+# Names to enter: NewYork, Paris, Shanghai
 city = "Shanghai"
 # set the # of vehicles available to Sweep and Algorithm
 numI_Atego = 0
